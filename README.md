@@ -1,4 +1,7 @@
 # Scheduler
+
+[![Build Status](https://travis-ci.org/akornatskyy/scheduler.svg?branch=master)](https://travis-ci.org/akornatskyy/scheduler)
+
 Scheduler is a fully managed cron job scheduler. It allows you to schedule
 virtually any job (e.g. such as calling HTTP/S endpoints). You can automate
 everything, including retries in case of failure, run jobs right away, on a recurring
