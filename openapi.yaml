@@ -1,0 +1,115 @@
+openapi: 3.0.2
+# https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md
+servers:
+  - url: 'http://localhost:8080'
+info:
+  version: 1.0.0
+  title: Scheduler Service
+  description: |
+    REST API for the Scheduler Service. This API allows create and manage
+    scheduled jobs.
+  contact:
+    name: Andriy Kornatskyy
+    email: andriy.kornatskyy@live.com
+  license:
+    name: MIT
+tags:
+  - name: collections
+    description: Provides operations for creating and managing collections of scheduled jobs.
+  - name: jobs
+    description: Provides operations for creating and managing scheduled jobs.
+paths:
+  /collections:
+    get:
+      summary: Retrieves a list of job collections
+      operationId: ListCollections
+      tags:
+        - collections
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CollectionItem'
+                required:
+                  - items
+  /jobs:
+    get:
+      summary: Retrieves a list of jobs
+      operationId: ListJobs
+      tags:
+        - jobs
+      parameters:
+        - $ref: '#/components/parameters/collection_id'
+        - name: state
+          in: query
+          required: false
+          description: comma delimited list of state to filter by e.g. state=enabled,disabled
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/JobItem'
+                required:
+                  - items
+components:
+  schemas:
+    CollectionItem:
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          description: unique job collection name
+          readOnly: true
+          example: my-app
+        state:
+          type: string
+          readOnly: true
+          enum:
+            - enabled
+            - disabled
+    JobItem:
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          description: unique job name
+          readOnly: true
+          example: hourly-job
+        state:
+          type: string
+          readOnly: true
+          enum:
+            - enabled
+            - disabled
+        schedule:
+          type: string
+          readOnly: true
+          example: '@every 1h'
+  parameters:
+    collection_id:
+      in: query
+      name: collection_id
+      required: false
+      schema:
+        type: string
+        format: uuid
