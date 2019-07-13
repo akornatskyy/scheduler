@@ -8,7 +8,7 @@ import (
 
 // MustPrepare creates a prepared statement for later queries or executions.
 func MustPrepare(db *sql.DB, query string) *sql.Stmt {
-	query = strings.ReplaceAll(query, "\t\t\t", "")
+	query = strings.Replace(query, "\t\t\t", "", -1)
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		log.Fatalf(
