@@ -55,7 +55,7 @@ func TestServeHTTP(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, in := range cases {
-		name := strings.ReplaceAll(in[len("testdata/"):len(in)-len(suffix)], "\\", "/")
+		name := strings.Replace(in[len("testdata/"):len(in)-len(suffix)], "\\", "/", -1)
 		out := in[:len(in)-len(suffix)] + "-golden.json"
 		t.Run(name, func(t *testing.T) {
 			runTest(t, in, out)
