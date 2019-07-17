@@ -10,12 +10,12 @@
       {
         "id": "d4be3c55-039a-4480-a85c-820bbbdd4899",
         "name": "my-app-1",
-        "state": 1
+        "state": "enabled"
       },
       {
         "id": "f493d75f-3239-4136-ad39-19bff1d409ee",
         "name": "my-app-2",
-        "state": 2
+        "state": "disabled"
       }
     ]
   }
