@@ -1,0 +1,24 @@
+{
+  "code": 200,
+  "headers": {
+    "Content-Type": [
+      "application/json; charset=UTF-8"
+    ]
+  },
+  "body": {
+    "items": [
+      {
+        "id": "7304ad9e-8341-46f8-aa17-8cfff403e7e7",
+        "name": "my-task-1",
+        "schedule": "@every 20s",
+        "state": "disabled"
+      },
+      {
+        "id": "99bcad96-e74e-4084-b4d1-8acc9ba66542",
+        "name": "my-task-2",
+        "schedule": "@every 1m",
+        "state": "enabled"
+      }
+    ]
+  }
+}

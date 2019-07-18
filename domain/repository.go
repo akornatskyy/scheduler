@@ -5,4 +5,6 @@ type Repository interface {
 	Close() error
 
 	ListCollections() ([]*CollectionItem, error)
+
+	ListJobs(collectionID string) ([]*JobItem, error)
 }

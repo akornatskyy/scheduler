@@ -38,6 +38,7 @@ type (
 
 	mockRepository struct {
 		Collections []*domain.CollectionItem `json:"collections"`
+		Jobs        []*domain.JobItem        `json:"jobs"`
 		Err         string                   `json:"err"`
 	}
 
@@ -156,4 +157,8 @@ func (r *mockRepository) Close() error {
 
 func (r *mockRepository) ListCollections() ([]*domain.CollectionItem, error) {
 	return r.Collections, r.err("list-collections")
+}
+
+func (r *mockRepository) ListJobs(collectionID string) ([]*domain.JobItem, error) {
+	return r.Jobs, r.err("list-jobs")
 }

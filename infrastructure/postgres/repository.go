@@ -13,6 +13,8 @@ type sqlRepository struct {
 	db *sql.DB
 
 	selectCollections *sql.Stmt
+
+	selectJobs *sql.Stmt
 }
 
 // NewRepository returns postgres implementation of domain.Repository
@@ -28,6 +30,13 @@ func NewRepository(dsn string) domain.Repository {
 		selectCollections: sqlx.MustPrepare(db, `
 			SELECT id, name, state_id
 			FROM collection
+			ORDER BY name`),
+
+		selectJobs: sqlx.MustPrepare(db, `
+			SELECT
+				id, name, state_id, schedule
+			FROM job
+			WHERE $1 = '' OR collection_id = $1::uuid
 			ORDER BY name`),
 	}
 }
