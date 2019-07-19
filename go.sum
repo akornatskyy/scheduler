@@ -1,5 +1,6 @@
 github.com/akornatskyy/goext v1.2.0 h1:uIj/8GBXprHZjOKAJJnWVQjBqQhya7+Bhns/W02dAY8=
 github.com/akornatskyy/goext v1.2.0/go.mod h1:XCSn9fvXTghn4jJdg/BkYlQABAgel2NivTYDCoV9gp0=
+github.com/google/uuid v1.1.1 h1:Gkbcsh/GbpXz7lPftLA3P6TYMwjCLYm83jiFQZF/3gY=
 github.com/google/uuid v1.1.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/julienschmidt/httprouter v1.2.0 h1:TDTW5Yz1mjftljbcKqRcrYhd4XeOoI98t+9HbQbYf7g=
 github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7VTCxuUUipMqKk8s4w=

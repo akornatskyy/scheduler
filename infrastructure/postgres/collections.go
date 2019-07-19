@@ -1,7 +1,15 @@
 package postgres
 
 import (
+	"database/sql"
+
 	"github.com/akornatskyy/scheduler/domain"
+	"github.com/lib/pq"
+)
+
+const (
+	errDuplicateKey = "23505"
+	errForeignKey   = "23503"
 )
 
 func (r *sqlRepository) ListCollections() ([]*domain.CollectionItem, error) {
@@ -23,4 +31,32 @@ func (r *sqlRepository) ListCollections() ([]*domain.CollectionItem, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+func (r *sqlRepository) CreateCollection(c *domain.Collection) error {
+	return checkExec(r.insertCollection.Exec(
+		c.ID, c.Name, c.State,
+	))
+}
+
+func checkExec(res sql.Result, err error) error {
+	if err != nil {
+		if err, ok := err.(*pq.Error); ok {
+			switch err.Code {
+			case errDuplicateKey:
+				return domain.ErrConflict
+			case errForeignKey:
+				return domain.ErrConflict
+			}
+		}
+		return err
+	}
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n != 1 {
+		return domain.ErrNotFound
+	}
+	return nil
 }

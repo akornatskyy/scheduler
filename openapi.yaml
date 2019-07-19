@@ -38,6 +38,34 @@ paths:
                       $ref: '#/components/schemas/CollectionItem'
                 required:
                   - items
+    post:
+      summary: Creates a job collection
+      operationId: CreateCollection
+      tags:
+        - collections
+      requestBody:
+        description: a job collection to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Collection'
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+        '400':
+          description: validation errors
+        '404':
+          description: not found
+        '409':
+          description: conflict
+        '422':
+          description: unprocessable entity
   /jobs:
     get:
       summary: Retrieves a list of jobs
@@ -72,18 +100,28 @@ components:
         id:
           type: string
           format: uuid
-          readOnly: true
         name:
           type: string
           description: unique job collection name
-          readOnly: true
           example: my-app
+          minimum: 3
+          maximum: 64
         state:
           type: string
-          readOnly: true
+          default: enabled
           enum:
             - enabled
             - disabled
+    Collection:
+      allOf:
+        - $ref: '#/components/schemas/CollectionItem'
+      properties:
+        updated:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+        - name
     JobItem:
       properties:
         id:

@@ -8,6 +8,7 @@ import (
 	"github.com/akornatskyy/goext/errorstate"
 	"github.com/akornatskyy/goext/httpjson"
 	"github.com/akornatskyy/scheduler/core"
+	"github.com/akornatskyy/scheduler/domain"
 )
 
 const (
@@ -50,6 +51,10 @@ func (s *Server) Stop() {
 
 func writeError(w http.ResponseWriter, err error) {
 	switch err {
+	case domain.ErrNotFound:
+		w.WriteHeader(http.StatusNotFound)
+	case domain.ErrConflict:
+		w.WriteHeader(http.StatusConflict)
 	default:
 		switch err.(type) {
 		case *errorstate.ErrorState:

@@ -13,6 +13,7 @@ type sqlRepository struct {
 	db *sql.DB
 
 	selectCollections *sql.Stmt
+	insertCollection  *sql.Stmt
 
 	selectJobs *sql.Stmt
 }
@@ -31,6 +32,9 @@ func NewRepository(dsn string) domain.Repository {
 			SELECT id, name, state_id
 			FROM collection
 			ORDER BY name`),
+		insertCollection: sqlx.MustPrepare(db, `
+			INSERT INTO collection (id, name, state_id)
+			VALUES ($1, $2, $3)`),
 
 		selectJobs: sqlx.MustPrepare(db, `
 			SELECT

@@ -38,6 +38,7 @@ type (
 
 	mockRepository struct {
 		Collections []*domain.CollectionItem `json:"collections"`
+		Collection  *domain.Collection       `json:"collection"`
 		Jobs        []*domain.JobItem        `json:"jobs"`
 		Err         string                   `json:"err"`
 	}
@@ -139,6 +140,10 @@ func runTest(t *testing.T, in, golden string) {
 
 func (r *mockRepository) err(s string) error {
 	switch r.Err {
+	case "conflict":
+		return domain.ErrConflict
+	case "not found":
+		return domain.ErrNotFound
 	case "unexpected":
 		return errors.New(r.Err)
 	case s:
@@ -157,6 +162,10 @@ func (r *mockRepository) Close() error {
 
 func (r *mockRepository) ListCollections() ([]*domain.CollectionItem, error) {
 	return r.Collections, r.err("list-collections")
+}
+
+func (r *mockRepository) CreateCollection(c *domain.Collection) error {
+	return r.err("create-collection")
 }
 
 func (r *mockRepository) ListJobs(collectionID string) ([]*domain.JobItem, error) {

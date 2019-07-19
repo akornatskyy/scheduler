@@ -1,0 +1,15 @@
+{
+  "req": {
+    "method": "POST",
+    "path": "/collections",
+    "headers": {
+      "Content-Type": ["application/json"]
+    },
+    "body": {
+      "name": "my-app"
+    }
+  },
+  "mock": {
+    "err": "conflict"
+  }
+}

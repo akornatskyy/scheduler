@@ -25,6 +25,22 @@ func (s *Server) listCollections() http.HandlerFunc {
 	}
 }
 
+func (s *Server) createCollection() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var collection domain.Collection
+		collection.State = domain.CollectionStateEnabled
+		if err := httpjson.Decode(r, &collection, 140); err != nil {
+			httpjson.Encode(w, err, http.StatusUnprocessableEntity)
+			return
+		}
+		if err := s.Service.CreateCollection(&collection); err != nil {
+			writeError(w, err)
+			return
+		}
+		httpjson.Encode(w, collection.ID, http.StatusCreated)
+	}
+}
+
 func (s *Server) listJobs() http.HandlerFunc {
 	type Request struct {
 		CollectionID string `binding:"collectionId"`

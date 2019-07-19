@@ -10,6 +10,7 @@ func (s *Server) Routes() http.Handler {
 	r := httprouter.New()
 
 	r.HandlerFunc("GET", "/collections", s.listCollections())
+	r.HandlerFunc("POST", "/collections", s.createCollection())
 
 	r.HandlerFunc("GET", "/jobs", s.listJobs())
 
