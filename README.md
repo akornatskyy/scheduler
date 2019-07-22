@@ -9,3 +9,11 @@ schedule, or at some point in the future.
 
 Scheduler allows you to manage all of your automation tasks in a single place via
 simple UI or command line.
+
+## Docker
+
+Build docker images.
+
+```sh
+docker build -t akorn/scheduler -f misc/docker/Dockerfile .
+```
