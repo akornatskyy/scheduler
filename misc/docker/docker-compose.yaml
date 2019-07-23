@@ -1,0 +1,35 @@
+version: '3'
+services:
+  db:
+    container_name: db
+    restart: always
+    image: postgres:alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=scheduler
+    command: postgres -c 'log_statement=all'
+    networks:
+      - db
+  api:
+    container_name: api
+    depends_on:
+      - db
+    restart: always
+    stop_signal: SIGINT
+    image: akorn/scheduler
+    ports:
+      - 8080:8080
+    environment:
+      - DSN=postgres://postgres:@db:5432/scheduler?sslmode=disable
+    networks:
+      - api
+      - db
+volumes:
+  db:
+    driver: local
+networks:
+  db:
+  api:
