@@ -4,13 +4,8 @@ import (
 	"database/sql"
 
 	"github.com/akornatskyy/scheduler/domain"
-	"github.com/lib/pq"
 )
 
-const (
-	errDuplicateKey = "23505"
-	errForeignKey   = "23503"
-)
 
 func (r *sqlRepository) ListCollections() ([]*domain.CollectionItem, error) {
 	items := make([]*domain.CollectionItem, 0, 10)
@@ -39,24 +34,16 @@ func (r *sqlRepository) CreateCollection(c *domain.Collection) error {
 	))
 }
 
-func checkExec(res sql.Result, err error) error {
+func (r *sqlRepository) RetrieveCollection(id string) (*domain.Collection, error) {
+	c := &domain.Collection{}
+	err := r.selectCollection.QueryRow(id).Scan(
+		&c.ID, &c.Name, &c.Updated, &c.State,
+	)
 	if err != nil {
-		if err, ok := err.(*pq.Error); ok {
-			switch err.Code {
-			case errDuplicateKey:
-				return domain.ErrConflict
-			case errForeignKey:
-				return domain.ErrConflict
-			}
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrNotFound
 		}
-		return err
+		return nil, err
 	}
-	n, err := res.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if n != 1 {
-		return domain.ErrNotFound
-	}
-	return nil
+	return c, nil
 }

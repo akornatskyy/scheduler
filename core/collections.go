@@ -18,3 +18,10 @@ func (s *Service) CreateCollection(c *domain.Collection) error {
 	}
 	return s.Repository.CreateCollection(c)
 }
+
+func (s *Service) RetrieveCollection(id string) (*domain.Collection, error) {
+	if err := domain.ValidateId(id); err != nil {
+		return nil, err
+	}
+	return s.Repository.RetrieveCollection(id)
+}

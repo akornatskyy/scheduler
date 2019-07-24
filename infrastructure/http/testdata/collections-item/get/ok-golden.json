@@ -1,0 +1,17 @@
+{
+  "code": 200,
+  "headers": {
+    "Content-Type": [
+      "application/json; charset=UTF-8"
+    ],
+    "Etag": [
+      "\"fdqgxvtir8\""
+    ]
+  },
+  "body": {
+    "id": "4cc78806-10cb-40ee-b9e5-3c0b5da877b1",
+    "name": "my-app",
+    "state": "disabled",
+    "updated": "2019-07-03T10:02:04.436276Z"
+  }
+}

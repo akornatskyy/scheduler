@@ -6,7 +6,12 @@ import (
 
 	"github.com/akornatskyy/scheduler/domain"
 	"github.com/akornatskyy/scheduler/shared/sqlx"
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
+)
+
+const (
+	errDuplicateKey = "23505"
+	errForeignKey   = "23503"
 )
 
 type sqlRepository struct {
@@ -14,6 +19,7 @@ type sqlRepository struct {
 
 	selectCollections *sql.Stmt
 	insertCollection  *sql.Stmt
+	selectCollection  *sql.Stmt
 
 	selectJobs *sql.Stmt
 }
@@ -35,6 +41,10 @@ func NewRepository(dsn string) domain.Repository {
 		insertCollection: sqlx.MustPrepare(db, `
 			INSERT INTO collection (id, name, state_id)
 			VALUES ($1, $2, $3)`),
+		selectCollection: sqlx.MustPrepare(db, `
+			SELECT id, name, updated, state_id
+			FROM collection
+			WHERE id = $1`),
 
 		selectJobs: sqlx.MustPrepare(db, `
 			SELECT
@@ -51,4 +61,26 @@ func (r *sqlRepository) Ping() error {
 
 func (r *sqlRepository) Close() error {
 	return r.db.Close()
+}
+
+func checkExec(res sql.Result, err error) error {
+	if err != nil {
+		if err, ok := err.(*pq.Error); ok {
+			switch err.Code {
+			case errDuplicateKey:
+				return domain.ErrConflict
+			case errForeignKey:
+				return domain.ErrConflict
+			}
+		}
+		return err
+	}
+	n, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n != 1 {
+		return domain.ErrNotFound
+	}
+	return nil
 }

@@ -6,6 +6,7 @@ type Repository interface {
 
 	ListCollections() ([]*CollectionItem, error)
 	CreateCollection(c *Collection) error
+	RetrieveCollection(id string) (*Collection, error)
 
 	ListJobs(collectionID string) ([]*JobItem, error)
 }

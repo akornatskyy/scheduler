@@ -1,0 +1,19 @@
+{
+  "code": 400,
+  "headers": {
+    "Content-Type": [
+      "application/json; charset=UTF-8"
+    ]
+  },
+  "body": {
+    "errors": [
+      {
+        "domain": "scheduler",
+        "location": "id",
+        "message": "Required to be exactly 36 characters in length.",
+        "reason": "exactly",
+        "type": "field"
+      }
+    ]
+  }
+}

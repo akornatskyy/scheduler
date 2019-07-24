@@ -168,6 +168,10 @@ func (r *mockRepository) CreateCollection(c *domain.Collection) error {
 	return r.err("create-collection")
 }
 
+func (r *mockRepository) RetrieveCollection(id string) (*domain.Collection, error) {
+	return r.Collection, r.err("retrieve-collection")
+}
+
 func (r *mockRepository) ListJobs(collectionID string) ([]*domain.JobItem, error) {
 	return r.Jobs, r.err("list-jobs")
 }

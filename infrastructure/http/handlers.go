@@ -6,6 +6,7 @@ import (
 	"github.com/akornatskyy/goext/binding"
 	"github.com/akornatskyy/goext/httpjson"
 	"github.com/akornatskyy/scheduler/domain"
+	"github.com/julienschmidt/httprouter"
 )
 
 func (s *Server) listCollections() http.HandlerFunc {
@@ -38,6 +39,23 @@ func (s *Server) createCollection() http.HandlerFunc {
 			return
 		}
 		httpjson.Encode(w, collection.ID, http.StatusCreated)
+	}
+}
+
+func (s *Server) retrieveCollection() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		c, err := s.Service.RetrieveCollection(p.ByName("id"))
+		if err != nil {
+			writeError(w, err)
+			return
+		}
+		etag := c.ETag()
+		if etag == r.Header.Get("If-None-Match") {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+		w.Header().Add("ETag", etag)
+		httpjson.Encode(w, c, http.StatusOK)
 	}
 }
 

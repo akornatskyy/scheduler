@@ -9,6 +9,14 @@ const (
 	domain = "scheduler"
 )
 
+func ValidateId(s string) error {
+	e := &errorstate.ErrorState{
+		Domain: domain,
+	}
+	rule.Id.Validate(e, s)
+	return e.OrNil()
+}
+
 func ValidateCollection(c *Collection) error {
 	e := &errorstate.ErrorState{
 		Domain: domain,

@@ -66,6 +66,32 @@ paths:
           description: conflict
         '422':
           description: unprocessable entity
+  /collections/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: Retrieves a specified job collection
+      operationId: RetrieveCollection
+      tags:
+        - collections
+      parameters:
+        - $ref: '#/components/parameters/if-none-match'
+      responses:
+        '200':
+          description: ok
+          headers:
+            ETag:
+              $ref: '#/components/schemas/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Collection'
+        '304':
+          description: not modified
+        '400':
+          description: validation errors
+        '404':
+          description: not found
   /jobs:
     get:
       summary: Retrieves a list of jobs
@@ -144,6 +170,13 @@ components:
           readOnly: true
           example: '@every 1h'
   parameters:
+    id:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
     collection_id:
       in: query
       name: collection_id
@@ -151,3 +184,9 @@ components:
       schema:
         type: string
         format: uuid
+    if-none-match:
+      in: header
+      name: If-None-Match
+      required: false
+      schema:
+        $ref: '#/components/schemas/ETag'
