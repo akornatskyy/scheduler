@@ -25,3 +25,10 @@ func (s *Service) RetrieveCollection(id string) (*domain.Collection, error) {
 	}
 	return s.Repository.RetrieveCollection(id)
 }
+
+func (s *Service) UpdateCollection(c *domain.Collection) error {
+	if err := domain.ValidateCollection(c); err != nil {
+		return err
+	}
+	return s.Repository.UpdateCollection(c)
+}

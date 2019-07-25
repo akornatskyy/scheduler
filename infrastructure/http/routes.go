@@ -12,6 +12,7 @@ func (s *Server) Routes() http.Handler {
 	r.HandlerFunc("GET", "/collections", s.listCollections())
 	r.HandlerFunc("POST", "/collections", s.createCollection())
 	r.Handle("GET", "/collections/:id", s.retrieveCollection())
+	r.Handle("PATCH", "/collections/:id", s.patchCollection())
 
 	r.HandlerFunc("GET", "/jobs", s.listJobs())
 

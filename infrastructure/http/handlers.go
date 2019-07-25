@@ -59,6 +59,30 @@ func (s *Server) retrieveCollection() httprouter.Handle {
 	}
 }
 
+func (s *Server) patchCollection() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		c, err := s.Service.RetrieveCollection(p.ByName("id"))
+		if err != nil {
+			writeError(w, err)
+			return
+		}
+		etag := r.Header.Get("If-Match")
+		if etag != "" && etag != c.ETag() {
+			w.WriteHeader(http.StatusPreconditionFailed)
+			return
+		}
+		if err := httpjson.Decode(r, &c, 140); err != nil {
+			httpjson.Encode(w, err, http.StatusUnprocessableEntity)
+			return
+		}
+		if err := s.Service.UpdateCollection(c); err != nil {
+			writeError(w, err)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
 func (s *Server) listJobs() http.HandlerFunc {
 	type Request struct {
 		CollectionID string `binding:"collectionId"`

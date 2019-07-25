@@ -92,6 +92,33 @@ paths:
           description: validation errors
         '404':
           description: not found
+    patch:
+      summary: Updates a job collection
+      operationId: UpdateCollection
+      tags:
+        - collections
+      parameters:
+        - $ref: '#/components/parameters/if-match'
+      requestBody:
+        description: a job collection to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Collection'
+      responses:
+        '204':
+          description: updated
+        '400':
+          description: validation errors
+        '404':
+          description: not found
+        '409':
+          description: conflict
+        '412':
+          description: precondition failed
+        '422':
+          description: unprocessable entity
   /jobs:
     get:
       summary: Retrieves a list of jobs
@@ -184,6 +211,12 @@ components:
       schema:
         type: string
         format: uuid
+    if-match:
+      in: header
+      name: If-Match
+      required: false
+      schema:
+        $ref: '#/components/schemas/ETag'
     if-none-match:
       in: header
       name: If-None-Match

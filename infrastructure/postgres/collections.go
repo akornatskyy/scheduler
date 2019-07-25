@@ -6,7 +6,6 @@ import (
 	"github.com/akornatskyy/scheduler/domain"
 )
 
-
 func (r *sqlRepository) ListCollections() ([]*domain.CollectionItem, error) {
 	items := make([]*domain.CollectionItem, 0, 10)
 	rows, err := r.selectCollections.Query()
@@ -46,4 +45,10 @@ func (r *sqlRepository) RetrieveCollection(id string) (*domain.Collection, error
 		return nil, err
 	}
 	return c, nil
+}
+
+func (r *sqlRepository) UpdateCollection(c *domain.Collection) error {
+	return checkExec(r.updateCollection.Exec(
+		c.ID, c.Updated, c.Name, c.State,
+	))
 }
