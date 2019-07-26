@@ -119,6 +119,22 @@ paths:
           description: precondition failed
         '422':
           description: unprocessable entity
+    delete:
+      description: Deletes a single job collection
+      operationId: DeleteCollection
+      tags:
+        - collections
+      parameters:
+        - $ref: '#/components/parameters/if-match'
+      responses:
+        '204':
+          description: deleted
+        '400':
+          description: validation errors
+        '404':
+          description: not found
+        '412':
+          description: precondition failed
   /jobs:
     get:
       summary: Retrieves a list of jobs

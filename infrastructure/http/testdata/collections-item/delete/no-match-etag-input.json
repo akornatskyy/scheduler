@@ -1,0 +1,19 @@
+{
+  "req": {
+    "method": "DELETE",
+    "path": "/collections/d4be3c55-039a-4480-a85c-820bbbdd4899",
+    "headers": {
+      "If-Match": [
+        "\"no match\""
+      ]
+    }
+  },
+  "mock": {
+    "collection": {
+      "id": "4cc78806-10cb-40ee-b9e5-3c0b5da877b1",
+      "name": "my-app",
+      "updated": "2019-07-03T10:02:04.436276Z",
+      "state": "disabled"
+    }
+  }
+}

@@ -32,3 +32,10 @@ func (s *Service) UpdateCollection(c *domain.Collection) error {
 	}
 	return s.Repository.UpdateCollection(c)
 }
+
+func (s *Service) DeleteCollection(id string) error {
+	if err := domain.ValidateId(id); err != nil {
+		return err
+	}
+	return s.Repository.DeleteCollection(id)
+}

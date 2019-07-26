@@ -176,6 +176,10 @@ func (r *mockRepository) UpdateCollection(c *domain.Collection) error {
 	return r.err("update-collection")
 }
 
+func (r *mockRepository) DeleteCollection(id string) error {
+	return r.err("delete-collection")
+}
+
 func (r *mockRepository) ListJobs(collectionID string) ([]*domain.JobItem, error) {
 	return r.Jobs, r.err("list-jobs")
 }

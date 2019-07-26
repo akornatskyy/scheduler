@@ -1,0 +1,6 @@
+{
+  "req": {
+    "method": "DELETE",
+    "path": "/collections/xxx"
+  }
+}

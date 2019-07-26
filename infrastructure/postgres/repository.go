@@ -21,6 +21,7 @@ type sqlRepository struct {
 	insertCollection  *sql.Stmt
 	selectCollection  *sql.Stmt
 	updateCollection  *sql.Stmt
+	deleteCollection  *sql.Stmt
 
 	selectJobs *sql.Stmt
 }
@@ -50,6 +51,8 @@ func NewRepository(dsn string) domain.Repository {
 			UPDATE collection
 			SET name=$3, updated=now() at time zone 'utc', state_id = $4
 			WHERE id=$1 AND updated=$2`),
+		deleteCollection: sqlx.MustPrepare(db, `
+			DELETE FROM collection WHERE id = $1`),
 
 		selectJobs: sqlx.MustPrepare(db, `
 			SELECT

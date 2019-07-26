@@ -52,3 +52,7 @@ func (r *sqlRepository) UpdateCollection(c *domain.Collection) error {
 		c.ID, c.Updated, c.Name, c.State,
 	))
 }
+
+func (r *sqlRepository) DeleteCollection(id string) error {
+	return checkExec(r.deleteCollection.Exec(id))
+}

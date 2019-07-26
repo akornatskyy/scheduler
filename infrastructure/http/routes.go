@@ -13,6 +13,7 @@ func (s *Server) Routes() http.Handler {
 	r.HandlerFunc("POST", "/collections", s.createCollection())
 	r.Handle("GET", "/collections/:id", s.retrieveCollection())
 	r.Handle("PATCH", "/collections/:id", s.patchCollection())
+	r.Handle("DELETE", "/collections/:id", s.deleteCollection())
 
 	r.HandlerFunc("GET", "/jobs", s.listJobs())
 
