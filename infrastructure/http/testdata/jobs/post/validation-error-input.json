@@ -1,7 +1,7 @@
 {
   "req": {
     "method": "POST",
-    "path": "/collections",
+    "path": "/jobs",
     "headers": {
       "Content-Type": ["application/json"]
     },

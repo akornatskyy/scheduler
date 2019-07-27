@@ -1,6 +1,8 @@
 package postgres
 
 import (
+	"encoding/json"
+
 	"github.com/akornatskyy/scheduler/domain"
 )
 
@@ -23,4 +25,14 @@ func (r *sqlRepository) ListJobs(collectionID string) ([]*domain.JobItem, error)
 		return nil, err
 	}
 	return items, nil
+}
+
+func (r *sqlRepository) CreateJob(j *domain.JobDefinition) error {
+	action, err := json.Marshal(j.Action)
+	if err != nil {
+		return err
+	}
+	return checkExec(r.insertJob.Exec(
+		j.ID, j.Name, j.CollectionID, j.State, j.Schedule, action,
+	))
 }

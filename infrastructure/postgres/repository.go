@@ -24,6 +24,7 @@ type sqlRepository struct {
 	deleteCollection  *sql.Stmt
 
 	selectJobs *sql.Stmt
+	insertJob  *sql.Stmt
 }
 
 // NewRepository returns postgres implementation of domain.Repository
@@ -60,6 +61,13 @@ func NewRepository(dsn string) domain.Repository {
 			FROM job
 			WHERE $1 = '' OR collection_id = $1::uuid
 			ORDER BY name`),
+		insertJob: sqlx.MustPrepare(db, `
+			WITH x AS (
+				INSERT INTO job_status (id)
+				VALUES ($1)
+			)
+			INSERT INTO job (id, name, collection_id, state_id, schedule, action)
+			VALUES ($1, $2, $3, $4, $5, $6)`),
 	}
 }
 

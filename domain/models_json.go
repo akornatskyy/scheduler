@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"time"
 )
 
 const (
@@ -39,6 +40,30 @@ var (
 		"disabled": JobStateDisabled,
 	}
 )
+
+// MarshalJSON marshals the duration as a json string
+func (d Duration) MarshalJSON() ([]byte, error) {
+	return json.Marshal(time.Duration(d).String())
+}
+
+// UnmarshalJSON unmashals a json string to the duration value
+func (d *Duration) UnmarshalJSON(b []byte) error {
+	var v interface{}
+	if err := json.Unmarshal(b, &v); err != nil {
+		return err
+	}
+	switch value := v.(type) {
+	case string:
+		tmp, err := time.ParseDuration(value)
+		if err != nil {
+			return err
+		}
+		*d = Duration(tmp)
+		return nil
+	default:
+		return errors.New("invalid duration")
+	}
+}
 
 // MarshalJSON marshals the enum as a quoted json string
 func (s CollectionState) MarshalJSON() ([]byte, error) {

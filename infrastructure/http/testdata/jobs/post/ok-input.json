@@ -1,11 +1,14 @@
 {
   "req": {
     "method": "POST",
-    "path": "/collections",
+    "path": "/jobs",
     "headers": {
       "Content-Type": ["application/json"]
     },
-    "body": {}
+    "body": {
+      "id": "8a332e22-5b6d-4173-a61f-bc0863fb60bb",
+      "name": "my-task"
+    }
   },
   "mock": {
   }

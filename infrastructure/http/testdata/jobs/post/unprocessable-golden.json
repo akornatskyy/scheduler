@@ -1,0 +1,19 @@
+{
+  "code": 422,
+  "headers": {
+    "Content-Type": [
+      "application/json; charset=UTF-8"
+    ]
+  },
+  "body": {
+    "errors": [
+      {
+        "domain": "HTTP",
+        "location": "Content-Type",
+        "message": "Expecting 'application/json' content type.",
+        "reason": "unexpected content type",
+        "type": "header"
+      }
+    ]
+  }
+}

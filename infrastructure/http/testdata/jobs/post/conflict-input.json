@@ -1,12 +1,15 @@
 {
   "req": {
     "method": "POST",
-    "path": "/collections",
+    "path": "/jobs",
     "headers": {
       "Content-Type": ["application/json"]
     },
-    "body": {}
+    "body": {
+      "name": "my-task"
+    }
   },
   "mock": {
+    "err": "conflict"
   }
 }

@@ -27,3 +27,14 @@ func ValidateCollection(c *Collection) error {
 
 	return e.OrNil()
 }
+
+func ValidateJobDefinition(c *JobDefinition) error {
+	e := &errorstate.ErrorState{
+		Domain: domain,
+	}
+
+	rule.Id.Validate(e, c.ID)
+	rule.Name.Validate(e, c.Name)
+
+	return e.OrNil()
+}

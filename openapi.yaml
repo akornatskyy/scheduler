@@ -162,6 +162,34 @@ paths:
                       $ref: '#/components/schemas/JobItem'
                 required:
                   - items
+    post:
+      summary: Creates a job
+      operationId: CreateJob
+      tags:
+        - jobs
+      requestBody:
+        description: a job to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobDefinition'
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+        '400':
+          description: validation errors
+        '404':
+          description: not found
+        '409':
+          description: conflict
+        '422':
+          description: unprocessable entity
 components:
   schemas:
     CollectionItem:
@@ -212,6 +240,80 @@ components:
           type: string
           readOnly: true
           example: '@every 1h'
+    JobDefinition:
+      allOf:
+        - $ref: '#/components/schemas/JobItem'
+      properties:
+        updated:
+          type: string
+          format: date-time
+          readOnly: true
+        collectionId:
+          type: string
+          format: uuid
+        action:
+          $ref: '#/components/schemas/Action'
+      required:
+        - collectionId
+        - action
+    Action:
+      properties:
+        type:
+          type: string
+          default: http
+          enum:
+            - http
+        request:
+          $ref: '#/components/schemas/HttpRequest'
+        retryPolicy:
+          $ref: '#/components/schemas/RetryPolicy'
+      required:
+        - request
+    HttpRequest:
+      properties:
+        method:
+          type: string
+          default: get
+          enum:
+            - get
+            - post
+        uri:
+          type: string
+          format: uri
+        headers:
+          type: array
+          items:
+            $ref: '#/components/schemas/NameValuePair'
+        body:
+          type: string
+      required:
+        - uri
+    NameValuePair:
+      properties:
+        name:
+          type: string
+        value:
+          type: string
+      required:
+        - name
+        - value
+    RetryPolicy:
+      properties:
+        retryCount:
+          type: number
+          format: int
+          description: the number of times a retry should be attempted
+          default: 3
+          example: 3
+        retryInterval:
+          type: string
+          description: the interval between retries, duration in ISO 8601 format
+          default: 5s
+          example: 10s
+        deadline:
+          type: string
+          default: 20s
+          example: 1m
   parameters:
     id:
       in: path

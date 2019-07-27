@@ -130,3 +130,18 @@ func (s *Server) listJobs() http.HandlerFunc {
 		httpjson.Encode(w, resp, http.StatusOK)
 	}
 }
+
+func (s *Server) createJob() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var job domain.JobDefinition
+		if err := httpjson.Decode(r, &job, 512); err != nil {
+			httpjson.Encode(w, err, http.StatusUnprocessableEntity)
+			return
+		}
+		if err := s.Service.CreateJob(&job); err != nil {
+			writeError(w, err)
+			return
+		}
+		httpjson.Encode(w, job.ID, http.StatusCreated)
+	}
+}

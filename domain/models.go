@@ -11,6 +11,7 @@ var (
 )
 
 type (
+	Duration        time.Duration
 	CollectionState int
 	JobState        int
 
@@ -30,5 +31,36 @@ type (
 		Name     string   `json:"name"`
 		State    JobState `json:"state"`
 		Schedule string   `json:"schedule"`
+	}
+
+	JobDefinition struct {
+		JobItem
+		Updated      *time.Time `json:"updated"`
+		CollectionID string     `json:"collectionId"`
+		Action       *Action    `json:"action"`
+	}
+
+	Action struct {
+		Type        string       `json:"type"`
+		Request     *HttpRequest `json:"request"`
+		RetryPolicy *RetryPolicy `json:"retryPolicy,omitempty"`
+	}
+
+	HttpRequest struct {
+		Method  string           `json:"method,omitempty"`
+		URI     string           `json:"uri"`
+		Headers []*NameValuePair `json:"headers,omitempty"`
+		Body    string           `json:"body,omitempty"`
+	}
+
+	NameValuePair struct {
+		Name  string `json:"name"`
+		Value string `json:"value"`
+	}
+
+	RetryPolicy struct {
+		RetryCount    int      `json:"retryCount"`
+		RetryInterval Duration `json:"retryInterval"`
+		Deadline      Duration `json:"deadline"`
 	}
 )

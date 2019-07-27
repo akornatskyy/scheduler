@@ -1,0 +1,8 @@
+{
+  "req": {
+    "method": "POST",
+    "path": "/jobs"
+  },
+  "mock": {
+  }
+}
