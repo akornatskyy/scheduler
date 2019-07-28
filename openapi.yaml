@@ -190,6 +190,32 @@ paths:
           description: conflict
         '422':
           description: unprocessable entity
+  /jobs/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: Retrieves a specified job definition
+      operationId: RetrieveJob
+      tags:
+        - jobs
+      parameters:
+        - $ref: '#/components/parameters/if-none-match'
+      responses:
+        '200':
+          description: ok
+          headers:
+            ETag:
+              $ref: '#/components/schemas/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobDefinition'
+        '304':
+          description: not modified
+        '400':
+          description: validation errors
+        '404':
+          description: not found
 components:
   schemas:
     CollectionItem:
@@ -314,6 +340,9 @@ components:
           type: string
           default: 20s
           example: 1m
+    ETag:
+      type: string
+      example: '"fde7bculys"'
   parameters:
     id:
       in: path

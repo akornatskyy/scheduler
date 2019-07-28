@@ -1,0 +1,21 @@
+{
+  "req": {
+    "path": "/jobs/dc93f741-ccc4-4d15-9023-950392a74309"
+  },
+  "mock": {
+    "job": {
+      "id": "dc93f741-ccc4-4d15-9023-950392a74309",
+      "collectionId": "4cc78806-10cb-40ee-b9e5-3c0b5da877b1",
+      "name": "my-task",
+      "updated": "2019-07-03T10:02:04.436276Z",
+      "state": "disabled",
+      "schedule": "5s",
+      "action": {
+        "type": "http",
+        "request": {
+          "uri": "http://localhost:8080/test"
+        }
+      }
+    }
+  }
+}

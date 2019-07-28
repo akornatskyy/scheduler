@@ -145,3 +145,20 @@ func (s *Server) createJob() http.HandlerFunc {
 		httpjson.Encode(w, job.ID, http.StatusCreated)
 	}
 }
+
+func (s *Server) retrieveJob() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		j, err := s.Service.RetrieveJob(p.ByName("id"))
+		if err != nil {
+			writeError(w, err)
+			return
+		}
+		etag := j.ETag()
+		if etag == r.Header.Get("If-None-Match") {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+		w.Header().Add("ETag", etag)
+		httpjson.Encode(w, j, http.StatusOK)
+	}
+}

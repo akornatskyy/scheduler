@@ -25,6 +25,7 @@ type sqlRepository struct {
 
 	selectJobs *sql.Stmt
 	insertJob  *sql.Stmt
+	selectJob  *sql.Stmt
 }
 
 // NewRepository returns postgres implementation of domain.Repository
@@ -68,6 +69,10 @@ func NewRepository(dsn string) domain.Repository {
 			)
 			INSERT INTO job (id, name, collection_id, state_id, schedule, action)
 			VALUES ($1, $2, $3, $4, $5, $6)`),
+		selectJob: sqlx.MustPrepare(db, `
+			SELECT id, name, updated, collection_id, state_id, schedule, action
+			FROM job
+			WHERE id = $1`),
 	}
 }
 

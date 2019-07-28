@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"database/sql"
 	"encoding/json"
 
 	"github.com/akornatskyy/scheduler/domain"
@@ -35,4 +36,23 @@ func (r *sqlRepository) CreateJob(j *domain.JobDefinition) error {
 	return checkExec(r.insertJob.Exec(
 		j.ID, j.Name, j.CollectionID, j.State, j.Schedule, action,
 	))
+}
+
+func (r *sqlRepository) RetrieveJob(id string) (*domain.JobDefinition, error) {
+	j := &domain.JobDefinition{}
+	var s string
+	err := r.selectJob.QueryRow(id).Scan(
+		&j.ID, &j.Name, &j.Updated, &j.CollectionID, &j.State, &j.Schedule, &s,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrNotFound
+		}
+		return nil, err
+	}
+	j.Action = &domain.Action{}
+	if err := json.Unmarshal([]byte(s), j.Action); err != nil {
+		return nil, err
+	}
+	return j, nil
 }

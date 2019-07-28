@@ -1,0 +1,18 @@
+{
+  "req": {
+    "path": "/jobs/dc93f741-ccc4-4d15-9023-950392a74309",
+    "headers": {
+      "If-None-Match": [
+        "\"fdqgxvtir8\""
+      ]
+    }
+  },
+  "mock": {
+    "job": {
+      "id": "dc93f741-ccc4-4d15-9023-950392a74309",
+      "name": "my-task",
+      "updated": "2019-07-03T10:02:04.436276Z",
+      "state": "disabled"
+    }
+  }
+}

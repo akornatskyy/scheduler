@@ -19,3 +19,10 @@ func (s *Service) CreateJob(job *domain.JobDefinition) error {
 	}
 	return s.Repository.CreateJob(job)
 }
+
+func (s *Service) RetrieveJob(id string) (*domain.JobDefinition, error) {
+	if err := domain.ValidateId(id); err != nil {
+		return nil, err
+	}
+	return s.Repository.RetrieveJob(id)
+}
