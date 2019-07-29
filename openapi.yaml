@@ -216,6 +216,22 @@ paths:
           description: validation errors
         '404':
           description: not found
+    delete:
+      description: Deletes a single job definition
+      operationId: DeleteJob
+      tags:
+        - jobs
+      parameters:
+        - $ref: '#/components/parameters/if-match'
+      responses:
+        '204':
+          description: job definition deleted
+        '400':
+          description: validation errors
+        '404':
+          description: not found
+        '412':
+          description: precondition failed
 components:
   schemas:
     CollectionItem:

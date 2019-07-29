@@ -56,3 +56,7 @@ func (r *sqlRepository) RetrieveJob(id string) (*domain.JobDefinition, error) {
 	}
 	return j, nil
 }
+
+func (r *sqlRepository) DeleteJob(id string) error {
+	return checkExec(r.deleteJob.Exec(id))
+}

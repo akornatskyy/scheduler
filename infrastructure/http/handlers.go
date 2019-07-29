@@ -162,3 +162,26 @@ func (s *Server) retrieveJob() httprouter.Handle {
 		httpjson.Encode(w, j, http.StatusOK)
 	}
 }
+
+func (s *Server) deleteJob() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		id := p.ByName("id")
+		etag := r.Header.Get("If-Match")
+		if etag != "" {
+			j, err := s.Service.RetrieveJob(id)
+			if err != nil {
+				writeError(w, err)
+				return
+			}
+			if etag != j.ETag() {
+				w.WriteHeader(http.StatusPreconditionFailed)
+				return
+			}
+		}
+		if err := s.Service.DeleteJob(id); err != nil {
+			writeError(w, err)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}
+}

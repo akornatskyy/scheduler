@@ -192,3 +192,7 @@ func (r *mockRepository) CreateJob(j *domain.JobDefinition) error {
 func (r *mockRepository) RetrieveJob(id string) (*domain.JobDefinition, error) {
 	return r.Job, r.err("retrieve-job")
 }
+
+func (r *mockRepository) DeleteJob(id string) error {
+	return r.err("delete-job")
+}

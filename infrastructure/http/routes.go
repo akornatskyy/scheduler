@@ -18,6 +18,7 @@ func (s *Server) Routes() http.Handler {
 	r.HandlerFunc("GET", "/jobs", s.listJobs())
 	r.HandlerFunc("POST", "/jobs", s.createJob())
 	r.Handle("GET", "/jobs/:id", s.retrieveJob())
+	r.Handle("DELETE", "/jobs/:id", s.deleteJob())
 
 	return r
 }
