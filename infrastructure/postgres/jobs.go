@@ -57,6 +57,16 @@ func (r *sqlRepository) RetrieveJob(id string) (*domain.JobDefinition, error) {
 	return j, nil
 }
 
+func (r *sqlRepository) UpdateJob(j *domain.JobDefinition) error {
+	action, err := json.Marshal(j.Action)
+	if err != nil {
+		return err
+	}
+	return checkExec(r.updateJob.Exec(
+		j.ID, j.Updated, j.Name, j.State, j.Schedule, action,
+	))
+}
+
 func (r *sqlRepository) DeleteJob(id string) error {
 	return checkExec(r.deleteJob.Exec(id))
 }

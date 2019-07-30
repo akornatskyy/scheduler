@@ -13,5 +13,6 @@ type Repository interface {
 	ListJobs(collectionID string) ([]*JobItem, error)
 	CreateJob(j *JobDefinition) error
 	RetrieveJob(id string) (*JobDefinition, error)
+	UpdateJob(j *JobDefinition) error
 	DeleteJob(id string) error
 }

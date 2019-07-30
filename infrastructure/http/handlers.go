@@ -134,7 +134,7 @@ func (s *Server) listJobs() http.HandlerFunc {
 func (s *Server) createJob() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var job domain.JobDefinition
-		if err := httpjson.Decode(r, &job, 512); err != nil {
+		if err := httpjson.Decode(r, &job, 4096); err != nil {
 			httpjson.Encode(w, err, http.StatusUnprocessableEntity)
 			return
 		}
@@ -160,6 +160,30 @@ func (s *Server) retrieveJob() httprouter.Handle {
 		}
 		w.Header().Add("ETag", etag)
 		httpjson.Encode(w, j, http.StatusOK)
+	}
+}
+
+func (s *Server) patchJob() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		j, err := s.Service.RetrieveJob(p.ByName("id"))
+		if err != nil {
+			writeError(w, err)
+			return
+		}
+		etag := r.Header.Get("If-Match")
+		if etag != "" && etag != j.ETag() {
+			w.WriteHeader(http.StatusPreconditionFailed)
+			return
+		}
+		if err := httpjson.Decode(r, &j, 4096); err != nil {
+			httpjson.Encode(w, err, http.StatusUnprocessableEntity)
+			return
+		}
+		if err := s.Service.UpdateJob(j); err != nil {
+			writeError(w, err)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 

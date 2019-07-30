@@ -1,0 +1,17 @@
+{
+  "req": {
+    "method": "PATCH",
+    "path": "/jobs/d4be3c55-039a-4480-a85c-820bbbdd4899",
+    "headers": {
+      "Content-Type": [
+        "application/json"
+      ]
+    },
+    "body": {
+      "state": "disabled"
+    }
+  },
+  "mock": {
+    "err": "not found"
+  }
+}

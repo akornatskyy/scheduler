@@ -216,6 +216,33 @@ paths:
           description: validation errors
         '404':
           description: not found
+    patch:
+      summary: Updates a job definition
+      operationId: UpdateJob
+      tags:
+        - jobs
+      parameters:
+        - $ref: '#/components/parameters/if-match'
+      requestBody:
+        description: a job definition to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobDefinition'
+      responses:
+        '204':
+          description: updated
+        '400':
+          description: validation errors
+        '404':
+          description: not found
+        '409':
+          description: conflict
+        '412':
+          description: precondition failed
+        '422':
+          description: unprocessable entity
     delete:
       description: Deletes a single job definition
       operationId: DeleteJob

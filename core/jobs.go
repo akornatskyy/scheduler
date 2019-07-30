@@ -27,6 +27,13 @@ func (s *Service) RetrieveJob(id string) (*domain.JobDefinition, error) {
 	return s.Repository.RetrieveJob(id)
 }
 
+func (s *Service) UpdateJob(job *domain.JobDefinition) error {
+	if err := domain.ValidateJobDefinition(job); err != nil {
+		return err
+	}
+	return s.Repository.UpdateJob(job)
+}
+
 func (s *Service) DeleteJob(id string) error {
 	if err := domain.ValidateId(id); err != nil {
 		return err

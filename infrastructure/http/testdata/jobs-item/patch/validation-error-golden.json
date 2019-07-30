@@ -1,0 +1,19 @@
+{
+  "code": 400,
+  "headers": {
+    "Content-Type": [
+      "application/json; charset=UTF-8"
+    ]
+  },
+  "body": {
+    "errors": [
+      {
+        "domain": "scheduler",
+        "location": "name",
+        "message": "Required field cannot be left blank.",
+        "reason": "required",
+        "type": "field"
+      }
+    ]
+  }
+}

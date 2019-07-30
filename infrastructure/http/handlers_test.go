@@ -41,6 +41,7 @@ type (
 		Collection  *domain.Collection       `json:"collection"`
 		Jobs        []*domain.JobItem        `json:"jobs"`
 		Job         *domain.JobDefinition    `json:"job"`
+		JobStatus   *domain.JobStatus        `json:"jobStatus"`
 		Err         string                   `json:"err"`
 	}
 
@@ -191,6 +192,10 @@ func (r *mockRepository) CreateJob(j *domain.JobDefinition) error {
 
 func (r *mockRepository) RetrieveJob(id string) (*domain.JobDefinition, error) {
 	return r.Job, r.err("retrieve-job")
+}
+
+func (r *mockRepository) UpdateJob(j *domain.JobDefinition) error {
+	return r.err("update-job")
 }
 
 func (r *mockRepository) DeleteJob(id string) error {
