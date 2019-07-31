@@ -28,6 +28,8 @@ type sqlRepository struct {
 	selectJob  *sql.Stmt
 	updateJob  *sql.Stmt
 	deleteJob  *sql.Stmt
+
+	selectJobStatus *sql.Stmt
 }
 
 // NewRepository returns postgres implementation of domain.Repository
@@ -87,6 +89,11 @@ func NewRepository(dsn string) domain.Repository {
 				WHERE id = $1
 			)
 			DELETE FROM job WHERE id = $1`),
+
+		selectJobStatus: sqlx.MustPrepare(db, `
+			SELECT updated, running, run_count, error_count, last_run
+			FROM job_status
+			WHERE id = $1`),
 	}
 }
 

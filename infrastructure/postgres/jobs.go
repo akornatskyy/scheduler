@@ -70,3 +70,17 @@ func (r *sqlRepository) UpdateJob(j *domain.JobDefinition) error {
 func (r *sqlRepository) DeleteJob(id string) error {
 	return checkExec(r.deleteJob.Exec(id))
 }
+
+func (r *sqlRepository) RetrieveJobStatus(id string) (*domain.JobStatus, error) {
+	j := &domain.JobStatus{}
+	err := r.selectJobStatus.QueryRow(id).Scan(
+		&j.Updated, &j.Running, &j.RunCount, &j.ErrorCount, &j.LastRun,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrNotFound
+		}
+		return nil, err
+	}
+	return j, nil
+}

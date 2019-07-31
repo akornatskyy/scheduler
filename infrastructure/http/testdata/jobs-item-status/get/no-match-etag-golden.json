@@ -1,0 +1,17 @@
+{
+  "code": 200,
+  "headers": {
+    "Content-Type": [
+      "application/json; charset=UTF-8"
+    ],
+    "Etag": [
+      "\"fdqgxvtir8\""
+    ]
+  },
+  "body": {
+    "errorCount": 0,
+    "runCount": 0,
+    "running": false,
+    "updated": "2019-07-03T10:02:04.436276Z"
+  }
+}

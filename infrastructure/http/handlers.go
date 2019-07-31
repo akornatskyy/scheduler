@@ -209,3 +209,20 @@ func (s *Server) deleteJob() httprouter.Handle {
 		w.WriteHeader(http.StatusNoContent)
 	}
 }
+
+func (s *Server) retrieveJobStatus() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		j, err := s.Service.RetrieveJobStatus(p.ByName("id"))
+		if err != nil {
+			writeError(w, err)
+			return
+		}
+		etag := j.ETag()
+		if etag == r.Header.Get("If-None-Match") {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+		w.Header().Add("ETag", etag)
+		httpjson.Encode(w, j, http.StatusOK)
+	}
+}

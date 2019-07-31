@@ -63,4 +63,13 @@ type (
 		RetryInterval Duration `json:"retryInterval"`
 		Deadline      Duration `json:"deadline"`
 	}
+
+	JobStatus struct {
+		Updated    *time.Time `json:"updated"`
+		Running    bool       `json:"running"`
+		RunCount   int        `json:"runCount"`
+		ErrorCount int        `json:"errorCount"`
+		LastRun    *time.Time `json:"lastRun,omitempty"`
+		NextRun    *time.Time `json:"nextRun,omitempty"`
+	}
 )

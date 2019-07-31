@@ -15,4 +15,6 @@ type Repository interface {
 	RetrieveJob(id string) (*JobDefinition, error)
 	UpdateJob(j *JobDefinition) error
 	DeleteJob(id string) error
+
+	RetrieveJobStatus(id string) (*JobStatus, error)
 }

@@ -40,3 +40,16 @@ func (s *Service) DeleteJob(id string) error {
 	}
 	return s.Repository.DeleteJob(id)
 }
+
+func (s *Service) RetrieveJobStatus(id string) (*domain.JobStatus, error) {
+	if err := domain.ValidateId(id); err != nil {
+		return nil, err
+	}
+	j, err := s.Repository.RetrieveJobStatus(id)
+	if err != nil {
+		return nil, err
+	}
+	// TODO:
+	// j.NextRun =
+	return j, nil
+}

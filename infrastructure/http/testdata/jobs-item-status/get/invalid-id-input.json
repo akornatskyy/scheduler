@@ -1,0 +1,5 @@
+{
+  "req": {
+    "path": "/jobs/xxx/status"
+  }
+}

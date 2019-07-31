@@ -259,6 +259,30 @@ paths:
           description: not found
         '412':
           description: precondition failed
+  /jobs/{id}/status:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: Retrieves a specified job status
+      operationId: RetrieveJobStatus
+      tags:
+        - jobs
+      parameters:
+        - $ref: '#/components/parameters/if-none-match'
+      responses:
+        '200':
+          description: ok
+          headers:
+            ETag:
+              $ref: '#/components/schemas/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatus'
+        '400':
+          description: validation errors
+        '404':
+          description: not found
 components:
   schemas:
     CollectionItem:
@@ -383,6 +407,30 @@ components:
           type: string
           default: 20s
           example: 1m
+    JobStatus:
+      properties:
+        updated:
+          type: string
+          format: date-time
+          readOnly: true
+        running:
+          type: boolean
+        runCount:
+          type: number
+          format: int
+          readOnly: true
+        errorCount:
+          type: number
+          format: int
+          readOnly: true
+        lastRun:
+          type: string
+          format: date-time
+          readOnly: true
+        nextRun:
+          type: string
+          format: date-time
+          readOnly: true
     ETag:
       type: string
       example: '"fde7bculys"'
