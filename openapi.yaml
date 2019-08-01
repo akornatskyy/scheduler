@@ -283,6 +283,31 @@ paths:
           description: validation errors
         '404':
           description: not found
+    patch:
+      summary: Updates a specified job status
+      operationId: PatchJobStatus
+      tags:
+        - jobs
+      parameters:
+        - $ref: '#/components/parameters/if-match'
+      requestBody:
+        description: job to run
+        required: true
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/JobStatus'
+      responses:
+        '204':
+          description: updated
+        '400':
+          description: validation errors
+        '404':
+          description: not found
+        '412':
+          description: precondition failed
+        '422':
+          description: unprocessable entity
 components:
   schemas:
     CollectionItem:

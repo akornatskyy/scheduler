@@ -9,6 +9,14 @@ const (
 	domain = "scheduler"
 )
 
+var ErrUnableCancelJob = errorstate.Single(&errorstate.Detail{
+	Domain:   domain,
+	Type:     "field",
+	Location: "running",
+	Reason:   "not implemented",
+	Message:  "Unable to cancel the running job.",
+})
+
 func ValidateId(s string) error {
 	e := &errorstate.ErrorState{
 		Domain: domain,

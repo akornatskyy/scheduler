@@ -53,3 +53,17 @@ func (s *Service) RetrieveJobStatus(id string) (*domain.JobStatus, error) {
 	// j.NextRun =
 	return j, nil
 }
+
+func (s *Service) RunJob(id string) error {
+	if err := domain.ValidateId(id); err != nil {
+		return err
+	}
+	_, err := s.Repository.RetrieveJob(id)
+	if err != nil {
+		return err
+	}
+
+	// TODO:
+	// go s.OnRunJob(job)
+	return nil
+}

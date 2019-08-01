@@ -226,3 +226,41 @@ func (s *Server) retrieveJobStatus() httprouter.Handle {
 		httpjson.Encode(w, j, http.StatusOK)
 	}
 }
+
+func (s *Server) patchJobStatus() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		id := p.ByName("id")
+		j, err := s.Service.RetrieveJobStatus(id)
+		if err != nil {
+			writeError(w, err)
+			return
+		}
+		etag := r.Header.Get("If-Match")
+		if etag != "" && etag != j.ETag() {
+			w.WriteHeader(http.StatusPreconditionFailed)
+			return
+		}
+		running := j.Running
+		if err := httpjson.Decode(r, &j, 32); err != nil {
+			httpjson.Encode(w, err, http.StatusUnprocessableEntity)
+			return
+		}
+		if running {
+			if !j.Running {
+				httpjson.Encode(w, domain.ErrUnableCancelJob, http.StatusBadRequest)
+				return
+			}
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		if !j.Running {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		if err := s.Service.RunJob(id); err != nil {
+			writeError(w, err)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}
+}

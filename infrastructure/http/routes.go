@@ -22,6 +22,7 @@ func (s *Server) Routes() http.Handler {
 	r.Handle("DELETE", "/jobs/:id", s.deleteJob())
 
 	r.Handle("GET", "/jobs/:id/status", s.retrieveJobStatus())
+	r.Handle("PATCH", "/jobs/:id/status", s.patchJobStatus())
 
 	return r
 }

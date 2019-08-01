@@ -1,0 +1,19 @@
+{
+  "code": 400,
+  "headers": {
+    "Content-Type": [
+      "application/json; charset=UTF-8"
+    ]
+  },
+  "body": {
+    "errors": [
+      {
+        "domain": "scheduler",
+        "location": "running",
+        "message": "Unable to cancel the running job.",
+        "reason": "not implemented",
+        "type": "field"
+      }
+    ]
+  }
+}
