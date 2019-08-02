@@ -17,8 +17,14 @@ const (
 	JobStateDisabled
 )
 
+const (
+	JobHistoryStatusCompleted JobHistoryStatus = iota + 1
+	JobHistoryStatusFailed
+)
+
 var (
-	errInvalidState = errors.New("state must be either 'enabled' or 'disabled'")
+	errInvalidState  = errors.New("state must be either 'enabled' or 'disabled'")
+	errInvalidStatus = errors.New("state must be either 'completed' or 'failed'")
 
 	collectionStateToString = map[CollectionState]string{
 		CollectionStateEnabled:  "enabled",
@@ -38,6 +44,16 @@ var (
 	jobStateToID = map[string]JobState{
 		"enabled":  JobStateEnabled,
 		"disabled": JobStateDisabled,
+	}
+
+	jobHistoryStatusToString = map[JobHistoryStatus]string{
+		JobHistoryStatusCompleted: "completed",
+		JobHistoryStatusFailed:    "failed",
+	}
+
+	jobHistoryStatusToID = map[string]JobHistoryStatus{
+		"completed": JobHistoryStatusCompleted,
+		"failed":    JobHistoryStatusFailed,
 	}
 )
 
@@ -106,6 +122,29 @@ func (s *JobState) UnmarshalJSON(b []byte) error {
 	id, ok := jobStateToID[str]
 	if !ok {
 		return errInvalidState
+	}
+	*s = id
+	return nil
+}
+
+// MarshalJSON marshals the enum as a quoted json string
+func (s JobHistoryStatus) MarshalJSON() ([]byte, error) {
+	buffer := bytes.NewBufferString(`"`)
+	buffer.WriteString(jobHistoryStatusToString[s])
+	buffer.WriteString(`"`)
+	return buffer.Bytes(), nil
+}
+
+// UnmarshalJSON unmashals a quoted json string to the enum value
+func (s *JobHistoryStatus) UnmarshalJSON(b []byte) error {
+	var str string
+	err := json.Unmarshal(b, &str)
+	if err != nil {
+		return err
+	}
+	id, ok := jobHistoryStatusToID[str]
+	if !ok {
+		return errInvalidStatus
 	}
 	*s = id
 	return nil

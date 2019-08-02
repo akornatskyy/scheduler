@@ -1,0 +1,25 @@
+{
+  "req": {
+    "path": "/jobs/dc93f741-ccc4-4d15-9023-950392a74309/history"
+  },
+  "mock": {
+    "jobStatus": {
+      "updated": "2019-08-06T10:48:00.358915Z"
+    },
+    "jobHistory": [{
+        "action": "http",
+        "started": "2019-08-06T10:47:45.34846Z",
+        "finished": "2019-08-06T10:48:00.358915Z",
+        "status": "failed",
+        "retryCount": 3,
+        "message": "404 Not Found"
+      },
+      {
+        "action": "http",
+        "started": "2019-08-06T10:47:23.43524Z",
+        "finished": "2019-08-06T10:47:38.445094Z",
+        "status": "completed"
+      }
+    ]
+  }
+}

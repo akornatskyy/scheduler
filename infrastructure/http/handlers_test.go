@@ -42,6 +42,7 @@ type (
 		Jobs        []*domain.JobItem        `json:"jobs"`
 		Job         *domain.JobDefinition    `json:"job"`
 		JobStatus   *domain.JobStatus        `json:"jobStatus"`
+		JobHistory  []*domain.JobHistory     `json:"jobHistory"`
 		Err         string                   `json:"err"`
 	}
 
@@ -204,4 +205,8 @@ func (r *mockRepository) DeleteJob(id string) error {
 
 func (r *mockRepository) RetrieveJobStatus(id string) (*domain.JobStatus, error) {
 	return r.JobStatus, r.err("retrieve-job-status")
+}
+
+func (r *mockRepository) ListJobHistory(id string) ([]*domain.JobHistory, error) {
+	return r.JobHistory, r.err("retrieve-job-history")
 }

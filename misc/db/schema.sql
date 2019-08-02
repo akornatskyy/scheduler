@@ -60,3 +60,31 @@ CREATE TABLE job_status (
   PRIMARY KEY (id),
   CONSTRAINT job_status_job_fk FOREIGN KEY (id) REFERENCES job(id)
 );
+
+CREATE TABLE job_history_status (
+  id INT NOT NULL,
+  name VARCHAR(20) NOT NULL,
+
+  PRIMARY KEY (id)
+);
+
+INSERT INTO job_history_status VALUES
+(1, 'completed'),
+(2, 'failed');
+
+CREATE SEQUENCE job_history_seq;
+
+CREATE TABLE job_history (
+  id INT NOT NULL DEFAULT nextval('job_history_seq'),
+  job_id UUID NOT NULL,
+  action VARCHAR(64) NOT NULL,
+  started TIMESTAMP NOT NULL,
+  finished TIMESTAMP NOT NULL,
+  status_id INT NOT NULL,
+  retry_count INT NOT NULL,
+  message VARCHAR(1024),
+
+  PRIMARY KEY (id),
+  CONSTRAINT job_history_job_fk FOREIGN KEY (job_id) REFERENCES job(id),
+  CONSTRAINT job_history_status_fk FOREIGN KEY (status_id) REFERENCES job_history_status(id)
+);

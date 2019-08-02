@@ -264,3 +264,46 @@ func (s *Server) patchJobStatus() httprouter.Handle {
 		w.WriteHeader(http.StatusNoContent)
 	}
 }
+
+func (s *Server) listJobHistory() httprouter.Handle {
+	type Response struct {
+		Items []*domain.JobHistory `json:"items"`
+	}
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		id := p.ByName("id")
+		etag := r.Header.Get("If-None-Match")
+		if etag != "" {
+			j, err := s.Service.RetrieveJobStatus(id)
+			if err != nil {
+				writeError(w, err)
+				return
+			}
+			t := j.ETag()
+			if etag == t {
+				w.WriteHeader(http.StatusNotModified)
+				return
+			}
+			etag = t
+		}
+
+		items, err := s.Service.ListJobHistory(id)
+		if err != nil {
+			writeError(w, err)
+			return
+		}
+		resp := &Response{
+			Items: items,
+		}
+
+		if etag == "" {
+			j, err := s.Service.RetrieveJobStatus(id)
+			if err != nil {
+				writeError(w, err)
+				return
+			}
+			etag = j.ETag()
+		}
+		w.Header().Add("ETag", etag)
+		httpjson.Encode(w, resp, http.StatusOK)
+	}
+}

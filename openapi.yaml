@@ -18,6 +18,8 @@ tags:
     description: Provides operations for creating and managing collections of scheduled jobs.
   - name: jobs
     description: Provides operations for creating and managing scheduled jobs.
+  - name: history
+    description: Provides operations for managing job history.
 paths:
   /collections:
     get:
@@ -308,6 +310,31 @@ paths:
           description: precondition failed
         '422':
           description: unprocessable entity
+  /jobs/{id}/history:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: Retrieves a list of specified job history
+      operationId: ListJobHistory
+      tags:
+        - history
+      parameters:
+        - $ref: '#/components/parameters/if-none-match'
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/JobHistory'
+                required:
+                  - items
+        '400':
+          description: validation errors
 components:
   schemas:
     CollectionItem:
@@ -455,6 +482,34 @@ components:
         nextRun:
           type: string
           format: date-time
+          readOnly: true
+    JobHistory:
+      properties:
+        action:
+          type: string
+          description: action name
+          example: http
+          readOnly: true
+        started:
+          type: string
+          format: date-time
+          readOnly: true
+        finished:
+          type: string
+          format: date-time
+          readOnly: true
+        status:
+          type: string
+          enum:
+            - completed
+            - failed
+          readOnly: true
+        retryCount:
+          type: number
+          format: int
+          readOnly: true
+        message:
+          type: string
           readOnly: true
     ETag:
       type: string

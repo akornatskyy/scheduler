@@ -11,9 +11,10 @@ var (
 )
 
 type (
-	Duration        time.Duration
-	CollectionState int
-	JobState        int
+	Duration         time.Duration
+	CollectionState  int
+	JobState         int
+	JobHistoryStatus int
 
 	CollectionItem struct {
 		ID    string          `json:"id"`
@@ -71,5 +72,15 @@ type (
 		ErrorCount int        `json:"errorCount"`
 		LastRun    *time.Time `json:"lastRun,omitempty"`
 		NextRun    *time.Time `json:"nextRun,omitempty"`
+	}
+
+	JobHistory struct {
+		JobID      string           `json:"-"`
+		Action     string           `json:"action"`
+		Started    time.Time        `json:"started"`
+		Finished   time.Time        `json:"finished"`
+		Status     JobHistoryStatus `json:"status"`
+		RetryCount int              `json:"retryCount,omitempty"`
+		Message    *string          `json:"message,omitempty"`
 	}
 )

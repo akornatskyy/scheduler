@@ -1,0 +1,16 @@
+{
+  "req": {
+    "path": "/jobs/dc93f741-ccc4-4d15-9023-950392a74309/history",
+    "headers": {
+      "If-None-Match": [
+        "\"no match\""
+      ]
+    }
+  },
+  "mock": {
+    "jobStatus": {
+      "updated": "2019-07-03T10:02:04.436276Z"
+    },
+    "jobHistory": []
+  }
+}

@@ -1,0 +1,30 @@
+package postgres
+
+import (
+	"github.com/akornatskyy/scheduler/domain"
+)
+
+
+func (r *sqlRepository) ListJobHistory(id string) ([]*domain.JobHistory, error) {
+	items := make([]*domain.JobHistory, 0, 100)
+	rows, err := r.selectJobHistory.Query(id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		j := &domain.JobHistory{}
+		err := rows.Scan(
+			&j.Action, &j.Started, &j.Finished, &j.Status,
+			&j.RetryCount, &j.Message,
+		)
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, j)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
