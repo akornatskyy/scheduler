@@ -13,6 +13,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/akornatskyy/goext/iojson"
 	"github.com/akornatskyy/scheduler/core"
@@ -209,4 +210,8 @@ func (r *mockRepository) RetrieveJobStatus(id string) (*domain.JobStatus, error)
 
 func (r *mockRepository) ListJobHistory(id string) ([]*domain.JobHistory, error) {
 	return r.JobHistory, r.err("retrieve-job-history")
+}
+
+func (r *mockRepository) DeleteJobHistory(id string, before time.Time) error {
+	return r.err("delete-job-history")
 }

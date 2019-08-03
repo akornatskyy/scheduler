@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/akornatskyy/goext/binding"
 	"github.com/akornatskyy/goext/httpjson"
@@ -305,5 +306,38 @@ func (s *Server) listJobHistory() httprouter.Handle {
 		}
 		w.Header().Add("ETag", etag)
 		httpjson.Encode(w, resp, http.StatusOK)
+	}
+}
+
+func (s *Server) deleteJobHistory() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		id := p.ByName("id")
+		etag := r.Header.Get("If-Match")
+		if etag != "" {
+			j, err := s.Service.RetrieveJobStatus(id)
+			if err != nil {
+				writeError(w, err)
+				return
+			}
+			if etag != j.ETag() {
+				w.WriteHeader(http.StatusPreconditionFailed)
+				return
+			}
+		}
+		var before time.Time
+		b := r.URL.Query().Get("before")
+		if b != "" {
+			var err error
+			before, err = domain.ParseBefore(b)
+			if err != nil {
+				httpjson.Encode(w, err, http.StatusBadRequest)
+				return
+			}
+		}
+		if err := s.Service.DeleteJobHistory(id, before); err != nil {
+			writeError(w, err)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
 	}
 }

@@ -1,9 +1,10 @@
 package postgres
 
 import (
+	"time"
+
 	"github.com/akornatskyy/scheduler/domain"
 )
-
 
 func (r *sqlRepository) ListJobHistory(id string) ([]*domain.JobHistory, error) {
 	items := make([]*domain.JobHistory, 0, 100)
@@ -27,4 +28,12 @@ func (r *sqlRepository) ListJobHistory(id string) ([]*domain.JobHistory, error) 
 		return nil, err
 	}
 	return items, nil
+}
+
+func (r *sqlRepository) DeleteJobHistory(id string, before time.Time) error {
+	_, err := r.deleteJobHistory.Exec(id, before)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -335,6 +335,20 @@ paths:
                   - items
         '400':
           description: validation errors
+    delete:
+      description: Deletes a specified job history
+      operationId: DeleteJobHistory
+      tags:
+        - history
+      parameters:
+        - $ref: '#/components/parameters/before'
+      responses:
+        '204':
+          description: job history deleted
+        '400':
+          description: validation errors
+        '404':
+          description: not found
 components:
   schemas:
     CollectionItem:
@@ -529,6 +543,13 @@ components:
       schema:
         type: string
         format: uuid
+    before:
+      in: query
+      name: before
+      required: false
+      schema:
+        type: string
+        format: date-time
     if-match:
       in: header
       name: If-Match

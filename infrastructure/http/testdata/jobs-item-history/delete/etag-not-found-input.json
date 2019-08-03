@@ -1,0 +1,14 @@
+{
+  "req": {
+    "method": "DELETE",
+    "path": "/jobs/d4be3c55-039a-4480-a85c-820bbbdd4899/history",
+    "headers": {
+      "If-Match": [
+        "\"fdqgxvtir8\""
+      ]
+    }
+  },
+  "mock": {
+    "err": "not found"
+  }
+}

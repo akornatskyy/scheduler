@@ -1,5 +1,9 @@
 package domain
 
+import (
+	"time"
+)
+
 type Repository interface {
 	Ping() error
 	Close() error
@@ -19,4 +23,5 @@ type Repository interface {
 	RetrieveJobStatus(id string) (*JobStatus, error)
 
 	ListJobHistory(id string) ([]*JobHistory, error)
+	DeleteJobHistory(id string, before time.Time) error
 }

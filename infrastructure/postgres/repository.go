@@ -32,6 +32,7 @@ type sqlRepository struct {
 	selectJobStatus *sql.Stmt
 
 	selectJobHistory *sql.Stmt
+	deleteJobHistory *sql.Stmt
 }
 
 // NewRepository returns postgres implementation of domain.Repository
@@ -103,6 +104,8 @@ func NewRepository(dsn string) domain.Repository {
 			WHERE job_id = $1
 			ORDER BY started DESC
 			LIMIT 100`),
+		deleteJobHistory: sqlx.MustPrepare(db, `
+			DELETE FROM job_history WHERE job_id = $1 AND started < $2`),
 	}
 }
 

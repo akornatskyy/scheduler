@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"time"
+
 	"github.com/akornatskyy/goext/errorstate"
 	"github.com/akornatskyy/scheduler/shared/rule"
 )
@@ -16,6 +18,20 @@ var ErrUnableCancelJob = errorstate.Single(&errorstate.Detail{
 	Reason:   "not implemented",
 	Message:  "Unable to cancel the running job.",
 })
+
+func ParseBefore(s string) (time.Time, error) {
+	t, err := time.Parse(time.RFC3339, s)
+	if err != nil {
+		return t, errorstate.Single(&errorstate.Detail{
+			Domain:   domain,
+			Type:     "field",
+			Location: "before",
+			Reason:   "format",
+			Message:  err.Error(),
+		})
+	}
+	return t, nil
+}
 
 func ValidateId(s string) error {
 	e := &errorstate.ErrorState{
