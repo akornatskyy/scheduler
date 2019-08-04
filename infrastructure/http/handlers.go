@@ -341,3 +341,22 @@ func (s *Server) deleteJobHistory() httprouter.Handle {
 		w.WriteHeader(http.StatusNoContent)
 	}
 }
+
+func (s *Server) health() http.HandlerFunc {
+	type health struct {
+		Status  string `json:"status"`
+		Message string `json:"message,omitempty"`
+	}
+	up := health{Status: "up"}
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := s.Service.Health(); err != nil {
+			down := &health{
+				Status:  "down",
+				Message: err.Error(),
+			}
+			httpjson.Encode(w, down, http.StatusServiceUnavailable)
+			return
+		}
+		httpjson.Encode(w, up, http.StatusOK)
+	}
+}

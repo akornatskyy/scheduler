@@ -20,6 +20,7 @@ tags:
     description: Provides operations for creating and managing scheduled jobs.
   - name: history
     description: Provides operations for managing job history.
+  - name: others
 paths:
   /collections:
     get:
@@ -318,8 +319,6 @@ paths:
       operationId: ListJobHistory
       tags:
         - history
-      parameters:
-        - $ref: '#/components/parameters/if-none-match'
       responses:
         '200':
           description: ok
@@ -349,6 +348,28 @@ paths:
           description: validation errors
         '404':
           description: not found
+  /health:
+    get:
+      summary: Queries health-related information
+      operationId: RetrieveHealth
+      tags:
+        - others
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '503':
+          description: service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+              example:
+                status: down
+                message: unable connect to database
 components:
   schemas:
     CollectionItem:
@@ -475,10 +496,6 @@ components:
           example: 1m
     JobStatus:
       properties:
-        updated:
-          type: string
-          format: date-time
-          readOnly: true
         running:
           type: boolean
         runCount:
@@ -503,28 +520,31 @@ components:
           type: string
           description: action name
           example: http
-          readOnly: true
         started:
           type: string
           format: date-time
-          readOnly: true
         finished:
           type: string
           format: date-time
-          readOnly: true
         status:
           type: string
           enum:
             - completed
             - failed
-          readOnly: true
         retryCount:
           type: number
           format: int
-          readOnly: true
         message:
           type: string
-          readOnly: true
+    Health:
+      properties:
+        status:
+          type: string
+          example: up
+        message:
+          type: string
+      required:
+        - status
     ETag:
       type: string
       example: '"fde7bculys"'

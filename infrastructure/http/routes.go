@@ -26,6 +26,8 @@ func (s *Server) Routes() http.Handler {
 
 	r.Handle("GET", "/jobs/:id/history", s.listJobHistory())
 	r.Handle("DELETE", "/jobs/:id/history", s.deleteJobHistory())
-	
+
+	r.HandlerFunc("GET", "/health", s.health())
+
 	return r
 }

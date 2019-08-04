@@ -1,0 +1,12 @@
+{
+  "code": 503,
+  "headers": {
+    "Content-Type": [
+      "application/json; charset=UTF-8"
+    ]
+  },
+  "body": {
+    "message": "ping",
+    "status": "down"
+  }
+}

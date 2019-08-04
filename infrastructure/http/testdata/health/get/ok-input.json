@@ -1,0 +1,7 @@
+{
+  "req": {
+    "path": "/health"
+  },
+  "mock": {
+  }
+}

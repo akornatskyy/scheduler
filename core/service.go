@@ -7,3 +7,7 @@ import (
 type Service struct {
 	Repository domain.Repository
 }
+
+func (s *Service) Health() error {
+	return s.Repository.Ping()
+}
