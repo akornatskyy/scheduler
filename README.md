@@ -10,28 +10,11 @@ schedule, or at some point in the future.
 Scheduler allows you to manage all of your automation tasks in a single place via
 simple UI or command line.
 
-## Docker
+## Build
 
-Build docker images.
-
-```sh
-docker build -t akorn/scheduler -f misc/docker/Dockerfile .
 ```
+go build
+npm run build
 
-Docker componse.
-
-```sh
-cd misc/docker
-
-docker-compose up -d
-docker-compose logs -f --tail=10
-docker-compose down
-```
-
-Update api with a fresh image.
-
-```sh
-docker-compose stop api
-docker-compose up -d api
-docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
+NODE_ENV=prod npm run build
 ```
