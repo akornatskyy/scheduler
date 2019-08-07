@@ -2,3 +2,5 @@
 *.exe~
 *.test
 *.out
+node_modules/
+static/
