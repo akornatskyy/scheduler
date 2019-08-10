@@ -1,0 +1,4 @@
+.git/
+static/
+node_modules/
+*.exe
