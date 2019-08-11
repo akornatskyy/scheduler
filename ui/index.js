@@ -8,16 +8,20 @@ import {
   Route
 } from 'react-router-dom';
 
+import Header from './header';
+
 ReactDOM.render(
     <Container>
       <Router>
+        <Header />
         <Switch>
           <Redirect exact path="/" to="/collections" />
           <Route
             exact
             path="/collections"
-            component={() => <h1>Scheduler UI</h1>}
+            component={() => <h1>Collections</h1>}
           />
+          <Route exact path="/jobs" component={() => <h1>Jobs</h1>} />
         </Switch>
       </Router>
     </Container>,
