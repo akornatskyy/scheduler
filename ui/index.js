@@ -8,6 +8,7 @@ import {
   Route
 } from 'react-router-dom';
 
+import Collections from './collections';
 import Header from './header';
 
 ReactDOM.render(
@@ -16,11 +17,7 @@ ReactDOM.render(
         <Header />
         <Switch>
           <Redirect exact path="/" to="/collections" />
-          <Route
-            exact
-            path="/collections"
-            component={() => <h1>Collections</h1>}
-          />
+          <Route exact path="/collections" component={Collections} />
           <Route exact path="/jobs" component={() => <h1>Jobs</h1>} />
         </Switch>
       </Router>
