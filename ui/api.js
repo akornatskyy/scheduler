@@ -23,5 +23,7 @@ const go = (method, path) => {
 };
 
 export default {
-  listCollections: () => go('GET', '/collections')
+  listCollections: () => go('GET', '/collections'),
+
+  listJobs: () => go('GET', '/jobs')
 };

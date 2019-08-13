@@ -10,6 +10,7 @@ import {
 
 import Collections from './collections';
 import Header from './header';
+import Jobs from './jobs';
 
 ReactDOM.render(
     <Container>
@@ -18,7 +19,7 @@ ReactDOM.render(
         <Switch>
           <Redirect exact path="/" to="/collections" />
           <Route exact path="/collections" component={Collections} />
-          <Route exact path="/jobs" component={() => <h1>Jobs</h1>} />
+          <Route exact path="/jobs" component={Jobs} />
         </Switch>
       </Router>
     </Container>,
