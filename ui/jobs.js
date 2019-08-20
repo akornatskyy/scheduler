@@ -4,13 +4,13 @@ import {Table, Button} from 'react-bootstrap';
 
 import api from './api';
 import Errors from './errors';
+import Layout from './layout';
 
 export default class Jobs extends React.Component {
   state = {items: [], errors: {}};
 
   componentDidMount() {
-    api
-        .listJobs()
+    api.listJobs()
         .then((data) => this.setState({items: data.items}))
         .catch((errors) => this.setState({errors: errors}));
   }
@@ -19,9 +19,7 @@ export default class Jobs extends React.Component {
     const {items, errors} = this.state;
     const {url} = this.props.match;
     return (
-      <div>
-        <h1>Jobs</h1>
-        <hr />
+      <Layout title="Jobs">
         <Errors.Summary errors={errors} />
         <Table bordered striped hover>
           <thead>
@@ -46,7 +44,7 @@ export default class Jobs extends React.Component {
         <Button as={Link} to={`${url}/add`}>
           Add
         </Button>
-      </div>
+      </Layout>
     );
   }
 }
