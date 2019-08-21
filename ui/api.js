@@ -24,6 +24,7 @@ const go = (method, path) => {
 
 export default {
   listCollections: () => go('GET', '/collections'),
+  retrieveCollection: (id) => go('GET', `collections/${id}`),
 
   listJobs: () => go('GET', '/jobs')
 };
