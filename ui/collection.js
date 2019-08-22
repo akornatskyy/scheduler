@@ -36,6 +36,10 @@ export default class Collection extends React.Component {
 
   handleSave = (e) => {
     e.preventDefault();
+    this.setState({pending: true});
+    api.saveCollection(this.state.item)
+        .then(() => this.props.history.goBack())
+        .catch((errors) => this.setState({errors: errors, pending: false}));
   };
 
   render() {
