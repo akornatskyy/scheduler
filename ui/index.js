@@ -8,6 +8,7 @@ import {
   Route
 } from 'react-router-dom';
 
+import Collection from './collection';
 import Collections from './collections';
 import Header from './header';
 import Jobs from './jobs';
@@ -20,6 +21,8 @@ ReactDOM.render(
           <Redirect exact path="/" to="/collections" />
           <Route exact path="/collections" component={Collections} />
           <Route exact path="/jobs" component={Jobs} />
+          <Route exact path="/collections/add" component={Collection} />
+          <Route exact path="/collections/:id" component={Collection} />
         </Switch>
       </Router>
     </Container>,

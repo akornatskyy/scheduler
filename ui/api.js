@@ -19,6 +19,7 @@ const go = (method, path, data) => {
   };
   switch (method) {
     case 'PATCH':
+    case 'POST':
       options.headers['Content-Type'] = 'application/json';
       options.body = JSON.stringify(data);
       break;
@@ -34,7 +35,11 @@ export default {
   listCollections: () => go('GET', '/collections'),
   retrieveCollection: (id) => go('GET', `collections/${id}`),
   saveCollection: (c) => {
-    return go('PATCH', `/collections/${c.id}`, c);
+    if (c.id) {
+      return go('PATCH', `/collections/${c.id}`, c);
+    }
+
+    return go('POST', '/collections', c);
   },
 
   listJobs: () => go('GET', '/jobs')
