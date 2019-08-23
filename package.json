@@ -26,7 +26,7 @@
   "homepage": "https://github.com/akornatskyy/scheduler",
   "dependencies": {
     "react": "^16.9.0",
-    "react-bootstrap": "^1.0.0-beta.11",
+    "react-bootstrap": "^1.0.0-beta.12",
     "react-dom": "^16.9.0",
     "react-router-dom": "^5.0.1"
   },
