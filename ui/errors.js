@@ -19,6 +19,19 @@ const Summary = ({errors}) => {
   );
 };
 
+const Field = ({message}) => {
+  if (!message) {
+    return null;
+  }
+  return (
+    <p className="invalid-feedback mb-0">
+      <i className="fa fa-exclamation mr-1" aria-hidden="true" />
+      {message}
+    </p>
+  );
+};
+
 export default {
-  Summary: Summary
+  Summary: Summary,
+  Field: Field
 };

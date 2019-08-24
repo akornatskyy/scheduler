@@ -58,6 +58,7 @@ export default class Collection extends React.Component {
               value={item.name}
               isInvalid={errors.name}
               onChange={this.handleChange} />
+            <Errors.Field message={errors.name} />
           </Form.Group>
           <Form.Group controlId="state">
             <Form.Check
