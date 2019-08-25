@@ -51,6 +51,9 @@ export default {
 
     return go('POST', '/collections', c);
   },
+  deleteCollection: (id) => {
+    return go('DELETE', `collections/${id}`);
+  },
 
   listJobs: () => go('GET', '/jobs')
 };

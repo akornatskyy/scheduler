@@ -42,6 +42,12 @@ export default class Collection extends React.Component {
         .catch((errors) => this.setState({errors: errors, pending: false}));
   };
 
+  handleDelete = () => {
+    api.deleteCollection(this.state.item.id)
+        .then(() => this.props.history.goBack())
+        .catch((errors) => this.setState({errors: errors, pending: false}));
+  };
+
   render() {
     const {item, pending, errors} = this.state;
     return (
@@ -83,6 +89,15 @@ export default class Collection extends React.Component {
           <Button type="submit" disabled={pending}>
             Save
           </Button>
+          {item.id && (
+            <Button
+              onClick={this.handleDelete}
+              variant="danger"
+              className="float-right"
+              disabled={pending}>
+              Delete
+            </Button>
+          )}
         </Form>
       </Layout>
     );
