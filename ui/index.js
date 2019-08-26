@@ -10,7 +10,7 @@ import {
 
 import Collection from './collection';
 import Collections from './collections';
-import Header from './header';
+import {Header, Footer} from './shared';
 import Jobs from './jobs';
 
 ReactDOM.render(
@@ -25,6 +25,7 @@ ReactDOM.render(
           <Route exact path="/collections/:id" component={Collection} />
         </Switch>
       </Router>
+      <Footer />
     </Container>,
     document.getElementById('root')
 );

@@ -3,8 +3,7 @@ import {Link} from 'react-router-dom';
 import {Table, Button} from 'react-bootstrap';
 
 import api from './api';
-import Errors from './errors';
-import Layout from './layout';
+import {Layout, Errors} from './shared';
 
 export default class Collections extends React.Component {
   state = {items: [], errors: {}};

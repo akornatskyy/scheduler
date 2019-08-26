@@ -2,8 +2,7 @@ import React from 'react';
 import {Form, Button} from 'react-bootstrap';
 
 import api from './api';
-import Errors from './errors';
-import Layout from './layout';
+import {Layout, Errors} from './shared';
 
 export default class Collection extends React.Component {
   state = {
@@ -43,7 +42,8 @@ export default class Collection extends React.Component {
   };
 
   handleDelete = () => {
-    api.deleteCollection(this.state.item.id)
+    const {id} = this.state.item;
+    api.deleteCollection(id)
         .then(() => this.props.history.goBack())
         .catch((errors) => this.setState({errors: errors, pending: false}));
   };
