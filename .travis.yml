@@ -1,14 +1,10 @@
 matrix:
   include:
     - language: go
-      go:
-        - "1.11"
-        - "1.12"
+      go: "1.12"
 
     - language: node_js
-      node_js:
-        - "10"
-        - "12"
+      node_js: "12"
       install:
           - npm i
       env:
