@@ -4,7 +4,7 @@ go 1.11
 
 require (
 	github.com/NYTimes/gziphandler v1.1.1
-	github.com/akornatskyy/goext v1.2.0
+	github.com/akornatskyy/goext v1.3.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/google/uuid v1.1.1
 	github.com/julienschmidt/httprouter v1.2.0

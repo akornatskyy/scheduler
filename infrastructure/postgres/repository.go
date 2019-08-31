@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"log"
 
+	"github.com/akornatskyy/goext/sqlx"
 	"github.com/akornatskyy/scheduler/domain"
-	"github.com/akornatskyy/scheduler/shared/sqlx"
 	"github.com/lib/pq"
 )
 
