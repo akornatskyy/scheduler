@@ -2,6 +2,8 @@ github.com/NYTimes/gziphandler v1.1.1 h1:ZUDjpQae29j0ryrS0u/B8HZfJBtBQHjqw2rQ2cq
 github.com/NYTimes/gziphandler v1.1.1/go.mod h1:n/CVRwUEOgIxrgPvAQhUUr9oeUtvrhMomdKFjzJNB0c=
 github.com/akornatskyy/goext v1.3.0 h1:Z5Yrnb0H6B+KYuIzMB1QTxlCKTruJmx6b80H7c/qkfw=
 github.com/akornatskyy/goext v1.3.0/go.mod h1:XCSn9fvXTghn4jJdg/BkYlQABAgel2NivTYDCoV9gp0=
+github.com/akornatskyy/goext v1.4.0 h1:TS/dM+VWN7VkAVhPyQvM0MLf4DX7iBXF5AcB6T4U+0g=
+github.com/akornatskyy/goext v1.4.0/go.mod h1:XCSn9fvXTghn4jJdg/BkYlQABAgel2NivTYDCoV9gp0=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
