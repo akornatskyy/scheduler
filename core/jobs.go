@@ -21,7 +21,7 @@ func (s *Service) CreateJob(job *domain.JobDefinition) error {
 }
 
 func (s *Service) RetrieveJob(id string) (*domain.JobDefinition, error) {
-	if err := domain.ValidateId(id); err != nil {
+	if err := domain.ValidateID(id); err != nil {
 		return nil, err
 	}
 	return s.Repository.RetrieveJob(id)
@@ -35,14 +35,14 @@ func (s *Service) UpdateJob(job *domain.JobDefinition) error {
 }
 
 func (s *Service) DeleteJob(id string) error {
-	if err := domain.ValidateId(id); err != nil {
+	if err := domain.ValidateID(id); err != nil {
 		return err
 	}
 	return s.Repository.DeleteJob(id)
 }
 
 func (s *Service) RetrieveJobStatus(id string) (*domain.JobStatus, error) {
-	if err := domain.ValidateId(id); err != nil {
+	if err := domain.ValidateID(id); err != nil {
 		return nil, err
 	}
 	j, err := s.Repository.RetrieveJobStatus(id)
@@ -55,7 +55,7 @@ func (s *Service) RetrieveJobStatus(id string) (*domain.JobStatus, error) {
 }
 
 func (s *Service) RunJob(id string) error {
-	if err := domain.ValidateId(id); err != nil {
+	if err := domain.ValidateID(id); err != nil {
 		return err
 	}
 	_, err := s.Repository.RetrieveJob(id)

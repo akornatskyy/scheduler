@@ -20,7 +20,7 @@ func (s *Service) CreateCollection(c *domain.Collection) error {
 }
 
 func (s *Service) RetrieveCollection(id string) (*domain.Collection, error) {
-	if err := domain.ValidateId(id); err != nil {
+	if err := domain.ValidateID(id); err != nil {
 		return nil, err
 	}
 	return s.Repository.RetrieveCollection(id)
@@ -34,7 +34,7 @@ func (s *Service) UpdateCollection(c *domain.Collection) error {
 }
 
 func (s *Service) DeleteCollection(id string) error {
-	if err := domain.ValidateId(id); err != nil {
+	if err := domain.ValidateID(id); err != nil {
 		return err
 	}
 	return s.Repository.DeleteCollection(id)
