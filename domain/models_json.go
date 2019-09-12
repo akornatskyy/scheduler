@@ -24,7 +24,7 @@ const (
 
 var (
 	errInvalidState  = errors.New("state must be either 'enabled' or 'disabled'")
-	errInvalidStatus = errors.New("state must be either 'completed' or 'failed'")
+	errInvalidStatus = errors.New("status must be either 'completed' or 'failed'")
 
 	collectionStateToString = map[CollectionState]string{
 		CollectionStateEnabled:  "enabled",
