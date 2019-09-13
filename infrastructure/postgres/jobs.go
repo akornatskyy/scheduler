@@ -7,9 +7,9 @@ import (
 	"github.com/akornatskyy/scheduler/domain"
 )
 
-func (r *sqlRepository) ListJobs(collectionID string) ([]*domain.JobItem, error) {
+func (r *sqlRepository) ListJobs() ([]*domain.JobItem, error) {
 	items := make([]*domain.JobItem, 0, 10)
-	rows, err := r.selectJobs.Query(collectionID)
+	rows, err := r.selectJobs.Query()
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (r *sqlRepository) UpdateJob(j *domain.JobDefinition) error {
 		return err
 	}
 	return checkExec(r.updateJob.Exec(
-		j.ID, j.Updated, j.Name, j.State, j.Schedule, action,
+		j.ID, j.Updated, j.Name, j.CollectionID, j.State, j.Schedule, action,
 	))
 }
 

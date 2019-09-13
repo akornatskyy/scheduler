@@ -144,14 +144,6 @@ paths:
       operationId: ListJobs
       tags:
         - jobs
-      parameters:
-        - $ref: '#/components/parameters/collection_id'
-        - name: state
-          in: query
-          required: false
-          description: comma delimited list of state to filter by e.g. state=enabled,disabled
-          schema:
-            type: string
       responses:
         '200':
           description: ok
@@ -307,6 +299,8 @@ paths:
           description: validation errors
         '404':
           description: not found
+        '409':
+          description: conflict
         '412':
           description: precondition failed
         '422':
@@ -449,6 +443,7 @@ components:
           $ref: '#/components/schemas/RetryPolicy'
       required:
         - request
+        - retryPolicy
     HttpRequest:
       properties:
         method:
@@ -536,6 +531,9 @@ components:
           format: int
         message:
           type: string
+    ETag:
+      type: string
+      example: '"fde7bculys"'
     Health:
       properties:
         status:
@@ -545,21 +543,11 @@ components:
           type: string
       required:
         - status
-    ETag:
-      type: string
-      example: '"fde7bculys"'
   parameters:
     id:
       in: path
       name: id
       required: true
-      schema:
-        type: string
-        format: uuid
-    collection_id:
-      in: query
-      name: collection_id
-      required: false
       schema:
         type: string
         format: uuid

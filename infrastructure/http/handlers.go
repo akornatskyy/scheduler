@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/akornatskyy/goext/binding"
 	"github.com/akornatskyy/goext/httpjson"
 	"github.com/akornatskyy/scheduler/domain"
 	"github.com/julienschmidt/httprouter"
@@ -108,19 +107,11 @@ func (s *Server) deleteCollection() httprouter.Handle {
 }
 
 func (s *Server) listJobs() http.HandlerFunc {
-	type Request struct {
-		CollectionID string `binding:"collectionId"`
-	}
 	type Response struct {
 		Items []*domain.JobItem `json:"items"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req Request
-		if err := binding.Bind(&req, r.URL.Query()); err != nil {
-			httpjson.Encode(w, err, http.StatusBadRequest)
-			return
-		}
-		items, err := s.Service.ListJobs(req.CollectionID)
+		items, err := s.Service.ListJobs()
 		if err != nil {
 			writeError(w, err)
 			return

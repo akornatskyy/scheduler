@@ -5,9 +5,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func (s *Service) ListJobs(collectionID string) ([]*domain.JobItem, error) {
-	// TODO: search by state
-	return s.Repository.ListJobs(collectionID)
+func (s *Service) ListJobs() ([]*domain.JobItem, error) {
+	return s.Repository.ListJobs()
 }
 
 func (s *Service) CreateJob(job *domain.JobDefinition) error {

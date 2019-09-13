@@ -184,7 +184,7 @@ func (r *mockRepository) DeleteCollection(id string) error {
 	return r.err("delete-collection")
 }
 
-func (r *mockRepository) ListJobs(collectionID string) ([]*domain.JobItem, error) {
+func (r *mockRepository) ListJobs() ([]*domain.JobItem, error) {
 	return r.Jobs, r.err("list-jobs")
 }
 
