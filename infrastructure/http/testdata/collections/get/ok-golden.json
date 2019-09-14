@@ -3,6 +3,9 @@
   "headers": {
     "Content-Type": [
       "application/json; charset=UTF-8"
+    ],
+    "Etag": [
+      "\"26091qnu116yn\""
     ]
   },
   "body": {

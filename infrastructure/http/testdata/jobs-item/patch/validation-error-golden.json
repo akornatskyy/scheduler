@@ -10,8 +10,8 @@
       {
         "domain": "scheduler",
         "location": "name",
-        "message": "Required field cannot be left blank.",
-        "reason": "required",
+        "message": "Required to be a minimum of 3 characters in length.",
+        "reason": "min length",
         "type": "field"
       }
     ]

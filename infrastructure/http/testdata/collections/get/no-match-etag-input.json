@@ -1,0 +1,13 @@
+{
+  "req": {
+    "path": "/collections",
+    "headers": {
+      "If-None-Match": [
+        "\"no match\""
+      ]
+    }
+  },
+  "mock": {
+    "collections": []
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "req": {
+    "path": "/jobs/dc93f741-ccc4-4d15-9023-950392a74309/history",
+    "headers": {
+      "If-None-Match": [
+        "\"fdqgxvtir8\""
+      ]
+    }
+  },
+  "mock": {
+    "err": "not found"
+  }
+}

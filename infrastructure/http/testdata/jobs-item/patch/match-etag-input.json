@@ -16,10 +16,16 @@
   },
   "mock": {
     "job": {
-      "id": "d4be3c55-039a-4480-a85c-820bbbdd4899",
       "name": "my-task",
       "updated": "2019-07-03T10:02:04.436276Z",
-      "state": "enabled"
+      "collectionId": "f493d75f-3239-4136-ad39-19bff1d409ee",
+      "schedule": "@every 10s",
+      "action": {
+        "type": "HTTP",
+        "request": {
+          "uri": "http://localhost:8080/test"
+        }
+      }
     }
   }
 }

@@ -8,9 +8,20 @@
       ]
     },
     "body": {
-      "state": "disabled"
+      "name": "x"
     }
   },
   "mock": {
+    "job": {
+      "name": "my-task",
+      "collectionId": "f493d75f-3239-4136-ad39-19bff1d409ee",
+      "schedule": "@every 10s",
+      "action": {
+        "type": "HTTP",
+        "request": {
+          "uri": "http://localhost:8080/test"
+        }
+      }
+    }
   }
 }

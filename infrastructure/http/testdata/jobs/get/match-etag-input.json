@@ -1,0 +1,13 @@
+{
+  "req": {
+    "path": "/jobs",
+    "headers": {
+      "If-None-Match": [
+        "\"57k0vs3uybfn\""
+      ]
+    }
+  },
+  "mock": {
+    "jobs": []
+  }
+}

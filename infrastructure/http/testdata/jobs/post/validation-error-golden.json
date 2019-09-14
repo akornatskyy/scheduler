@@ -13,6 +13,27 @@
         "message": "Required field cannot be left blank.",
         "reason": "required",
         "type": "field"
+      },
+      {
+        "domain": "scheduler",
+        "location": "collectionId",
+        "message": "Required field cannot be left blank.",
+        "reason": "required",
+        "type": "field"
+      },
+      {
+        "domain": "scheduler",
+        "location": "schedule",
+        "message": "Required field cannot be left blank.",
+        "reason": "required",
+        "type": "field"
+      },
+      {
+        "domain": "scheduler",
+        "location": "action",
+        "message": "Required object cannot be null.",
+        "reason": "required",
+        "type": "field"
       }
     ]
   }
