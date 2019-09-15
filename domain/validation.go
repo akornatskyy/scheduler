@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/akornatskyy/goext/errorstate"
@@ -8,7 +10,8 @@ import (
 )
 
 const (
-	domain = "scheduler"
+	domain            = "scheduler"
+	msgRequiredObject = "Required object cannot be null."
 )
 
 var ErrUnableCancelJob = errorstate.Single(&errorstate.Detail{
@@ -33,11 +36,11 @@ func ParseBefore(s string) (time.Time, error) {
 	return t, nil
 }
 
-func ValidateId(s string) error {
+func ValidateID(s string) error {
 	e := &errorstate.ErrorState{
 		Domain: domain,
 	}
-	rule.Id.Validate(e, s)
+	rule.ID.Validate(e, s)
 	return e.OrNil()
 }
 
@@ -46,19 +49,86 @@ func ValidateCollection(c *Collection) error {
 		Domain: domain,
 	}
 
-	rule.Id.Validate(e, c.ID)
+	rule.ID.Validate(e, c.ID)
 	rule.Name.Validate(e, c.Name)
 
 	return e.OrNil()
 }
 
-func ValidateJobDefinition(c *JobDefinition) error {
+func ValidateJobDefinition(j *JobDefinition) error {
 	e := &errorstate.ErrorState{
 		Domain: domain,
 	}
 
-	rule.Id.Validate(e, c.ID)
-	rule.Name.Validate(e, c.Name)
+	rule.ID.Validate(e, j.ID)
+	rule.Name.Validate(e, j.Name)
+	rule.CollectionID.Validate(e, j.CollectionID)
+	rule.Schedule.Validate(e, j.Schedule)
+
+	validateAction(e, j.Action)
 
 	return e.OrNil()
+}
+
+func validateAction(e *errorstate.ErrorState, a *Action) {
+	if a == nil {
+		addRequiredObjectError(e, "action")
+		return
+	}
+
+	rule.ActionType.Validate(e, a.Type)
+
+	validateHTTPRequest(e, a.Request)
+	validateRetryPolicy(e, a.RetryPolicy)
+}
+
+func validateHTTPRequest(e *errorstate.ErrorState, r *HttpRequest) {
+	if r == nil {
+		addRequiredObjectError(e, "request")
+		return
+	}
+
+	rule.Method.Validate(e, r.Method)
+	if rule.URI.Validate(e, r.URI) {
+		u, err := url.ParseRequestURI(r.URI)
+		if err != nil {
+			e.Add(&errorstate.Detail{
+				Domain:   domain,
+				Type:     "field",
+				Location: "uri",
+				Reason:   "pattern",
+				Message:  fmt.Sprintf("Unrecognized format: %s.", err.Error()),
+			})
+		} else if u.Scheme != "http" && u.Scheme != "https" {
+			e.Add(&errorstate.Detail{
+				Domain:   domain,
+				Type:     "field",
+				Location: "uri",
+				Reason:   "pattern",
+				Message:  "Must begin with http or https.",
+			})
+		}
+	}
+	rule.Body.Validate(e, r.Body)
+	for _, p := range r.Headers {
+		rule.HeaderName.Validate(e, p.Name)
+		rule.HeaderValue.Validate(e, p.Value)
+	}
+}
+
+func validateRetryPolicy(e *errorstate.ErrorState, r *RetryPolicy) {
+	if r == nil {
+		return
+	}
+	rule.RetryCount.Validate(e, r.RetryCount)
+}
+
+func addRequiredObjectError(e *errorstate.ErrorState, location string) {
+	e.Add(&errorstate.Detail{
+		Domain:   domain,
+		Type:     "field",
+		Location: location,
+		Reason:   "required",
+		Message:  msgRequiredObject,
+	})
 }
