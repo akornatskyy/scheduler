@@ -40,3 +40,65 @@ The stateful part scales out by subscribing to Postgres notification events
 and refecting corresponding changes in job scheduler. The job scheduler
 ensures that only one job is run at a given point of time (although each
 instance has a full list of enabled jobs and competes to acquire one).
+
+## Installation
+
+There are several installation methods:
+
+1. Running locally.
+2. Running with Docker Compose.
+
+> 💡 The services does not automatically apply SQL schema. You need to manually
+> connect to your Postgres database and run
+> [sql scripts](./tree/master/misc/db).
+
+### Option 1: Running locally
+
+If you are going to play around first or contribute you might consider to
+run service locally.
+
+```sh
+# default data source name
+export DSN=postgres://postgres:@127.0.0.1:5432/postgres?sslmode=disable
+```
+
+> NOTE: Apply apply [sql scripts](./tree/master/misc/db) per connection
+> DSN environment variable.
+
+```sh
+npm run build
+go build
+```
+
+The  `npm build` places SPA resources into `static` directory and service
+can serve files out of it. In this case, just start service executable and
+navigate to http://localhost:8080.
+
+Alternatively, you can run via `npm start` (enables hot reloading) and
+navigate to http://localhost:3000.
+
+### Option 2: Running with Docker Compose
+
+You can use automatically built Docker
+[image](https://hub.docker.com/r/akorn/scheduler) from Docker Hub and start
+service right away.
+
+```sh
+cd misc/docker
+docker-compose up -d
+```
+
+View output from containers with `docker-compose logs -f --tail=10`.
+
+> NOTE: The DB is exposed on port *5432* of your docker machine. You need
+> manually apply [sql scripts](./tree/master/misc/db).
+
+The service frontend should be available on port *8080* of your docker machine.
+
+For more information refer to files at the
+[`misc/docker`](tree/master/misc/docker) directory.
+
+### Cleanup
+
+If you have deployed the application with docker compose, you can stop and
+remove containers with `docker-compose down`.
