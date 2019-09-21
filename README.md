@@ -33,7 +33,7 @@ Packaged into a docker image and orchestrated by Kubernetes.
 The service contains stateless parts (API) and stateful part (job scheduler
 and Postgres notification events subscriber).
 
-There is Open API service [specification](./blob/master/openapi.yaml)
+There is Open API service [specification](./openapi.yaml)
 published [online](https://akornatskyy.github.io/scheduler).
 
 The stateful part scales out by subscribing to Postgres notification events
@@ -50,7 +50,7 @@ There are several installation methods:
 
 > 💡 The services does not automatically apply SQL schema. You need to manually
 > connect to your Postgres database and run
-> [sql scripts](./tree/master/misc/db).
+> [sql scripts](./misc/db).
 
 ### Option 1: Running locally
 
@@ -62,7 +62,7 @@ run service locally.
 export DSN=postgres://postgres:@127.0.0.1:5432/postgres?sslmode=disable
 ```
 
-> NOTE: Apply apply [sql scripts](./tree/master/misc/db) per connection
+> NOTE: Apply apply [sql scripts](./misc/db) per connection
 > DSN environment variable.
 
 ```sh
@@ -91,12 +91,12 @@ docker-compose up -d
 View output from containers with `docker-compose logs -f --tail=10`.
 
 > NOTE: The DB is exposed on port *5432* of your docker machine. You need
-> manually apply [sql scripts](./tree/master/misc/db).
+> manually apply [sql scripts](./misc/db).
 
 The service frontend should be available on port *8080* of your docker machine.
 
 For more information refer to files at the
-[`misc/docker`](tree/master/misc/docker) directory.
+[`misc/docker`](./misc/docker) directory.
 
 ### Cleanup
 
