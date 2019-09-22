@@ -48,7 +48,7 @@ There are several installation methods:
 1. Running locally.
 2. Running with Docker Compose.
 
-> 💡 The services does not automatically apply SQL schema. You need to manually
+> 💡 The service does not automatically apply SQL schema. You need to manually
 > connect to your Postgres database and run
 > [sql scripts](./misc/db).
 
