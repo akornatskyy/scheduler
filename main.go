@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/akornatskyy/scheduler/core"
+	"github.com/akornatskyy/scheduler/infrastructure/cron"
 	"github.com/akornatskyy/scheduler/infrastructure/http"
 	"github.com/akornatskyy/scheduler/infrastructure/postgres"
 )
@@ -17,12 +18,14 @@ func main() {
 	dsn := os.Getenv("DSN")
 	service := &core.Service{
 		Repository: postgres.NewRepository(dsn),
+		Scheduler:  cron.New(),
 	}
 
 	server := &http.Server{
 		Service: service,
 	}
 
+	service.Start()
 	server.Start()
 
 	c := make(chan os.Signal, 1)
@@ -32,6 +35,7 @@ func main() {
 	log.Println("shutting down...")
 
 	server.Stop()
+	service.Stop()
 
 	log.Println("done")
 }
