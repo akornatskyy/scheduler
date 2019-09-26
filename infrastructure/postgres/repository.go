@@ -67,6 +67,7 @@ func NewRepository(dsn string) domain.Repository {
 			SELECT
 				id, name, state_id, schedule
 			FROM job
+			WHERE $1 = '' OR collection_id = $1::uuid
 			ORDER BY name`),
 		insertJob: sqlx.MustPrepare(db, `
 			WITH x AS (
