@@ -5,6 +5,10 @@ import (
 	"time"
 )
 
+const (
+	Version = "1.0.0"
+)
+
 var (
 	ErrConflict = errors.New("conflict")
 	ErrNotFound = errors.New("not found")
