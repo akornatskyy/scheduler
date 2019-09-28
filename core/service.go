@@ -7,6 +7,7 @@ import (
 type Service struct {
 	Repository domain.Repository
 	Scheduler  domain.Scheduler
+	Runners    map[string]domain.Runner
 }
 
 func (s *Service) Start() {

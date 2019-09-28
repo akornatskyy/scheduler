@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/akornatskyy/scheduler/core"
+	"github.com/akornatskyy/scheduler/domain"
 	"github.com/akornatskyy/scheduler/infrastructure/cron"
 	"github.com/akornatskyy/scheduler/infrastructure/http"
 	"github.com/akornatskyy/scheduler/infrastructure/postgres"
@@ -19,6 +20,9 @@ func main() {
 	service := &core.Service{
 		Repository: postgres.NewRepository(dsn),
 		Scheduler:  cron.New(),
+		Runners: map[string]domain.Runner{
+			"HTTP": http.NewRunner(),
+		},
 	}
 
 	server := &http.Server{
