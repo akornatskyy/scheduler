@@ -88,3 +88,11 @@ type (
 		Message    *string          `json:"message,omitempty"`
 	}
 )
+
+var (
+	DefaultRetryPolicy = &RetryPolicy{
+		RetryCount:    3,
+		RetryInterval: 5 * Duration(time.Second),
+		Deadline:      20 * Duration(time.Second),
+	}
+)

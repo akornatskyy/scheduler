@@ -30,6 +30,13 @@ func (r *sqlRepository) ListJobHistory(id string) ([]*domain.JobHistory, error) 
 	return items, nil
 }
 
+func (r *sqlRepository) AddJobHistory(jh *domain.JobHistory) error {
+	return checkExec(r.insertJobHistory.Exec(
+		jh.JobID, jh.Action, jh.Started, jh.Finished,
+		jh.Status, jh.RetryCount, jh.Message,
+	))
+}
+
 func (r *sqlRepository) DeleteJobHistory(id string, before time.Time) error {
 	_, err := r.deleteJobHistory.Exec(id, before)
 	if err != nil {

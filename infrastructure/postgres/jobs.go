@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"encoding/json"
+	"time"
 
 	"github.com/akornatskyy/scheduler/domain"
 )
@@ -83,4 +84,8 @@ func (r *sqlRepository) RetrieveJobStatus(id string) (*domain.JobStatus, error) 
 		return nil, err
 	}
 	return j, nil
+}
+
+func (r *sqlRepository) AcquireJob(id string, deadline time.Duration) error {
+	return checkExec(r.updateJobStatus.Exec(id, deadline.String()))
 }

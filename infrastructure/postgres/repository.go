@@ -30,8 +30,10 @@ type sqlRepository struct {
 	deleteJob  *sql.Stmt
 
 	selectJobStatus *sql.Stmt
+	updateJobStatus *sql.Stmt
 
 	selectJobHistory *sql.Stmt
+	insertJobHistory *sql.Stmt
 	deleteJobHistory *sql.Stmt
 }
 
@@ -97,6 +99,13 @@ func NewRepository(dsn string) domain.Repository {
 			SELECT updated, running, run_count, error_count, last_run
 			FROM job_status
 			WHERE id = $1`),
+		updateJobStatus: sqlx.MustPrepare(db, `
+			UPDATE job_status
+			SET updated=now() at time zone 'utc', running=true
+			WHERE id = $1 AND (
+				running = false OR
+				age(now() at time zone 'utc', updated) > $2
+			)`),
 
 		selectJobHistory: sqlx.MustPrepare(db, `
 			SELECT action, started, finished, status_id, retry_count, message
@@ -104,6 +113,20 @@ func NewRepository(dsn string) domain.Repository {
 			WHERE job_id = $1
 			ORDER BY started DESC
 			LIMIT 100`),
+		insertJobHistory: sqlx.MustPrepare(db, `
+			WITH x AS (
+				UPDATE job_status
+				SET
+					updated=now() at time zone 'utc', running=false,
+					run_count=run_count+1, last_run=$3,
+					error_count = error_count + CASE WHEN $5=1 /* ok */ THEN 0 ELSE 1 END
+				WHERE
+					id = $1
+			)
+			INSERT INTO job_history
+			(job_id, action, started, finished, status_id, retry_count, message)
+			VALUES
+			($1, $2, $3, $4, $5, $6, $7)`),
 		deleteJobHistory: sqlx.MustPrepare(db, `
 			DELETE FROM job_history WHERE job_id = $1 AND started < $2`),
 	}

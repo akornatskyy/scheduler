@@ -24,4 +24,7 @@ type Repository interface {
 
 	ListJobHistory(id string) ([]*JobHistory, error)
 	DeleteJobHistory(id string, before time.Time) error
+
+	AcquireJob(id string, deadline time.Duration) error
+	AddJobHistory(*JobHistory) error
 }
