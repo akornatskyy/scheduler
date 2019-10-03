@@ -6,7 +6,7 @@ import (
 )
 
 func (s *Service) ListJobs() ([]*domain.JobItem, error) {
-	return s.Repository.ListJobs()
+	return s.Repository.ListJobs("")
 }
 
 func (s *Service) CreateJob(job *domain.JobDefinition) error {
