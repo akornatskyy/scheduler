@@ -85,8 +85,8 @@ func NewRepository(dsn string) domain.Repository {
 		updateJob: sqlx.MustPrepare(db, `
 			UPDATE job j
 			SET
-				name=$3, updated=now() at time zone 'utc', state_id = $4,
-				schedule=$5, action=$6
+				name=$3, updated=now() at time zone 'utc', collection_id=$4,
+				state_id=$5, schedule=$6, action=$7
 			WHERE j.id = $1 AND j.updated = $2`),
 		deleteJob: sqlx.MustPrepare(db, `
 			WITH x AS (

@@ -184,7 +184,7 @@ func (r *mockRepository) DeleteCollection(id string) error {
 	return r.err("delete-collection")
 }
 
-func (r *mockRepository) ListJobs() ([]*domain.JobItem, error) {
+func (r *mockRepository) ListJobs(collectionID string) ([]*domain.JobItem, error) {
 	return r.Jobs, r.err("list-jobs")
 }
 
@@ -208,8 +208,16 @@ func (r *mockRepository) RetrieveJobStatus(id string) (*domain.JobStatus, error)
 	return r.JobStatus, r.err("retrieve-job-status")
 }
 
+func (r *mockRepository) AcquireJob(id string, deadline time.Duration) error {
+	return r.err("acquire-job")
+}
+
 func (r *mockRepository) ListJobHistory(id string) ([]*domain.JobHistory, error) {
 	return r.JobHistory, r.err("retrieve-job-history")
+}
+
+func (r *mockRepository) AddJobHistory(jh *domain.JobHistory) error {
+	return r.err("add-job-history")
 }
 
 func (r *mockRepository) DeleteJobHistory(id string, before time.Time) error {
