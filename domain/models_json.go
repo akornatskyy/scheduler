@@ -127,6 +127,11 @@ func (s *JobState) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// Strings returns a human readable representation of status
+func (s JobHistoryStatus) String() string {
+	return jobHistoryStatusToString[s]
+}
+
 // MarshalJSON marshals the enum as a quoted json string
 func (s JobHistoryStatus) MarshalJSON() ([]byte, error) {
 	buffer := bytes.NewBufferString(`"`)
