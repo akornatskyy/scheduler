@@ -1,14 +1,21 @@
 matrix:
   include:
     - language: go
-      go: "1.12"
+      go: "1.13"
+      before_install:
+        - go get github.com/mattn/goveralls
+      script:
+        - go test -v -covermode=count -coverprofile=coverage.out ./...
+        - go vet ./...
+        - test -z "$(gofmt -d -s . | tee /dev/stderr)"
+        - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci
 
     - language: node_js
       node_js: "12"
       install:
-          - npm i
+        - npm i
       env:
-          - NODE_ENV=prod
+        - NODE_ENV=prod
       script:
-          - npm run lint
-          - npm run build
+        - npm run lint
+        - npm run build
