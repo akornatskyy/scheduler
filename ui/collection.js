@@ -2,7 +2,7 @@ import React from 'react';
 import {Form, Button} from 'react-bootstrap';
 
 import api from './api';
-import {Layout, Errors} from './shared';
+import {Layout, FieldError} from './shared';
 
 export default class Collection extends React.Component {
   state = {
@@ -43,6 +43,7 @@ export default class Collection extends React.Component {
 
   handleDelete = () => {
     const {id} = this.state.item;
+    this.setState({pending: true});
     api.deleteCollection(id)
         .then(() => this.props.history.goBack())
         .catch((errors) => this.setState({errors: errors, pending: false}));
@@ -51,8 +52,7 @@ export default class Collection extends React.Component {
   render() {
     const {item, pending, errors} = this.state;
     return (
-      <Layout title={`Collection ${item.name}`}>
-        <Errors.Summary errors={errors} />
+      <Layout title={`Collection ${item.name}`} errors={errors}>
         <Form autoComplete="off" onSubmit={this.handleSave}>
           <Form.Group controlId="name">
             <Form.Label>Name</Form.Label>
@@ -62,9 +62,9 @@ export default class Collection extends React.Component {
               placeholder="Name"
               type="text"
               value={item.name}
-              isInvalid={errors.name}
+              isInvalid={!!errors.name}
               onChange={this.handleChange} />
-            <Errors.Field message={errors.name} />
+            <FieldError message={errors.name} />
           </Form.Group>
           <Form.Group controlId="state">
             <Form.Check
@@ -75,6 +75,7 @@ export default class Collection extends React.Component {
               type="radio"
               value="enabled"
               checked={item.state === 'enabled'}
+              isInvalid={!!errors.state}
               onChange={this.handleChange} />
             <Form.Check
               id="stateDisabled"
@@ -84,7 +85,9 @@ export default class Collection extends React.Component {
               type="radio"
               value="disabled"
               checked={item.state === 'disabled'}
+              isInvalid={!!errors.state}
               onChange={this.handleChange} />
+            <FieldError message={errors.state} />
           </Form.Group>
           <Button type="submit" disabled={pending}>
             Save

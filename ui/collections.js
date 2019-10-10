@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 import {Table, Button} from 'react-bootstrap';
 
 import api from './api';
-import {Layout, Errors} from './shared';
+import {Layout} from './shared';
 
 export default class Collections extends React.Component {
   state = {items: [], errors: {}};
@@ -18,8 +18,7 @@ export default class Collections extends React.Component {
     const {items, errors} = this.state;
     const {url} = this.props.match;
     return (
-      <Layout title="Collections">
-        <Errors.Summary errors={errors} />
+      <Layout title="Collections" errors={errors}>
         <Table bordered striped hover>
           <thead>
             <tr>

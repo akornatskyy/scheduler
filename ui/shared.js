@@ -16,13 +16,14 @@ export const Header = () => (
   </Navbar>
 );
 
-export const Layout = ({title, children}) => (
+export const Layout = ({title, errors, children}) => (
   <div>
     <h1>
       {title}
     </h1>
     <hr />
     <article>
+      <ErrorSummary errors={errors} />
       {children}
     </article>
   </div>
@@ -32,12 +33,13 @@ const year = new Date().getFullYear();
 export const Footer = () => (
   <footer>
     <p className="small text-center text-secondary py-3">
-        &copy; { year } 1.0.0 <a className="text-secondary" href="https://github.com/akornatskyy/scheduler">Documentation</a>
+        &copy; { year } 1.0.0 <a className="text-secondary"
+        href="https://github.com/akornatskyy/scheduler">Documentation</a>
     </p>
   </footer>
 );
 
-const Summary = ({errors}) => {
+export const ErrorSummary = ({errors}) => {
   const message = errors['__ERROR__'];
   if (!message) {
     return null;
@@ -55,7 +57,7 @@ const Summary = ({errors}) => {
   );
 };
 
-const Field = ({message}) => {
+export const FieldError = ({message}) => {
   if (!message) {
     return null;
   }
@@ -65,9 +67,4 @@ const Field = ({message}) => {
       {message}
     </p>
   );
-};
-
-export const Errors = {
-  Summary: Summary,
-  Field: Field
 };
