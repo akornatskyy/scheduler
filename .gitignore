@@ -4,3 +4,4 @@
 *.out
 node_modules/
 static/
+coverage/
