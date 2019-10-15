@@ -7,6 +7,7 @@ import (
 
 	"github.com/akornatskyy/goext/errorstate"
 	"github.com/akornatskyy/scheduler/shared/rule"
+	"github.com/robfig/cron/v3"
 )
 
 const (
@@ -63,7 +64,18 @@ func ValidateJobDefinition(j *JobDefinition) error {
 	rule.ID.Validate(e, j.ID)
 	rule.Name.Validate(e, j.Name)
 	rule.CollectionID.Validate(e, j.CollectionID)
-	rule.Schedule.Validate(e, j.Schedule)
+	if rule.Schedule.Validate(e, j.Schedule) {
+		_, err := cron.ParseStandard(j.Schedule)
+		if err != nil {
+			e.Add(&errorstate.Detail{
+				Domain:   domain,
+				Type:     "field",
+				Location: "schedule",
+				Reason:   "pattern",
+				Message:  fmt.Sprintf("Unrecognized format: %s.", err.Error()),
+			})
+		}
+	}
 
 	validateAction(e, j.Action)
 
