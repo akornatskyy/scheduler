@@ -25,11 +25,15 @@ func main() {
 		},
 	}
 
+	subscriber := postgres.NewSubscriber(dsn)
+	subscriber.SetCallback(service.OnUpdateEvent)
+
 	server := &http.Server{
 		Service: service,
 	}
 
 	service.Start()
+	subscriber.Start()
 	server.Start()
 
 	c := make(chan os.Signal, 1)
@@ -39,6 +43,7 @@ func main() {
 	log.Println("shutting down...")
 
 	server.Stop()
+	subscriber.Stop()
 	service.Stop()
 
 	log.Println("done")

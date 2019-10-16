@@ -13,7 +13,6 @@ type Service struct {
 func (s *Service) Start() {
 	s.Scheduler.SetRunner(s.OnRunJob)
 	s.Scheduler.Start()
-	s.scheduleJobs()
 }
 
 func (s *Service) Stop() {

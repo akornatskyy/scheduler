@@ -87,6 +87,12 @@ type (
 		RetryCount int              `json:"retryCount,omitempty"`
 		Message    *string          `json:"message,omitempty"`
 	}
+
+	UpdateEvent struct {
+		ObjectType string
+		Operation  string
+		ObjectID   string
+	}
 )
 
 var (
@@ -95,4 +101,8 @@ var (
 		RetryInterval: 5 * Duration(time.Second),
 		Deadline:      20 * Duration(time.Second),
 	}
+
+	Connected    = &UpdateEvent{ObjectType: "connection", Operation: "connected"}
+	Disconnected = &UpdateEvent{ObjectType: "connection", Operation: "disconnected"}
+	Reconnected  = &UpdateEvent{ObjectType: "connection", Operation: "reconnected"}
 )
