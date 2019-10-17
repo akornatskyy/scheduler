@@ -2,10 +2,15 @@ package postgres
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	"github.com/akornatskyy/scheduler/domain"
 	"github.com/lib/pq"
+)
+
+const (
+	chTableUpdate = "table_update"
 )
 
 type sqlSubscriber struct {
@@ -31,6 +36,9 @@ func (s *sqlSubscriber) SetCallback(callback domain.UpdateEventCallback) {
 
 func (s *sqlSubscriber) Start() {
 	go s.waitForEvents()
+	if err := s.listener.Listen(chTableUpdate); err != nil {
+		panic(err)
+	}
 }
 
 func (s *sqlSubscriber) Stop() {
@@ -58,12 +66,24 @@ func (s *sqlSubscriber) onListenerEvent(ev pq.ListenerEventType, err error) {
 
 func (s *sqlSubscriber) waitForEvents() {
 	log.Printf("subscriber started")
+	var e domain.UpdateEvent
 loop:
 	for {
 		select {
 		case n := <-s.listener.Notify:
 			if n == nil {
 				continue
+			}
+
+			switch n.Channel {
+			case chTableUpdate:
+				fields := strings.Fields(n.Extra)
+				e.Operation = fields[0]
+				e.ObjectType = fields[1]
+				e.ObjectID = fields[2]
+				if err := s.callback(&e); err != nil {
+					log.Printf("subscriber waiting for events: %s", err)
+				}
 			}
 		case <-time.After(1 * time.Minute):
 			s.listener.Ping()

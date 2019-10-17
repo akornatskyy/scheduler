@@ -88,3 +88,20 @@ CREATE TABLE job_history (
   CONSTRAINT job_history_job_fk FOREIGN KEY (job_id) REFERENCES job(id),
   CONSTRAINT job_history_status_fk FOREIGN KEY (status_id) REFERENCES job_history_status(id)
 );
+
+CREATE OR REPLACE FUNCTION table_update_notify() RETURNS trigger AS $$
+DECLARE
+  id UUID;
+BEGIN
+  IF TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN
+    id = NEW.id;
+  ELSE
+    id = OLD.id;
+  END IF;
+  PERFORM pg_notify('table_update', TG_OP || ' ' || TG_TABLE_NAME || ' ' || id);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER collection_notify AFTER UPDATE ON collection
+FOR EACH ROW EXECUTE PROCEDURE table_update_notify();
