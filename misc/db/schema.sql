@@ -105,3 +105,6 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER collection_notify AFTER UPDATE ON collection
 FOR EACH ROW EXECUTE PROCEDURE table_update_notify();
+
+CREATE TRIGGER job_notify AFTER INSERT OR UPDATE OR DELETE ON job
+FOR EACH ROW EXECUTE PROCEDURE table_update_notify();

@@ -15,6 +15,15 @@ func (s *Service) OnUpdateEvent(m *domain.UpdateEvent) error {
 		case "UPDATE":
 			return s.onCollectionUpdate(m.ObjectID)
 		}
+	case "job":
+		switch m.Operation {
+		case "INSERT":
+			return s.onJobInsert(m.ObjectID)
+		case "UPDATE":
+			return s.onJobUpdate(m.ObjectID)
+		case "DELETE":
+			s.Scheduler.Remove(m.ObjectID)
+		}
 	case "connection":
 		switch m.Operation {
 		case "connected", "reconnected":
@@ -53,6 +62,41 @@ func (s *Service) onCollectionUpdate(id string) error {
 			if j.State == domain.JobStateEnabled {
 				s.Scheduler.Add(j)
 			}
+		}
+	}
+	return nil
+}
+
+func (s *Service) onJobInsert(id string) error {
+	j, err := s.Repository.RetrieveJob(id)
+	if err != nil {
+		return err
+	}
+	if j.State == domain.JobStateEnabled {
+		c, err := s.Repository.RetrieveCollection(j.CollectionID)
+		if err != nil {
+			return err
+		}
+		if c.State == domain.CollectionStateEnabled {
+			s.Scheduler.Add(j)
+		}
+	}
+	return nil
+}
+
+func (s *Service) onJobUpdate(id string) error {
+	j, err := s.Repository.RetrieveJob(id)
+	if err != nil {
+		return err
+	}
+	s.Scheduler.Remove(id)
+	if j.State == domain.JobStateEnabled {
+		c, err := s.Repository.RetrieveCollection(j.CollectionID)
+		if err != nil {
+			return err
+		}
+		if c.State == domain.CollectionStateEnabled {
+			s.Scheduler.Add(j)
 		}
 	}
 	return nil
