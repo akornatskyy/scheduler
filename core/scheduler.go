@@ -11,6 +11,8 @@ func (s *Service) scheduleJobs() error {
 	if err != nil {
 		return err
 	}
+	scheduled := s.Scheduler.ListIDs()
+	added := make(map[string]bool)
 	n := 0
 	for _, c := range collections {
 		jobs, err := s.Repository.ListJobs(c.ID)
@@ -30,10 +32,16 @@ func (s *Service) scheduleJobs() error {
 			if err = s.Scheduler.Add(j); err != nil {
 				return err
 			}
+			added[j.ID] = true
 			n++
 		}
 	}
-	// TODO: remove orphaned jobs if any
+	// remove orphaned jobs if any
+	for _, id := range scheduled {
+		if !added[id] {
+			s.Scheduler.Remove(id)
+		}
+	}
 	log.Printf("scheduled %d jobs", n)
 	return nil
 }

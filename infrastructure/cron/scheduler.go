@@ -32,6 +32,16 @@ func (s *cronSheduler) SetRunner(f func(*domain.JobDefinition)) {
 	s.runner = f
 }
 
+func (s *cronSheduler) ListIDs() []string {
+	defer s.mu.Unlock()
+	s.mu.Lock()
+	var l = make([]string, 0, len(s.jobs))
+	for id := range s.jobs {
+		l = append(l, id)
+	}
+	return l
+}
+
 func (s *cronSheduler) Add(j *domain.JobDefinition) error {
 	defer s.mu.Unlock()
 	s.mu.Lock()
