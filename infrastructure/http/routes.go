@@ -29,9 +29,9 @@ func (s *Server) Routes() http.Handler {
 
 	r.HandlerFunc("GET", "/health", s.health())
 
-	r.Handle("GET", "/", serveFile("static/index.html"))
-	r.Handle("GET", "/favicon.ico", serveFile("static/favicon.ico"))
-	r.Handle("GET", "/js/*filepath", serveFiles(http.Dir("static/js")))
+	r.Handle("GET", "/", serveIndex())
+	r.Handle("GET", "/favicon.ico", serveFavicon())
+	r.Handle("GET", "/js/*filepath", serveJavascript())
 
 	return r
 }
