@@ -47,6 +47,9 @@ type (
 		Err         string                   `json:"err"`
 	}
 
+	mockScheduler struct {
+	}
+
 	result struct {
 		Code   int         `json:"code"`
 		Header http.Header `json:"headers,omitempty"`
@@ -92,6 +95,7 @@ func runTest(t *testing.T, in, golden string) {
 	srv := &web.Server{
 		Service: &core.Service{
 			Repository: i.Mock,
+			Scheduler:  &mockScheduler{},
 		},
 	}
 	srv.Routes().ServeHTTP(w, r)
@@ -222,4 +226,28 @@ func (r *mockRepository) AddJobHistory(jh *domain.JobHistory) error {
 
 func (r *mockRepository) DeleteJobHistory(id string, before time.Time) error {
 	return r.err("delete-job-history")
+}
+
+func (r *mockScheduler) SetRunner(f func(*domain.JobDefinition)) {
+}
+
+func (r *mockScheduler) ListIDs() []string {
+	return []string{}
+}
+
+func (r *mockScheduler) Add(j *domain.JobDefinition) error {
+	return nil
+}
+
+func (r *mockScheduler) Remove(id string) {
+}
+
+func (r *mockScheduler) NextRun(id string) *time.Time {
+	return nil
+}
+
+func (r *mockScheduler) Start() {
+}
+
+func (r *mockScheduler) Stop() {
 }

@@ -48,8 +48,7 @@ func (s *Service) RetrieveJobStatus(id string) (*domain.JobStatus, error) {
 	if err != nil {
 		return nil, err
 	}
-	// TODO:
-	// j.NextRun =
+	j.NextRun = s.Scheduler.NextRun(id)
 	return j, nil
 }
 

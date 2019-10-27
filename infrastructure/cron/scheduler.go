@@ -79,6 +79,17 @@ func (s *cronSheduler) Remove(id string) {
 	delete(s.jobs, id)
 }
 
+func (s *cronSheduler) NextRun(id string) *time.Time {
+	defer s.mu.Unlock()
+	s.mu.Lock()
+	cj := s.jobs[id]
+	if cj == nil {
+		return nil
+	}
+	e := s.c.Entry(cj.id)
+	return &e.Next
+}
+
 func (s *cronSheduler) Start() {
 	s.c.Start()
 	log.Print("scheduler started")
