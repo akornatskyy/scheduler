@@ -96,6 +96,7 @@ func runTest(t *testing.T, in, golden string) {
 		Service: &core.Service{
 			Repository: i.Mock,
 			Scheduler:  &mockScheduler{},
+			Runners:    map[string]domain.Runner{},
 		},
 	}
 	srv.Routes().ServeHTTP(w, r)

@@ -12,7 +12,11 @@
     }
   },
   "mock": {
-    "jobStatus": {
-    }
+    "job": {
+      "action": {
+        "type": "UNKNOWN"
+      }
+    },
+    "jobStatus": {}
   }
 }

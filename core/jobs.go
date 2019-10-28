@@ -56,12 +56,11 @@ func (s *Service) RunJob(id string) error {
 	if err := domain.ValidateID(id); err != nil {
 		return err
 	}
-	_, err := s.Repository.RetrieveJob(id)
+	job, err := s.Repository.RetrieveJob(id)
 	if err != nil {
 		return err
 	}
 
-	// TODO:
-	// go s.OnRunJob(job)
+	go s.OnRunJob(job)
 	return nil
 }
