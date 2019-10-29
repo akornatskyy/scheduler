@@ -17,6 +17,6 @@ func (j *JobStatus) ETag() string {
 	return etag(j.Updated)
 }
 
-func etag(t *time.Time) string {
+func etag(t time.Time) string {
 	return "\"" + strconv.FormatInt(t.UnixNano()/int64(time.Microsecond), 36) + "\""
 }

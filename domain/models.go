@@ -28,7 +28,7 @@ type (
 
 	Collection struct {
 		CollectionItem
-		Updated *time.Time `json:"updated"`
+		Updated time.Time `json:"updated"`
 	}
 
 	JobItem struct {
@@ -40,9 +40,9 @@ type (
 
 	JobDefinition struct {
 		JobItem
-		Updated      *time.Time `json:"updated"`
-		CollectionID string     `json:"collectionId"`
-		Action       *Action    `json:"action"`
+		Updated      time.Time `json:"updated"`
+		CollectionID string    `json:"collectionId"`
+		Action       *Action   `json:"action"`
 	}
 
 	Action struct {
@@ -70,7 +70,7 @@ type (
 	}
 
 	JobStatus struct {
-		Updated    *time.Time `json:"updated"`
+		Updated    time.Time  `json:"updated"`
 		Running    bool       `json:"running"`
 		RunCount   int        `json:"runCount"`
 		ErrorCount int        `json:"errorCount"`
