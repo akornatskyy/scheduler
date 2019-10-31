@@ -3,14 +3,14 @@ services:
   db:
     container_name: db
     restart: always
-    image: postgres:alpine
+    image: postgres:12-alpine
     ports:
       - 5432:5432
     volumes:
       - db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=scheduler
-    command: postgres -c 'log_statement=all'
+      - POSTGRES_DB=postgres
+        #command: postgres -c 'log_statement=all'
     networks:
       - db
   api:
@@ -23,7 +23,7 @@ services:
     ports:
       - 8080:8080
     environment:
-      - DSN=postgres://postgres:@db:5432/scheduler?sslmode=disable
+      - DSN=postgres://postgres:@db:5432/postgres?sslmode=disable
     networks:
       - api
       - db
