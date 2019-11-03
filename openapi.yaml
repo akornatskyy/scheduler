@@ -41,6 +41,14 @@ paths:
                       $ref: '#/components/schemas/CollectionItem'
                 required:
                   - items
+              example:
+                items:
+                  - id: 65ada2f9-be3d-4960-a7f4-ea47fe3323b9
+                    name: 'My App #1'
+                    state: enabled
+                  - id: 7d76cb30-f581-49ca-a718-d353a1d129a8
+                    name: My Other App
+                    state: disabled
     post:
       summary: Creates a job collection
       operationId: CreateCollection
@@ -112,6 +120,9 @@ paths:
       responses:
         '204':
           description: updated
+          content:
+            application/json:
+              example:
         '400':
           description: validation errors
         '404':
@@ -157,6 +168,16 @@ paths:
                       $ref: '#/components/schemas/JobItem'
                 required:
                   - items
+              example:
+                items:
+                  - id: 7ce1f17e-48b1-4e73-be22-771fa764993a
+                    name: 'My Task #1'
+                    schedule: '@every 15s'
+                    state: disabled
+                  - id: 94946f60-711f-4044-b08e-ccd9ba998f88
+                    name: 'My Task #2'
+                    schedule: '@every 1m'
+                    state: enabled
     post:
       summary: Creates a job
       operationId: CreateJob
@@ -374,7 +395,7 @@ components:
         name:
           type: string
           description: unique job collection name
-          example: my-app
+          example: 'My App #1'
           minimum: 3
           maximum: 64
         state:
@@ -403,7 +424,7 @@ components:
           type: string
           description: unique job name
           readOnly: true
-          example: hourly-job
+          example: 'My Task #1'
         state:
           type: string
           readOnly: true
@@ -434,9 +455,9 @@ components:
       properties:
         type:
           type: string
-          default: http
+          default: HTTP
           enum:
-            - http
+            - HTTP
         request:
           $ref: '#/components/schemas/HttpRequest'
         retryPolicy:
@@ -448,13 +469,18 @@ components:
       properties:
         method:
           type: string
-          default: get
+          default: GET
           enum:
-            - get
-            - post
+            - HEAD
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
         uri:
           type: string
           format: uri
+          example: http://example.com
         headers:
           type: array
           items:
@@ -467,19 +493,23 @@ components:
       properties:
         name:
           type: string
+          example: X-Requested-With
         value:
           type: string
+          example: XMLHttpRequest
       required:
         - name
         - value
     RetryPolicy:
       properties:
         retryCount:
-          type: number
-          format: int
+          type: integer
+          format: int32
           description: the number of times a retry should be attempted
           default: 3
           example: 3
+          minimum: 0
+          maximum: 10
         retryInterval:
           type: string
           description: the interval between retries, duration in ISO 8601 format
@@ -494,13 +524,15 @@ components:
         running:
           type: boolean
         runCount:
-          type: number
-          format: int
+          type: integer
+          format: int32
           readOnly: true
+          example: 157
         errorCount:
-          type: number
-          format: int
+          type: integer
+          format: int32
           readOnly: true
+          example: 39
         lastRun:
           type: string
           format: date-time
@@ -514,7 +546,7 @@ components:
         action:
           type: string
           description: action name
-          example: http
+          example: HTTP
         started:
           type: string
           format: date-time
@@ -527,10 +559,14 @@ components:
             - completed
             - failed
         retryCount:
-          type: number
-          format: int
+          type: integer
+          format: int32
+          example: 0
+          minimum: 0
+          maximum: 3
         message:
           type: string
+          example:
     ETag:
       type: string
       example: '"fde7bculys"'
