@@ -3,17 +3,18 @@ const path = require('path');
 const pkg = require('./package.json');
 const webpack = require('webpack');
 const HtmlPlugin = require('html-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const plugins = [
   new HtmlPlugin({
     template: 'index.html',
-    favicon: 'favicon.ico'
+    favicon: 'favicon.ico',
+    minify: true
   }),
   new webpack.NoEmitOnErrorsPlugin()
 ];
 
 if (prod) {
+  const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
   plugins.push(
       new webpack.optimize.OccurrenceOrderPlugin(),
       new UglifyJsPlugin()
@@ -32,6 +33,10 @@ module.exports = {
     filename: 'js/[name].[chunkhash:5].js'
   },
   plugins: plugins,
+  performance: {
+    maxEntrypointSize: 360000,
+    maxAssetSize: 320000
+  },
   optimization: {
     splitChunks: {
       cacheGroups: {
