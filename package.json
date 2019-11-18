@@ -33,7 +33,7 @@
   "dependencies": {
     "immutability-helper": "^3.0.1",
     "react": "^16.11.0",
-    "react-bootstrap": "^1.0.0-beta.14",
+    "react-bootstrap": "^1.0.0-beta.15",
     "react-dom": "^16.11.0",
     "react-router-dom": "^5.1.2"
   },
