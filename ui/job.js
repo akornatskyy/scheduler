@@ -49,6 +49,14 @@ export default class Job extends React.Component {
     });
   };
 
+  handleRequestChange = ({target: {name, value}}) => {
+    this.setState({
+      item: update(this.state.item, {action: {request: {
+        [name]: {$set: value}
+      }}})
+    });
+  };
+
   handleSave = (e) => {
   };
 
@@ -57,7 +65,6 @@ export default class Job extends React.Component {
 
   render() {
     const {item, collections, pending, errors} = this.state;
-    const {url} = this.props.match;
     const action = item.action;
     return (
       <Layout title={`Job ${item.name}`} errors={errors}>
@@ -145,6 +152,10 @@ export default class Job extends React.Component {
               <FieldError message={errors.schedule} />
             </Form.Group>
           </Form.Row>
+          <Request
+            value={action.request}
+            errors={errors}
+            onChange={this.handleRequestChange} />
           <Button type="submit" disabled={pending}>
             Save
           </Button>
@@ -153,3 +164,38 @@ export default class Job extends React.Component {
     );
   }
 }
+
+const Request = ({value, errors, onChange}) => (
+  <Form.Row>
+    <Form.Group as={Col} controlId="method" className="col-4">
+      <Form.Label>Method</Form.Label>
+      <Form.Control
+        name="method"
+        required
+        as="select"
+        value={value.method}
+        isInvalid={!!errors.method}
+        onChange={onChange}>
+        <option>HEAD</option>
+        <option>GET</option>
+        <option>POST</option>
+        <option>PUT</option>
+        <option>PATCH</option>
+        <option>DELETE</option>
+      </Form.Control>
+      <FieldError message={errors.method} />
+    </Form.Group>
+    <Form.Group as={Col} controlId="uri">
+      <Form.Label>URI</Form.Label>
+      <Form.Control
+        name="uri"
+        required
+        placeholder="URI"
+        type="text"
+        value={value.uri}
+        isInvalid={!!errors.uri}
+        onChange={onChange} />
+      <FieldError message={errors.uri} />
+    </Form.Group>
+  </Form.Row>
+);
