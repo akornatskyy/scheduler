@@ -4,6 +4,8 @@ import {Form, Button, Col} from 'react-bootstrap';
 
 import {Layout, FieldError} from './shared';
 
+const httpMethodsWithBody = ['POST', 'PUT', 'PATCH'];
+
 export default class Job extends React.Component {
   state = {
     item: {
@@ -66,6 +68,25 @@ export default class Job extends React.Component {
   render() {
     const {item, collections, pending, errors} = this.state;
     const action = item.action;
+    const request = action.request;
+    let body;
+    if (httpMethodsWithBody.includes(request.method)) {
+      body = (
+        <Form.Row>
+          <Form.Group as={Col} controlId="body">
+            <Form.Label>Body</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows="5"
+              name="body"
+              value={request.body}
+              isInvalid={!!errors.body}
+              onChange={this.handleRequestChange} />
+            <FieldError message={errors.body} />
+          </Form.Group>
+        </Form.Row>
+      );
+    }
     return (
       <Layout title={`Job ${item.name}`} errors={errors}>
         <Form autoComplete="off" onSubmit={this.handleSave}>
@@ -156,6 +177,7 @@ export default class Job extends React.Component {
             value={action.request}
             errors={errors}
             onChange={this.handleRequestChange} />
+          {body}
           <Button type="submit" disabled={pending}>
             Save
           </Button>
