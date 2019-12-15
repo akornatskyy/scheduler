@@ -38,24 +38,44 @@ export default class Job extends React.Component {
 
   handleItemChange = ({target: {name, value}}) => {
     this.setState({
-      item: {...this.state.item,
+      item: {
+        ...this.state.item,
         [name]: value
-      }});
+      }
+    });
   };
 
   handleActionChange = ({target: {name, value}}) => {
     this.setState({
-      item: update(this.state.item, {action: {
-        [name]: {$set: value}
-      }})
+      item: update(this.state.item, {
+        action: {
+          [name]: {$set: value}
+        }
+      })
     });
   };
 
   handleRequestChange = ({target: {name, value}}) => {
     this.setState({
-      item: update(this.state.item, {action: {request: {
-        [name]: {$set: value}
-      }}})
+      item: update(this.state.item, {
+        action: {
+          request: {
+            [name]: {$set: value}
+          }
+        }
+      })
+    });
+  };
+
+  handlePolicyChange = ({target: {name, value}}) => {
+    this.setState({
+      item: update(this.state.item, {
+        action: {
+          retryPolicy: {
+            [name]: {$set: name === 'retryCount' ? parseInt(value) : value}
+          }
+        }
+      })
     });
   };
 
@@ -178,6 +198,10 @@ export default class Job extends React.Component {
             errors={errors}
             onChange={this.handleRequestChange} />
           {body}
+          <RetryPolicy
+            value={action.retryPolicy}
+            errors={errors}
+            onChange={this.handlePolicyChange} />
           <Button type="submit" disabled={pending}>
             Save
           </Button>
@@ -218,6 +242,49 @@ const Request = ({value, errors, onChange}) => (
         isInvalid={!!errors.uri}
         onChange={onChange} />
       <FieldError message={errors.uri} />
+    </Form.Group>
+  </Form.Row>
+);
+
+const RetryPolicy = ({value, errors, onChange}) => (
+  <Form.Row>
+    <Form.Group as={Col} controlId="retryCount">
+      <Form.Label>Retry Count</Form.Label>
+      <Form.Control
+        name="retryCount"
+        required
+        min="0"
+        max="10"
+        placeholder="Retry Count"
+        type="number"
+        value={value.retryCount}
+        isInvalid={!!errors.retryCount}
+        onChange={onChange} />
+      <FieldError message={errors.retryCount} />
+    </Form.Group>
+    <Form.Group as={Col} controlId="retryInterval">
+      <Form.Label>Interval</Form.Label>
+      <Form.Control
+        name="retryInterval"
+        required
+        placeholder="Interval"
+        type="text"
+        value={value.retryInterval}
+        isInvalid={!!errors.retryInterval}
+        onChange={onChange} />
+      <FieldError message={errors.retryInterval} />
+    </Form.Group>
+    <Form.Group as={Col} controlId="deadline">
+      <Form.Label>Deadline</Form.Label>
+      <Form.Control
+        name="deadline"
+        required
+        placeholder="Deadline"
+        type="text"
+        value={value.deadline}
+        isInvalid={!!errors.deadline}
+        onChange={onChange} />
+      <FieldError message={errors.deadline} />
     </Form.Group>
   </Form.Row>
 );
