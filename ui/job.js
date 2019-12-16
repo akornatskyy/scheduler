@@ -79,6 +79,48 @@ export default class Job extends React.Component {
     });
   };
 
+  handleHeaderChange = ({target: {name, value}}, i) => {
+    this.setState({
+      item: update(this.state.item, {
+        action: {
+          request: {
+            headers: {
+              [i]: {[name]: {$set: value}}
+            }
+          }
+        }
+      })
+    });
+  }
+
+  handleAddHeader = () => {
+    this.setState({
+      item: update(this.state.item, {
+        action: {
+          request: {
+            headers: {
+              $push: [{name: '', value: ''}]
+            }
+          }
+        }
+      })
+    });
+  }
+
+  handleDeleteHeader = (i) => {
+    this.setState({
+      item: update(this.state.item, {
+        action: {
+          request: {
+            headers: {
+              $splice: [[i, 1]]
+            }
+          }
+        }
+      })
+    });
+  }
+
   handleSave = (e) => {
   };
 
@@ -197,6 +239,23 @@ export default class Job extends React.Component {
             value={action.request}
             errors={errors}
             onChange={this.handleRequestChange} />
+          <Form.Row>
+            <Form.Group className="col mb-0" >
+              <Form.Label>Headers</Form.Label>
+              <button className="btn" type="button" disabled={pending}
+                onClick={this.handleAddHeader}>
+                <i className="fa fa-plus" />
+              </button>
+            </Form.Group>
+          </Form.Row>
+          {action.request.headers.map((h, i) => (
+            <Header
+              key={i}
+              value={h}
+              pending={pending}
+              onChange={(e) => this.handleHeaderChange(e, i)}
+              onClick={() => this.handleDeleteHeader(i)} />
+          ))}
           {body}
           <RetryPolicy
             value={action.retryPolicy}
@@ -242,6 +301,36 @@ const Request = ({value, errors, onChange}) => (
         isInvalid={!!errors.uri}
         onChange={onChange} />
       <FieldError message={errors.uri} />
+    </Form.Group>
+  </Form.Row>
+);
+
+const Header = ({value, pending, onChange, onClick}) => (
+  <Form.Row>
+    <button className="btn mb-3 mr-n2" type="button" disabled={pending}
+      onClick={onClick}>
+      <i className="fa fa-times" />
+    </button>
+    <Form.Group as={Col}>
+      <Form.Control
+        name="name"
+        placeholder="Name"
+        type="text"
+        required
+        minLength="5"
+        maxLength="32"
+        value={value.name}
+        onChange={onChange} />
+    </Form.Group>
+    <Form.Group as={Col}>
+      <Form.Control
+        name="value"
+        placeholder="Value"
+        type="text"
+        required
+        maxLength="256"
+        value={value.value}
+        onChange={onChange} />
     </Form.Group>
   </Form.Row>
 );
