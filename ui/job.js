@@ -1,5 +1,6 @@
 import React from 'react';
 import update from 'immutability-helper';
+import {Link} from 'react-router-dom';
 import {Form, Button, Col} from 'react-bootstrap';
 
 import {Layout, FieldError} from './shared';
@@ -129,6 +130,7 @@ export default class Job extends React.Component {
 
   render() {
     const {item, collections, pending, errors} = this.state;
+    const {url} = this.props.match;
     const action = item.action;
     const request = action.request;
     let body;
@@ -264,6 +266,23 @@ export default class Job extends React.Component {
           <Button type="submit" disabled={pending}>
             Save
           </Button>
+          <Button
+            as={Link}
+            to={`${url}/history`}
+            variant="outline-secondary"
+            disabled={pending}
+            className="ml-2">
+            History
+          </Button>
+          {item.id && (
+            <Button
+              onClick={this.handleDelete}
+              variant="danger"
+              className="float-right"
+              disabled={pending}>
+              Delete
+            </Button>
+          )}
         </Form>
       </Layout>
     );
