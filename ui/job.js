@@ -3,6 +3,7 @@ import update from 'immutability-helper';
 import {Link} from 'react-router-dom';
 import {Form, Button, Col} from 'react-bootstrap';
 
+import api from './api';
 import {Layout, FieldError} from './shared';
 
 const httpMethodsWithBody = ['POST', 'PUT', 'PATCH'];
@@ -35,6 +36,24 @@ export default class Job extends React.Component {
   };
 
   componentDidMount() {
+    api.listCollections()
+        .then((data) => {
+          const s = {collections: data.items};
+          if (!this.state.item.collectionId) {
+            if (data.items.length > 0) {
+              s.item = {...this.state.item,
+                collectionId: data.items[0].id
+              };
+            } else {
+              s.errors = {
+                collectionId: 'There is no collection available.'
+              };
+            }
+          }
+
+          this.setState(s);
+        })
+        .catch((errors) => this.setState({errors: errors}));
   }
 
   handleItemChange = ({target: {name, value}}) => {
