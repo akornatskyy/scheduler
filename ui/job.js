@@ -36,12 +36,28 @@ export default class Job extends React.Component {
   };
 
   componentDidMount() {
+    const {id} = this.props.match.params;
+    if (id) {
+      this.setState({pending: true});
+      api.retrieveJob(id)
+          .then((data) => this.setState({item: data, pending: false}))
+          .catch((errors) => this.setState({errors: errors, pending: false}));
+    } else {
+      this.setState({
+        item: {
+          ...this.state.item,
+          state: 'enabled'
+        },
+        pending: false
+      });
+    }
     api.listCollections()
         .then((data) => {
           const s = {collections: data.items};
           if (!this.state.item.collectionId) {
             if (data.items.length > 0) {
-              s.item = {...this.state.item,
+              s.item = {
+                ...this.state.item,
                 collectionId: data.items[0].id
               };
             } else {

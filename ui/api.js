@@ -1,3 +1,5 @@
+import update from 'immutability-helper';
+
 const host = '';
 
 const thenHandle = (r, resolve, reject) => {
@@ -41,6 +43,18 @@ const go = (method, path, data) => {
   );
 };
 
+const defaultRequest = {
+  method: 'GET',
+  headers: [],
+  body: ''
+};
+
+const defaultRetryPolicy = {
+  retryCount: 3,
+  retryInterval: '10s',
+  deadline: '1m'
+};
+
 export default {
   listCollections: () => go('GET', '/collections'),
   retrieveCollection: (id) => go('GET', `collections/${id}`),
@@ -55,5 +69,17 @@ export default {
     return go('DELETE', `collections/${id}`);
   },
 
-  listJobs: () => go('GET', '/jobs')
+  listJobs: () => go('GET', '/jobs'),
+  retrieveJob: (id) =>
+    go('GET', `/jobs/${id}`).then((data) => {
+      const a = data.action;
+      a.request = update(defaultRequest, {$merge: a.request});
+      if (a.retryPolicy) {
+        a.retryPolicy = update(defaultRetryPolicy, {$merge: a.retryPolicy});
+      } else {
+        a.retryPolicy = {...defaultRetryPolicy};
+      }
+
+      return data;
+    }),
 };
