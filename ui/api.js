@@ -82,4 +82,11 @@ export default {
 
       return data;
     }),
+  saveJob: (j) => {
+    if (j.id) {
+      return go('PATCH', `/jobs/${j.id}`, j);
+    }
+
+    return go('POST', '/jobs', j);
+  },
 };

@@ -158,6 +158,11 @@ export default class Job extends React.Component {
   }
 
   handleSave = (e) => {
+    e.preventDefault();
+    this.setState({pending: true});
+    api.saveJob(this.state.item)
+        .then(() => this.props.history.goBack())
+        .catch((errors) => this.setState({errors: errors, pending: false}));
   };
 
   handleDelete = () => {
