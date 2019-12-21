@@ -166,6 +166,11 @@ export default class Job extends React.Component {
   };
 
   handleDelete = () => {
+    const {id, etag} = this.state.item;
+    this.setState({pending: true});
+    api.deleteJob(id, etag)
+        .then(() => this.props.history.goBack())
+        .catch((errors) => this.setState({errors: errors, pending: false}));
   };
 
   render() {

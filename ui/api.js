@@ -89,4 +89,5 @@ export default {
 
     return go('POST', '/jobs', j);
   },
+  deleteJob: (id) => go('DELETE', `/jobs/${id}`),
 };
