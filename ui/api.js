@@ -90,4 +90,8 @@ export default {
     return go('POST', '/jobs', j);
   },
   deleteJob: (id) => go('DELETE', `/jobs/${id}`),
+
+  retrieveJobStatus: (id) => go('GET', `/jobs/${id}/status`),
+
+  listJobHistory: (id) => go('GET', `/jobs/${id}/history`)
 };

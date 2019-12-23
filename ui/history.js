@@ -1,6 +1,7 @@
 import React from 'react';
 import {Table, Button, Row, Col} from 'react-bootstrap';
 
+import api from './api';
 import {Layout} from './shared';
 
 export default class JobHistory extends React.Component {
@@ -20,6 +21,16 @@ export default class JobHistory extends React.Component {
   };
 
   componentDidMount() {
+    const {id} = this.props.match.params;
+    api.retrieveJob(id)
+        .then((data) => this.setState({job: data}))
+        .catch((errors) => this.setState({errors: errors}));
+    api.retrieveJobStatus(id)
+        .then((data) => this.setState({status: data}))
+        .catch((errors) => this.setState({errors: errors}));
+    api.listJobHistory(id)
+        .then((data) => this.setState({items: data.items.slice(0, 7)}))
+        .catch((errors) => this.setState({errors: errors}));
   }
 
   handleBack = () => {
@@ -73,21 +84,21 @@ export default class JobHistory extends React.Component {
           </tbody>
         </Table>
         <Button onClick={this.handleBack}>
-            Back
+          Back
         </Button>
         <Button
           onClick={this.handleRun}
           variant="outline-secondary"
           disabled={status.running === true}
           className="ml-2">
-            Run
+          Run
         </Button>
         {items.length > 0 && (
           <Button
             onClick={this.handleDelete}
             variant="danger"
             className="float-right">
-          Delete
+            Delete
           </Button>
         )}
       </Layout>
