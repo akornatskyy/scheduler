@@ -41,6 +41,10 @@ export default class JobHistory extends React.Component {
   }
 
   handleDelete = () => {
+    const {id} = this.props.match.params;
+    api.deleteJobHistory(id)
+        .then(() => this.props.history.goBack())
+        .catch((errors) => this.setState({errors: errors}));
   };
 
   render() {

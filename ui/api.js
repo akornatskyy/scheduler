@@ -93,5 +93,6 @@ export default {
 
   retrieveJobStatus: (id) => go('GET', `/jobs/${id}/status`),
 
-  listJobHistory: (id) => go('GET', `/jobs/${id}/history`)
+  listJobHistory: (id) => go('GET', `/jobs/${id}/history`),
+  deleteJobHistory: (id) => go('DELETE', `/jobs/${id}/history`)
 };
