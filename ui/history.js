@@ -38,6 +38,14 @@ export default class JobHistory extends React.Component {
   }
 
   handleRun = () => {
+    const {id} = this.props.match.params;
+    api.patchJobStatus(id, {running: true})
+        .then(() => {
+          api.retrieveJobStatus(id)
+              .then((data) => this.setState({status: data}))
+              .catch((errors) => this.setState({errors: errors}));
+        })
+        .catch((errors) => this.setState({errors: errors}));
   }
 
   handleDelete = () => {
