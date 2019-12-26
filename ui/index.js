@@ -15,22 +15,24 @@ import Job from './job';
 import JobHistory from './history';
 import Jobs from './jobs';
 
+export const App = () => (
+  <Container>
+    <Header />
+    <Switch>
+      <Redirect exact path="/" to="/collections" />
+      <Route exact path="/collections" component={Collections} />
+      <Route exact path="/jobs" component={Jobs} />
+      <Route exact path="/collections/add" component={Collection} />
+      <Route exact path="/collections/:id" component={Collection} />
+      <Route exact path="/jobs/add" component={Job} />
+      <Route exact path="/jobs/:id" component={Job} />
+      <Route exact path="/jobs/:id/history" component={JobHistory} />
+    </Switch>
+    <Footer />
+  </Container>
+);
+
 ReactDOM.render(
-    <Container>
-      <Router>
-        <Header />
-        <Switch>
-          <Redirect exact path="/" to="/collections" />
-          <Route exact path="/collections" component={Collections} />
-          <Route exact path="/jobs" component={Jobs} />
-          <Route exact path="/collections/add" component={Collection} />
-          <Route exact path="/collections/:id" component={Collection} />
-          <Route exact path="/jobs/add" component={Job} />
-          <Route exact path="/jobs/:id" component={Job} />
-          <Route exact path="/jobs/:id/history" component={JobHistory} />
-        </Switch>
-      </Router>
-      <Footer />
-    </Container>,
+    <Router><App /></Router>,
     document.getElementById('root')
 );
