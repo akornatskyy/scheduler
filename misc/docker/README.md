@@ -6,7 +6,7 @@ Build docker images.
 docker build -t akorn/scheduler -f misc/docker/Dockerfile .
 ```
 
-Docker componse.
+## Docker componse
 
 ```sh
 cd misc/docker
@@ -21,5 +21,8 @@ Update api with a fresh image.
 ```sh
 docker-compose stop api
 docker-compose up -d api
+
+docker image prune --all
+# or
 docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
 ```
