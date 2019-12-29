@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scheduler-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scheduler-db
+  template:
+    metadata:
+      labels:
+        app: scheduler-db
+    spec:
+      containers:
+      - name: scheduler-db
+        image: postgres:alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+        args:
+        - postgres
+        - -c
+        - log_statement=all
+        resources:
+          requests:
+            cpu: 100m
+            memory: 32Mi
+          limits:
+            cpu: 250m
+            memory: 64Mi
+        volumeMounts:
+        - name: scheduler-db
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: scheduler-db
+        persistentVolumeClaim:
+          claimName: scheduler-db
+
