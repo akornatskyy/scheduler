@@ -10,6 +10,9 @@ recurring schedule, or at some point in the future.
 The scheduler allows you to manage all of your automation tasks in a single place
 via simple UI or command line.
 
+This service works on any Kubernetes cluster (such as Minikube), it’s easy to
+deploy with little to no configuration.
+
 If you’re using this service, **★Star** this repository to show your interest,
 please!
 
@@ -41,12 +44,17 @@ and refecting corresponding changes in job scheduler. The job scheduler
 ensures that only one job is run at a given point of time (although each
 instance has a full list of enabled jobs and competes to acquire one).
 
+### Database Schema
+
+![database schema](./misc/docs/img/db-schema.png)
+
 ## Installation
 
 There are several installation methods:
 
 1. Running locally.
 2. Running with Docker Compose.
+3. Running on Kubernetes.
 
 > 💡 The service does not automatically apply SQL schema. You need to manually
 > connect to your Postgres database and run
@@ -98,7 +106,29 @@ The service frontend should be available on port *8080* of your docker machine.
 For more information refer to files at the
 [`misc/docker`](./misc/docker) directory.
 
+### Option 3: Running on Kubernetes
+
+If you are using Minikube to run a Kubernetes cluster locally, start it via
+`minikube start`.
+
+Roll out service with  `kubectl apply -f misc/k8s`.
+
+Run `kubectl get pods` to verify the pods are ready and running.
+
+> NOTE: You can expose DB via `kubectl port-forward service/scheduler-db 5432`
+> and apply [sql scripts](./misc/db).
+
+The service can be accessed with `minikube service scheduler`. Use
+`minikube dashboard` to access the Kubernetes dashboard running within the
+cluster.
+
 ### Cleanup
 
 If you have deployed the application with docker compose, you can stop and
 remove containers with `docker-compose down`.
+
+If you have deployed the application with `kubectl apply -f misc/k8s`, you can
+run `kubectl delete -f misc/k8s` to clean up the deployed resources.
+
+If you have deployed to minikube, stop the cluster with `minikube stop` or
+delete virtual machine with `minikube delete`.
