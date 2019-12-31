@@ -3,7 +3,7 @@ import update from 'immutability-helper';
 const host = '';
 
 const thenHandle = (r, resolve, reject) => {
-  if (r.status === 204) {
+  if (r.status === 201 || r.status === 204) {
     return resolve();
   } else if (r.status >= 200 && r.status < 300) {
     return r.json().then(resolve);
