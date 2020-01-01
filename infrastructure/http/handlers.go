@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -334,20 +335,14 @@ func (s *Server) deleteJobHistory() httprouter.Handle {
 }
 
 func (s *Server) health() http.HandlerFunc {
-	type health struct {
-		Status  string `json:"status"`
-		Message string `json:"message,omitempty"`
-	}
-	up := health{Status: "up"}
+	const up = "{\"status\":\"up\"}"
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		if err := s.Service.Health(); err != nil {
-			down := &health{
-				Status:  "down",
-				Message: err.Error(),
-			}
-			httpjson.Encode(w, down, http.StatusServiceUnavailable)
+			w.WriteHeader(http.StatusServiceUnavailable)
+			fmt.Fprintf(w, "{\"status\":\"down\",\"message\":%q}", err.Error())
 			return
 		}
-		httpjson.Encode(w, up, http.StatusOK)
+		fmt.Fprint(w, up)
 	}
 }
