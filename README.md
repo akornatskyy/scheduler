@@ -56,9 +56,7 @@ There are several installation methods:
 2. Running with Docker Compose.
 3. Running on Kubernetes.
 
-> 💡 The service does not automatically apply SQL schema. You need to manually
-> connect to your Postgres database and run
-> [sql scripts](./misc/db).
+> 💡 The service automatically migrates SQL schema.
 
 ### Option 1: Running locally
 
@@ -69,9 +67,6 @@ run service locally.
 # default data source name
 export DSN=postgres://postgres:@127.0.0.1:5432/postgres?sslmode=disable
 ```
-
-> NOTE: Apply apply [sql scripts](./misc/db) per connection
-> DSN environment variable.
 
 ```sh
 npm run build
@@ -98,9 +93,6 @@ docker-compose up -d
 
 View output from containers with `docker-compose logs -f --tail=10`.
 
-> NOTE: The DB is exposed on port *5432* of your docker machine. You need
-> manually apply [sql scripts](./misc/db).
-
 The service frontend should be available on port *8080* of your docker machine.
 
 For more information refer to files at the
@@ -115,8 +107,7 @@ Roll out service with  `kubectl apply -f misc/k8s`.
 
 Run `kubectl get pods` to verify the pods are ready and running.
 
-> NOTE: You can expose DB via `kubectl port-forward service/scheduler-db 5432`
-> and apply [sql scripts](./misc/db).
+> NOTE: You can expose DB via `kubectl port-forward service/scheduler-db 5432`.
 
 The service can be accessed with `minikube service scheduler`. Use
 `minikube dashboard` to access the Kubernetes dashboard running within the

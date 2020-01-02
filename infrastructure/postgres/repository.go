@@ -44,6 +44,10 @@ func NewRepository(dsn string) domain.Repository {
 		log.Fatalf("ERR: %s", err)
 	}
 
+	if err = migrate(db); err != nil {
+		log.Fatalf("ERR: failed to apply migrations: %s", err);
+	}
+
 	return &sqlRepository{
 		db: db,
 
