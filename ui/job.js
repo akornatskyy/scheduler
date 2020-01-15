@@ -270,7 +270,21 @@ export default class Job extends React.Component {
               <FieldError message={errors.type} />
             </Form.Group>
             <Form.Group as={Col} controlId="schedule">
-              <Form.Label>Schedule</Form.Label>
+              <Form.Label>
+                Schedule
+                <small className="text-muted pl-2 d-none d-md-inline">
+                  use either <a target="_blank" rel="noopener noreferrer"
+                    href="https://godoc.org/github.com/robfig/cron#hdr-Predefined_schedules">
+                      pre-defined
+                  </a>, <a target="_blank" rel="noopener noreferrer"
+                    href="https://godoc.org/github.com/robfig/cron#hdr-Intervals">
+                    interval
+                  </a> or <a target="_blank" rel="noopener noreferrer"
+                    href="https://en.wikipedia.org/wiki/Cron">
+                      cron
+                  </a> expression
+                </small>
+              </Form.Label>
               <Form.Control
                 name="schedule"
                 required
