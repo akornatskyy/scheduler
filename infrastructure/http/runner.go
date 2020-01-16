@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 
@@ -42,9 +43,11 @@ func (runner *httpRunner) Run(ctx context.Context, a *domain.Action) error {
 	req.Header.Set("User-Agent", userAgent)
 	resp, err := runner.client.Do(req.WithContext(ctx))
 	if err != nil {
+		log.Printf("%s %s - %s", r.Method, r.URI, err)
 		return err
 	}
-	_, err = ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
+	log.Printf("%s %s - %d %d", r.Method, r.URI, resp.StatusCode, len(body))
 	if err != nil {
 		return err
 	}
