@@ -52,7 +52,10 @@ func (runner *httpRunner) Run(ctx context.Context, a *domain.Action) error {
 		return err
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return errors.New(resp.Status)
+		return &domain.RunError{
+			Code: resp.StatusCode,
+			Err:  errors.New(http.StatusText(resp.StatusCode)),
+		}
 	}
 	return nil
 }
