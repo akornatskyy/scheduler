@@ -38,16 +38,25 @@ func (s *Service) OnRunJob(j *domain.JobDefinition) {
 	defer cancel()
 
 	attempt := 0
+loop:
 	for {
 		err = runner.Run(ctx, a)
 		if err == nil {
 			break
 		}
+		if re, ok := err.(*domain.RunError); ok {
+			switch re.Code {
+				// https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#Client_error_responses
+				// TODO: add all client error responses (4XX) as unrecoverable?
+			case 400, 401, 403, 404, 422:
+				break loop
+			}
+		}
 		select {
 		case <-ctx.Done():
 			err = ctx.Err()
 			if err != nil {
-				break
+				break loop
 			}
 		case <-time.After(time.Duration(p.RetryInterval)):
 		}
