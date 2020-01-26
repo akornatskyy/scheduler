@@ -34,7 +34,7 @@ func (s *Service) OnRunJob(j *domain.JobDefinition) {
 		Started: time.Now().UTC(),
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(p.Deadline))
+	ctx, cancel := context.WithTimeout(s.ctx, time.Duration(p.Deadline))
 	defer cancel()
 
 	attempt := 0

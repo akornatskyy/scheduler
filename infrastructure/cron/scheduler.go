@@ -96,7 +96,9 @@ func (s *cronSheduler) Start() {
 }
 
 func (s *cronSheduler) Stop() {
-	s.c.Stop()
+	log.Println("scheduler is awaiting jobs to finish")
+	<-s.c.Stop().Done()
+
 	log.Print("scheduler stopped")
 }
 
