@@ -30,6 +30,7 @@ type sqlRepository struct {
 	deleteJob  *sql.Stmt
 
 	selectJobStatus *sql.Stmt
+	resetJobStatus  *sql.Stmt
 	updateJobStatus *sql.Stmt
 
 	selectJobHistory *sql.Stmt
@@ -103,6 +104,36 @@ func NewRepository(dsn string) domain.Repository {
 			SELECT updated, running, run_count, error_count, last_run
 			FROM job_status
 			WHERE id = $1`),
+		resetJobStatus: sqlx.MustPrepare(db, `
+			WITH x AS (
+				SELECT
+				js.id,
+					action->>'type' as "action",
+					js.updated started,
+					now() at time zone 'utc' finished
+				FROM job_status js
+				INNER JOIN job j ON js.id = j.id
+				WHERE
+					running
+					AND age(now() at time zone 'utc', js.updated) >
+								  (action->'retryPolicy'->>'deadline')::interval
+				FOR UPDATE
+			), u AS (
+				UPDATE job_status js
+				SET
+					updated=x.finished,
+					running=false,
+					run_count=run_count+1,
+					error_count=error_count+1
+				FROM x
+				WHERE
+					js.id = x.id
+			)
+			INSERT INTO job_history
+			(job_id, action, started, finished, status_id, retry_count, message)
+			SELECT id, action, started, finished, 2 /* failed  */, 0, 'status reset'
+			FROM x
+			RETURNING job_id`),
 		updateJobStatus: sqlx.MustPrepare(db, `
 			UPDATE job_status
 			SET updated=now() at time zone 'utc', running=true

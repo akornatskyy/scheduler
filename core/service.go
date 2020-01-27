@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 	"log"
+	"strings"
 
 	"github.com/akornatskyy/scheduler/domain"
 )
@@ -19,6 +20,15 @@ func (s *Service) Start() {
 	ctx, cancel := context.WithCancel(context.Background())
 	s.ctx = ctx
 	s.cancel = cancel
+
+	items, err := s.Repository.ResetJobsStatus()
+	if err != nil {
+		log.Fatalf("ERR: failed to reset job statuses: %s", err)
+	}
+	if len(items) > 0 {
+		log.Printf("reset job status for: %s", strings.Join(items, ", "))
+	}
+
 	s.Scheduler.SetRunner(s.OnRunJob)
 	s.Scheduler.Start()
 }

@@ -86,6 +86,27 @@ func (r *sqlRepository) RetrieveJobStatus(id string) (*domain.JobStatus, error) 
 	return j, nil
 }
 
+func (r *sqlRepository) ResetJobsStatus() ([]string, error) {
+	items := make([]string, 0, 10)
+	rows, err := r.resetJobStatus.Query()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id string
+		err := rows.Scan(&id)
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, id)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 func (r *sqlRepository) AcquireJob(id string, deadline time.Duration) error {
 	return checkExec(r.updateJobStatus.Exec(id, deadline.String()))
 }
