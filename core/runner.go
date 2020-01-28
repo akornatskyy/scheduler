@@ -34,36 +34,40 @@ func (s *Service) OnRunJob(j *domain.JobDefinition) {
 		Started: time.Now().UTC(),
 	}
 
-	ctx, cancel := context.WithTimeout(s.ctx, time.Duration(p.Deadline))
-	defer cancel()
-
 	attempt := 0
-loop:
-	for {
-		err = runner.Run(ctx, a)
-		if err == nil {
-			break
-		}
-		if re, ok := err.(*domain.RunError); ok {
-			switch re.Code {
-			// https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#Client_error_responses
-			// TODO: add all client error responses (4XX) as unrecoverable?
-			case 400, 401, 403, 404, 422:
-				break loop
+
+	a, err = s.transposeAction(j.CollectionID, a)
+	if err == nil {
+		ctx, cancel := context.WithTimeout(s.ctx, time.Duration(p.Deadline))
+		defer cancel()
+
+	loop:
+		for {
+			err = runner.Run(ctx, a)
+			if err == nil {
+				break
 			}
-		}
-		select {
-		case <-ctx.Done():
-			err = ctx.Err()
-			if err != nil {
-				break loop
+			if re, ok := err.(*domain.RunError); ok {
+				switch re.Code {
+				// https://developer.mozilla.org/en-US/docs/Web/HTTP/Status#Client_error_responses
+				// TODO: add all client error responses (4XX) as unrecoverable?
+				case 400, 401, 403, 404, 422:
+					break loop
+				}
 			}
-		case <-time.After(time.Duration(p.RetryInterval)):
+			select {
+			case <-ctx.Done():
+				err = ctx.Err()
+				if err != nil {
+					break loop
+				}
+			case <-time.After(time.Duration(p.RetryInterval)):
+			}
+			if attempt == p.RetryCount {
+				break
+			}
+			attempt++
 		}
-		if attempt == p.RetryCount {
-			break
-		}
-		attempt++
 	}
 
 	jh.Finished = time.Now().UTC()
@@ -80,4 +84,20 @@ loop:
 	if err = s.Repository.AddJobHistory(jh); err != nil {
 		log.Printf("ERR: job %s: %s", j.ID, err)
 	}
+}
+
+func (s *Service) transposeAction(collectionID string, a *domain.Action) (*domain.Action, error) {
+	variables, err := s.mapVariables(collectionID)
+	if err != nil {
+		return nil, err
+	}
+	req, err := a.Request.Transpose(variables)
+	if err != nil {
+		return nil, err
+	}
+	return &domain.Action{
+		Type:        a.Type,
+		Request:     req,
+		RetryPolicy: a.RetryPolicy,
+	}, nil
 }

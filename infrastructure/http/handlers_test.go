@@ -233,6 +233,10 @@ func (r *mockRepository) DeleteJobHistory(id string, before time.Time) error {
 	return r.err("delete-job-history")
 }
 
+func (r *mockRepository) MapVariables(collectionID string) (map[string]string, error) {
+	return nil, r.err("map-variables")
+}
+
 func (r *mockScheduler) SetRunner(f func(*domain.JobDefinition)) {
 }
 

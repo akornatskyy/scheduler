@@ -10,7 +10,7 @@ func (s *Service) ListJobs() ([]*domain.JobItem, error) {
 }
 
 func (s *Service) CreateJob(job *domain.JobDefinition) error {
-	if err := domain.ValidateJobDefinition(job); err != nil {
+	if err := s.validateJobDefinition(job); err != nil {
 		return err
 	}
 	if job.ID == "" {
@@ -27,7 +27,7 @@ func (s *Service) RetrieveJob(id string) (*domain.JobDefinition, error) {
 }
 
 func (s *Service) UpdateJob(job *domain.JobDefinition) error {
-	if err := domain.ValidateJobDefinition(job); err != nil {
+	if err := s.validateJobDefinition(job); err != nil {
 		return err
 	}
 	return s.Repository.UpdateJob(job)
@@ -62,5 +62,23 @@ func (s *Service) RunJob(id string) error {
 	}
 
 	go s.OnRunJob(job)
+	return nil
+}
+
+func (s *Service) validateJobDefinition(job *domain.JobDefinition) error {
+	if err := domain.ValidateJobDefinition(job); err != nil {
+		return err
+	}
+	variables, err := s.mapVariables(job.CollectionID)
+	if err != nil {
+		return err
+	}
+	req, err := job.Action.Request.Transpose(variables)
+	if err != nil {
+		return err
+	}
+	if err := domain.ValidateURI(req.URI); err != nil {
+		return err
+	}
 	return nil
 }

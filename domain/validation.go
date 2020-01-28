@@ -45,6 +45,31 @@ func ValidateID(s string) error {
 	return e.OrNil()
 }
 
+func ValidateURI(uri string) error {
+	e := &errorstate.ErrorState{
+		Domain: domain,
+	}
+	u, err := url.ParseRequestURI(uri)
+	if err != nil {
+		e.Add(&errorstate.Detail{
+			Domain:   domain,
+			Type:     "field",
+			Location: "uri",
+			Reason:   "pattern",
+			Message:  fmt.Sprintf("Unrecognized format: %s.", err.Error()),
+		})
+	} else if u.Scheme != "http" && u.Scheme != "https" {
+		e.Add(&errorstate.Detail{
+			Domain:   domain,
+			Type:     "field",
+			Location: "uri",
+			Reason:   "pattern",
+			Message:  "Must begin with http or https.",
+		})
+	}
+	return e.OrNil()
+}
+
 func ValidateCollection(c *Collection) error {
 	e := &errorstate.ErrorState{
 		Domain: domain,
@@ -101,26 +126,7 @@ func validateHTTPRequest(e *errorstate.ErrorState, r *HttpRequest) {
 	}
 
 	rule.Method.Validate(e, r.Method)
-	if rule.URI.Validate(e, r.URI) {
-		u, err := url.ParseRequestURI(r.URI)
-		if err != nil {
-			e.Add(&errorstate.Detail{
-				Domain:   domain,
-				Type:     "field",
-				Location: "uri",
-				Reason:   "pattern",
-				Message:  fmt.Sprintf("Unrecognized format: %s.", err.Error()),
-			})
-		} else if u.Scheme != "http" && u.Scheme != "https" {
-			e.Add(&errorstate.Detail{
-				Domain:   domain,
-				Type:     "field",
-				Location: "uri",
-				Reason:   "pattern",
-				Message:  "Must begin with http or https.",
-			})
-		}
-	}
+	rule.URI.Validate(e, r.URI)
 	rule.Body.Validate(e, r.Body)
 	for _, p := range r.Headers {
 		rule.HeaderName.Validate(e, p.Name)
