@@ -23,11 +23,12 @@ type sqlRepository struct {
 	updateCollection  *sql.Stmt
 	deleteCollection  *sql.Stmt
 
-	selectJobs *sql.Stmt
-	insertJob  *sql.Stmt
-	selectJob  *sql.Stmt
-	updateJob  *sql.Stmt
-	deleteJob  *sql.Stmt
+	selectJobs         *sql.Stmt
+	insertJob          *sql.Stmt
+	selectJob          *sql.Stmt
+	updateJob          *sql.Stmt
+	deleteJob          *sql.Stmt
+	selectLeftOverJobs *sql.Stmt
 
 	selectJobStatus *sql.Stmt
 	resetJobStatus  *sql.Stmt
@@ -74,7 +75,7 @@ func NewRepository(dsn string) domain.Repository {
 			SELECT
 				id, name, state_id, schedule
 			FROM job
-			WHERE $1 = '' OR collection_id = $1::uuid
+			WHERE $1 = '' OR collection_id = $1
 			ORDER BY name`),
 		insertJob: sqlx.MustPrepare(db, `
 			WITH x AS (
@@ -99,6 +100,15 @@ func NewRepository(dsn string) domain.Repository {
 				WHERE id = $1
 			)
 			DELETE FROM job WHERE id = $1`),
+		selectLeftOverJobs: sqlx.MustPrepare(db, `
+			SELECT
+				j.id
+			FROM job j
+			INNER JOIN job_status js ON j.id = js.id
+			WHERE
+				js.running
+				AND age(now() at time zone 'utc', js.updated) >
+								(j.action->'retryPolicy'->>'deadline')::interval`),
 
 		selectJobStatus: sqlx.MustPrepare(db, `
 			SELECT updated, running, run_count, error_count, last_run
@@ -107,16 +117,14 @@ func NewRepository(dsn string) domain.Repository {
 		resetJobStatus: sqlx.MustPrepare(db, `
 			WITH x AS (
 				SELECT
-				js.id,
+					js.id,
 					action->>'type' as "action",
 					js.updated started,
 					now() at time zone 'utc' finished
 				FROM job_status js
 				INNER JOIN job j ON js.id = j.id
 				WHERE
-					running
-					AND age(now() at time zone 'utc', js.updated) >
-								  (action->'retryPolicy'->>'deadline')::interval
+					j.id = $1 AND running
 				FOR UPDATE
 			), u AS (
 				UPDATE job_status js
@@ -127,13 +135,12 @@ func NewRepository(dsn string) domain.Repository {
 					error_count=error_count+1
 				FROM x
 				WHERE
-					js.id = x.id
+					js.id = x.id AND running
 			)
 			INSERT INTO job_history
 			(job_id, action, started, finished, status_id, retry_count, message)
-			SELECT id, action, started, finished, 2 /* failed  */, 0, 'status reset'
-			FROM x
-			RETURNING job_id`),
+			SELECT id, action, started, x.finished, 2 /* failed  */, 0, 'status reset'
+			FROM x`),
 		updateJobStatus: sqlx.MustPrepare(db, `
 			UPDATE job_status
 			SET updated=now() at time zone 'utc', running=true

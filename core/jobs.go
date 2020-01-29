@@ -1,6 +1,8 @@
 package core
 
 import (
+	"log"
+
 	"github.com/akornatskyy/scheduler/domain"
 	"github.com/google/uuid"
 )
@@ -81,4 +83,16 @@ func (s *Service) validateJobDefinition(job *domain.JobDefinition) error {
 		return err
 	}
 	return nil
+}
+
+func (s *Service) resetLeftOverJobs() {
+	jobs, err := s.Repository.ListLeftOverJobs()
+	if err != nil {
+		log.Printf("WARN: failed to list left over jobs: %s", err)
+		return
+	}
+	for _, id := range jobs {
+		log.Printf("reset job status for: %s", id)
+		s.Repository.ResetJobStatus(id)
+	}
 }

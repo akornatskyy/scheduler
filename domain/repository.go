@@ -23,7 +23,8 @@ type Repository interface {
 	DeleteJob(id string) error
 
 	RetrieveJobStatus(id string) (*JobStatus, error)
-	ResetJobsStatus() ([]string, error)
+	ListLeftOverJobs() ([]string, error)
+	ResetJobStatus(id string) error
 
 	ListJobHistory(id string) ([]*JobHistory, error)
 	DeleteJobHistory(id string, before time.Time) error

@@ -213,8 +213,12 @@ func (r *mockRepository) RetrieveJobStatus(id string) (*domain.JobStatus, error)
 	return r.JobStatus, r.err("retrieve-job-status")
 }
 
-func (r *mockRepository) ResetJobsStatus() ([]string, error) {
-	return []string{}, r.err("reset-job-status")
+func (r *mockRepository) ListLeftOverJobs() ([]string, error) {
+	return []string{}, r.err("list-left-over-jobs")
+}
+
+func (r *mockRepository) ResetJobStatus(id string) error {
+	return r.err("reset-job-status")
 }
 
 func (r *mockRepository) AcquireJob(id string, deadline time.Duration) error {

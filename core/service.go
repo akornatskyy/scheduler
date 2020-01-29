@@ -24,14 +24,7 @@ func (s *Service) Start() {
 	s.cancel = cancel
 	s.variables = mapEnviron()
 
-	items, err := s.Repository.ResetJobsStatus()
-	if err != nil {
-		log.Fatalf("ERR: failed to reset job statuses: %s", err)
-	}
-	if len(items) > 0 {
-		log.Printf("reset job status for: %s", strings.Join(items, ", "))
-	}
-
+	s.resetLeftOverJobs()
 	s.Scheduler.SetRunner(s.OnRunJob)
 	s.Scheduler.Start()
 }

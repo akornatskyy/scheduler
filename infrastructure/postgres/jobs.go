@@ -85,10 +85,9 @@ func (r *sqlRepository) RetrieveJobStatus(id string) (*domain.JobStatus, error) 
 	}
 	return j, nil
 }
-
-func (r *sqlRepository) ResetJobsStatus() ([]string, error) {
+func (r *sqlRepository) ListLeftOverJobs() ([]string, error) {
 	items := make([]string, 0, 10)
-	rows, err := r.resetJobStatus.Query()
+	rows, err := r.selectLeftOverJobs.Query()
 	if err != nil {
 		return nil, err
 	}
@@ -105,6 +104,10 @@ func (r *sqlRepository) ResetJobsStatus() ([]string, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+func (r *sqlRepository) ResetJobStatus(id string) error {
+	return checkExec(r.resetJobStatus.Exec(id))
 }
 
 func (r *sqlRepository) AcquireJob(id string, deadline time.Duration) error {
