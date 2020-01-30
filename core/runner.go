@@ -44,7 +44,7 @@ func (s *Service) OnRunJob(j *domain.JobDefinition) {
 	loop:
 		for {
 			err = runner.Run(ctx, a)
-			if err == nil {
+			if err == nil || attempt == p.RetryCount {
 				break
 			}
 			if re, ok := err.(*domain.RunError); ok {
@@ -62,9 +62,6 @@ func (s *Service) OnRunJob(j *domain.JobDefinition) {
 					break loop
 				}
 			case <-time.After(time.Duration(p.RetryInterval)):
-			}
-			if attempt == p.RetryCount {
-				break
 			}
 			attempt++
 		}
