@@ -1,7 +1,10 @@
 package domain
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"errors"
+	"io"
 	"time"
 )
 
@@ -106,3 +109,15 @@ var (
 	Disconnected = &UpdateEvent{ObjectType: "connection", Operation: "disconnected"}
 	Reconnected  = &UpdateEvent{ObjectType: "connection", Operation: "reconnected"}
 )
+
+func NewID() string {
+	id := make([]byte, 8)
+	_, err := io.ReadAtLeast(rand.Reader, id, 8)
+	if err != nil {
+		return ""
+	}
+	if id[0] >= 248 { // Exclude '-' and '_'
+		id[0] -= 248
+	}
+	return base64.RawURLEncoding.EncodeToString(id)
+}

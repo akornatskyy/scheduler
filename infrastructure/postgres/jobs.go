@@ -107,7 +107,7 @@ func (r *sqlRepository) ListLeftOverJobs() ([]string, error) {
 }
 
 func (r *sqlRepository) ResetJobStatus(id string) error {
-	return checkExec(r.resetJobStatus.Exec(id))
+	return checkExec(r.resetJobStatus.Exec(id, domain.NewID()))
 }
 
 func (r *sqlRepository) AcquireJob(id string, deadline time.Duration) error {

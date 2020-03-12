@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/akornatskyy/scheduler/domain"
-	"github.com/google/uuid"
 )
 
 func (s *Service) ListJobs() ([]*domain.JobItem, error) {
@@ -16,7 +15,7 @@ func (s *Service) CreateJob(job *domain.JobDefinition) error {
 		return err
 	}
 	if job.ID == "" {
-		job.ID = uuid.New().String()
+		job.ID = domain.NewID()
 	}
 	return s.Repository.CreateJob(job)
 }

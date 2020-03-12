@@ -9,7 +9,7 @@ func migrate(db *sql.DB) error {
 	_, err := db.Exec(`
 		CREATE TABLE IF NOT EXISTS migration (
 			id INT NOT NULL,
-			created TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC')
+			created TIMESTAMPTZ NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC')
 		);
 	`)
 	if err != nil {
@@ -53,9 +53,9 @@ var migrations = []string{
 	(2, 'disabled')`,
 	`
 	CREATE TABLE collection (
-		id UUID NOT NULL,
+		id VARCHAR(36) NOT NULL,
 		name VARCHAR(64) NOT NULL UNIQUE,
-		updated TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+		updated TIMESTAMPTZ NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
 		state_id INT NOT NULL DEFAULT 1,
 
 		PRIMARY KEY (id),
@@ -75,10 +75,10 @@ var migrations = []string{
 	(2, 'disabled')`,
 	`
 	CREATE TABLE job (
-		id UUID NOT NULL,
+		id VARCHAR(36) NOT NULL,
 		name VARCHAR(64) NOT NULL,
-		updated TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
-		collection_id UUID NOT NULL,
+		updated TIMESTAMPTZ NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+		collection_id VARCHAR(36) NOT NULL,
 		state_id INT NOT NULL,
 		schedule VARCHAR(64) NOT NULL,
 		action JSON NOT NULL,
@@ -92,12 +92,12 @@ var migrations = []string{
 	)`,
 	`
 	CREATE TABLE job_status (
-		id UUID NOT NULL,
-		updated TIMESTAMP NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+		id VARCHAR(36) NOT NULL,
+		updated TIMESTAMPTZ NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
 		running BOOL NOT NULL DEFAULT FALSE,
 		run_count INT NOT NULL DEFAULT 0,
 		error_count INT NOT NULL DEFAULT 0,
-		last_run TIMESTAMP,
+		last_run TIMESTAMPTZ,
 
 		PRIMARY KEY (id),
 		CONSTRAINT job_status_job_fk FOREIGN KEY (id) REFERENCES job(id)
@@ -114,14 +114,12 @@ var migrations = []string{
 	(1, 'completed'),
 	(2, 'failed')`,
 	`
-	CREATE SEQUENCE job_history_seq;
-
 	CREATE TABLE job_history (
-		id INT NOT NULL DEFAULT nextval('job_history_seq'),
-		job_id UUID NOT NULL,
+		id VARCHAR(36) NOT NULL,
+		job_id VARCHAR(36) NOT NULL,
 		action VARCHAR(64) NOT NULL,
-		started TIMESTAMP NOT NULL,
-		finished TIMESTAMP NOT NULL,
+		started TIMESTAMPTZ NOT NULL,
+		finished TIMESTAMPTZ NOT NULL,
 		status_id INT NOT NULL,
 		retry_count INT NOT NULL,
 		message VARCHAR(1024),
@@ -135,7 +133,7 @@ var migrations = []string{
 	`
 	CREATE OR REPLACE FUNCTION table_update_notify() RETURNS trigger AS $$
 	DECLARE
-		id UUID;
+		id VARCHAR;
 	BEGIN
 		IF TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN
 			id = NEW.id;

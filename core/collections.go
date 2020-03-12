@@ -2,7 +2,6 @@ package core
 
 import (
 	"github.com/akornatskyy/scheduler/domain"
-	"github.com/google/uuid"
 )
 
 func (s *Service) ListCollections() ([]*domain.CollectionItem, error) {
@@ -14,7 +13,7 @@ func (s *Service) CreateCollection(c *domain.Collection) error {
 		return err
 	}
 	if c.ID == "" {
-		c.ID = uuid.New().String()
+		c.ID = domain.NewID()
 	}
 	return s.Repository.CreateCollection(c)
 }

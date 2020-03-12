@@ -68,7 +68,6 @@ paths:
             application/json:
               schema:
                 type: string
-                format: uuid
         '400':
           description: validation errors
         '404':
@@ -197,7 +196,6 @@ paths:
             application/json:
               schema:
                 type: string
-                format: uuid
         '400':
           description: validation errors
         '404':
@@ -391,7 +389,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
         name:
           type: string
           description: unique job collection name
@@ -418,7 +415,6 @@ components:
       properties:
         id:
           type: string
-          format: uuid
           readOnly: true
         name:
           type: string
@@ -445,7 +441,6 @@ components:
           readOnly: true
         collectionId:
           type: string
-          format: uuid
         action:
           $ref: '#/components/schemas/Action'
       required:
@@ -586,7 +581,6 @@ components:
       required: true
       schema:
         type: string
-        format: uuid
     before:
       in: query
       name: before

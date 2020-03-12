@@ -4,13 +4,20 @@ import (
 	"github.com/akornatskyy/goext/validator"
 )
 
+const (
+	idPattern = "^[A-Za-z0-9][A-Za-z0-9_\\-]*$"
+	idMessage = "Required to match URL safe characters only."
+)
+
 var (
 	ID = validator.String("id").
-		Exactly(36).UUID().Build()
+		Min(3).Max(36).
+		Pattern(idPattern, idMessage).Build()
 	Name = validator.String("name").
 		Required().Min(3).Max(64).Build()
 	CollectionID = validator.String("collectionId").
-			Required().Exactly(36).UUID().Build()
+			Required().Min(3).Max(36).
+			Pattern(idPattern, idMessage).Build()
 	Schedule = validator.String("schedule").
 			Required().Min(9).Max(64).Build()
 	ActionType = validator.String("type").

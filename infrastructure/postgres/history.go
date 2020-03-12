@@ -32,7 +32,7 @@ func (r *sqlRepository) ListJobHistory(id string) ([]*domain.JobHistory, error) 
 
 func (r *sqlRepository) AddJobHistory(jh *domain.JobHistory) error {
 	return checkExec(r.insertJobHistory.Exec(
-		jh.JobID, jh.Action, jh.Started, jh.Finished,
+		domain.NewID(), jh.JobID, jh.Action, jh.Started, jh.Finished,
 		jh.Status, jh.RetryCount, jh.Message,
 	))
 }
