@@ -10,8 +10,8 @@
       {
         "domain": "scheduler",
         "location": "id",
-        "message": "Required to be exactly 36 characters in length.",
-        "reason": "exactly",
+        "message": "Exceeds maximum length of 36.",
+        "reason": "max length",
         "type": "field"
       }
     ]

@@ -1,6 +1,6 @@
 {
   "req": {
     "method": "PATCH",
-    "path": "/jobs/xxx/status"
+    "path": "/jobs/1234567890123456789012345678901234567/status"
   }
 }
