@@ -9,6 +9,10 @@ func (c *Collection) ETag() string {
 	return etag(c.Updated)
 }
 
+func (c *Variable) ETag() string {
+	return etag(c.Updated)
+}
+
 func (j *JobDefinition) ETag() string {
 	return etag(j.Updated)
 }

@@ -34,6 +34,18 @@ type (
 		Updated time.Time `json:"updated"`
 	}
 
+	VariableItem struct {
+		ID           string    `json:"id"`
+		Name         string    `json:"name"`
+		CollectionID string    `json:"collectionId"`
+		Updated      time.Time `json:"updated"`
+	}
+
+	Variable struct {
+		VariableItem
+		Value string `json:"value"`
+	}
+
 	JobItem struct {
 		ID       string   `json:"id"`
 		Name     string   `json:"name"`
