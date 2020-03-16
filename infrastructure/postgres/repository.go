@@ -23,6 +23,13 @@ type sqlRepository struct {
 	updateCollection  *sql.Stmt
 	deleteCollection  *sql.Stmt
 
+	selectVariables          *sql.Stmt
+	selectVariablesNameValue *sql.Stmt
+	insertVariable           *sql.Stmt
+	selectVariable           *sql.Stmt
+	updateVariable           *sql.Stmt
+	deleteVariable           *sql.Stmt
+
 	selectJobs         *sql.Stmt
 	insertJob          *sql.Stmt
 	selectJob          *sql.Stmt
@@ -70,6 +77,33 @@ func NewRepository(dsn string) domain.Repository {
 			WHERE id=$1 AND updated=$2`),
 		deleteCollection: sqlx.MustPrepare(db, `
 			DELETE FROM collection WHERE id = $1`),
+
+		selectVariables: sqlx.MustPrepare(db, `
+			SELECT
+				id, name, collection_id, updated
+			FROM variable
+			WHERE $1 = '' OR collection_id = $1
+			ORDER BY collection_id, name`),
+		selectVariablesNameValue: sqlx.MustPrepare(db, `
+			SELECT
+				name, value
+			FROM variable
+			WHERE collection_id = $1`),
+		insertVariable: sqlx.MustPrepare(db, `
+			INSERT INTO variable (id, name, collection_id, value)
+			VALUES ($1, $2, $3, $4)`),
+		selectVariable: sqlx.MustPrepare(db, `
+			SELECT id, name, updated, collection_id, value
+			FROM variable
+			WHERE id = $1`),
+		updateVariable: sqlx.MustPrepare(db, `
+			UPDATE variable
+			SET
+				name=$3, updated=now() at time zone 'utc',
+				collection_id=$4, value=$5
+			WHERE id = $1 AND updated = $2`),
+		deleteVariable: sqlx.MustPrepare(db, `
+			DELETE FROM variable WHERE id = $1`),
 
 		selectJobs: sqlx.MustPrepare(db, `
 			SELECT

@@ -14,7 +14,12 @@ type Repository interface {
 	UpdateCollection(c *Collection) error
 	DeleteCollection(id string) error
 
+	ListVariables(collectionID string) ([]*VariableItem, error)
 	MapVariables(collectionID string) (map[string]string, error)
+	CreateVariable(v *Variable) error
+	RetrieveVariable(id string) (*Variable, error)
+	UpdateVariable(v *Variable) error
+	DeleteVariable(id string) error
 
 	ListJobs(collectionID string) ([]*JobItem, error)
 	CreateJob(j *JobDefinition) error

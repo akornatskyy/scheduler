@@ -152,4 +152,17 @@ var migrations = []string{
 	CREATE TRIGGER job_notify AFTER INSERT OR UPDATE OR DELETE ON job
 	FOR EACH ROW EXECUTE PROCEDURE table_update_notify()
 	`,
+	`
+	CREATE TABLE variable (
+		id VARCHAR(36) NOT NULL,
+		collection_id VARCHAR(36) NOT NULL,
+		name VARCHAR(64) NOT NULL,
+		updated TIMESTAMPTZ NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'),
+		value VARCHAR(1024) NOT NULL,
+
+		PRIMARY KEY (id),
+		UNIQUE (name, collection_id),
+		CONSTRAINT variable_collection_fk FOREIGN KEY (collection_id)
+			REFERENCES collection(id)
+	)`,
 }

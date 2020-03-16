@@ -189,6 +189,30 @@ func (r *mockRepository) DeleteCollection(id string) error {
 	return r.err("delete-collection")
 }
 
+func (r *mockRepository) ListVariables(collectionID string) ([]*domain.VariableItem, error) {
+	return nil, r.err("list-variables")
+}
+
+func (r *mockRepository) MapVariables(collectionID string) (map[string]string, error) {
+	return nil, r.err("map-variables")
+}
+
+func (r *mockRepository) CreateVariable(v *domain.Variable) error {
+	return r.err("create-variables")
+}
+
+func (r *mockRepository) RetrieveVariable(id string) (*domain.Variable, error) {
+	return nil, r.err("retrieve-variable")
+}
+
+func (r *mockRepository) UpdateVariable(v *domain.Variable) error {
+	return r.err("update-variable")
+}
+
+func (r *mockRepository) DeleteVariable(id string) error {
+	return r.err("delete-variable")
+}
+
 func (r *mockRepository) ListJobs(collectionID string) ([]*domain.JobItem, error) {
 	return r.Jobs, r.err("list-jobs")
 }
@@ -235,10 +259,6 @@ func (r *mockRepository) AddJobHistory(jh *domain.JobHistory) error {
 
 func (r *mockRepository) DeleteJobHistory(id string, before time.Time) error {
 	return r.err("delete-job-history")
-}
-
-func (r *mockRepository) MapVariables(collectionID string) (map[string]string, error) {
-	return nil, r.err("map-variables")
 }
 
 func (r *mockScheduler) SetRunner(f func(*domain.JobDefinition)) {
