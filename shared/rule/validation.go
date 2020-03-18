@@ -34,6 +34,8 @@ var (
 			Required().Max(256).Build()
 	Body = validator.String("body").
 		Max(1024).Build()
+	VariableValue = validator.String("value").
+			Max(1024).Build()
 	RetryCount = validator.Number("retryCount").
 			Max(10).Build()
 )

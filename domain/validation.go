@@ -81,6 +81,19 @@ func ValidateCollection(c *Collection) error {
 	return e.OrNil()
 }
 
+func ValidateVariable(v *Variable) error {
+	e := &errorstate.ErrorState{
+		Domain: domain,
+	}
+
+	rule.ID.Validate(e, v.ID)
+	rule.Name.Validate(e, v.Name)
+	rule.CollectionID.Validate(e, v.CollectionID)
+	rule.VariableValue.Validate(e, v.Value)
+
+	return e.OrNil()
+}
+
 func ValidateJobDefinition(j *JobDefinition) error {
 	e := &errorstate.ErrorState{
 		Domain: domain,
