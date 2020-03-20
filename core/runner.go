@@ -36,7 +36,7 @@ func (s *Service) OnRunJob(j *domain.JobDefinition) {
 
 	attempt := 0
 
-	a, err = s.transposeAction(j.CollectionID, a)
+	a, err = s.transposeAction(j)
 	if err == nil {
 		ctx, cancel := context.WithTimeout(s.ctx, time.Duration(p.Deadline))
 		defer cancel()
@@ -83,11 +83,14 @@ func (s *Service) OnRunJob(j *domain.JobDefinition) {
 	}
 }
 
-func (s *Service) transposeAction(collectionID string, a *domain.Action) (*domain.Action, error) {
-	variables, err := s.mapVariables(collectionID)
+func (s *Service) transposeAction(j *domain.JobDefinition) (*domain.Action, error) {
+	variables, err := s.mapVariables(j.CollectionID)
 	if err != nil {
 		return nil, err
 	}
+	variables["CollectionID"] = j.CollectionID
+	variables["JobID"] = j.ID
+	a := j.Action
 	req, err := a.Request.Transpose(variables)
 	if err != nil {
 		return nil, err
