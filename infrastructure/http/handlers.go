@@ -107,6 +107,103 @@ func (s *Server) deleteCollection() httprouter.Handle {
 	}
 }
 
+func (s *Server) listVariables() http.HandlerFunc {
+	type Response struct {
+		Items []*domain.VariableItem `json:"items"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		collectionId := r.URL.Query().Get("collectionId")
+		items, err := s.Service.ListVariables(collectionId)
+		if err != nil {
+			writeError(w, err)
+			return
+		}
+		resp := &Response{
+			Items: items,
+		}
+		httpjson.Encode(w, resp, http.StatusOK)
+	}
+}
+
+func (s *Server) createVariable() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var v domain.Variable
+		if err := httpjson.Decode(r, &v, 1256); err != nil {
+			httpjson.Encode(w, err, http.StatusUnprocessableEntity)
+			return
+		}
+		if err := s.Service.CreateVariable(&v); err != nil {
+			writeError(w, err)
+			return
+		}
+		httpjson.Encode(w, v.ID, http.StatusCreated)
+	}
+}
+
+func (s *Server) retrieveVariable() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		v, err := s.Service.RetrieveVariable(p.ByName("id"))
+		if err != nil {
+			writeError(w, err)
+			return
+		}
+		etag := v.ETag()
+		if etag == r.Header.Get("If-None-Match") {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+		w.Header().Add("ETag", etag)
+		httpjson.Encode(w, v, http.StatusOK)
+	}
+}
+
+func (s *Server) patchVariable() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		v, err := s.Service.RetrieveVariable(p.ByName("id"))
+		if err != nil {
+			writeError(w, err)
+			return
+		}
+		etag := r.Header.Get("If-Match")
+		if etag != "" && etag != v.ETag() {
+			w.WriteHeader(http.StatusPreconditionFailed)
+			return
+		}
+		if err := httpjson.Decode(r, &v, 1256); err != nil {
+			httpjson.Encode(w, err, http.StatusUnprocessableEntity)
+			return
+		}
+		if err := s.Service.UpdateVariable(v); err != nil {
+			writeError(w, err)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+func (s *Server) deleteVariable() httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+		id := p.ByName("id")
+		etag := r.Header.Get("If-Match")
+		if etag != "" {
+			v, err := s.Service.RetrieveVariable(id)
+			if err != nil {
+				writeError(w, err)
+				return
+			}
+			if etag != v.ETag() {
+				w.WriteHeader(http.StatusPreconditionFailed)
+				return
+			}
+		}
+		if err := s.Service.DeleteVariable(id); err != nil {
+			writeError(w, err)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
 func (s *Server) listJobs() http.HandlerFunc {
 	type Response struct {
 		Items []*domain.JobItem `json:"items"`

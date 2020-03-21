@@ -15,6 +15,12 @@ func (s *Server) Routes() http.Handler {
 	r.Handle("PATCH", "/collections/:id", s.patchCollection())
 	r.Handle("DELETE", "/collections/:id", s.deleteCollection())
 
+	r.HandlerFunc("GET", "/variables", ETagHandler(s.listVariables()))
+	r.HandlerFunc("POST", "/variables", s.createVariable())
+	r.Handle("GET", "/variables/:id", s.retrieveVariable())
+	r.Handle("PATCH", "/variables/:id", s.patchVariable())
+	r.Handle("DELETE", "/variables/:id", s.deleteVariable())
+
 	r.HandlerFunc("GET", "/jobs", ETagHandler(s.listJobs()))
 	r.HandlerFunc("POST", "/jobs", s.createJob())
 	r.Handle("GET", "/jobs/:id", s.retrieveJob())
