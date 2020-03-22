@@ -69,6 +69,21 @@ export default {
     return go('DELETE', `collections/${id}`);
   },
 
+  listVariables: (collectionId) =>
+    go('GET',
+       collectionId ? `/variables?collectionId=${collectionId}` : '/variables'),
+  retrieveVariable: (id) => go('GET', `/variables/${id}`),
+  saveVariable: (c) => {
+    if (c.id) {
+      return go('PATCH', `/variables/${c.id}`, c);
+    }
+
+    return go('POST', '/variables', c);
+  },
+  deleteVariable: (id, etag) => {
+    return go('DELETE', `/variables/${id}`, etag);
+  },
+
   listJobs: () => go('GET', '/jobs'),
   retrieveJob: (id) =>
     go('GET', `/jobs/${id}`).then((data) => {

@@ -8,7 +8,7 @@ describe('shared', () => {
     const w = shallow(<Header />);
 
     expect(w.find('NavLink').map((l) => l.props().to))
-        .toEqual(['/collections', '/jobs']);
+        .toEqual(['/collections', '/variables', '/jobs']);
   });
 
   it('renders layout', () => {

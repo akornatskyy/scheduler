@@ -9,6 +9,9 @@ export const Header = () => (
       <Nav.Link as={Link} to="/collections">
         Collections
       </Nav.Link>
+      <Nav.Link as={Link} to="/variables">
+        Variables
+      </Nav.Link>
       <Nav.Link as={Link} to="/jobs">
         Jobs
       </Nav.Link>
@@ -67,4 +70,18 @@ export const FieldError = ({message}) => {
       {message}
     </p>
   );
+};
+
+export const Tip = ({children}) => (
+  <small className="d-block mb-3 text-muted">
+    <i className="fa fa-bullhorn mr-1" />
+    <strong>Tip!</strong> {children}
+  </small>
+);
+
+export const groupBy = function(items, key) {
+  return items.reduce((result, value) => {
+    (result[value[key]] = result[value[key]] || []).push(value);
+    return result;
+  }, {});
 };
