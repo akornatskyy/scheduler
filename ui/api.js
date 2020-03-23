@@ -6,7 +6,10 @@ const thenHandle = (r, resolve, reject) => {
   if (r.status === 201 || r.status === 204) {
     return resolve();
   } else if (r.status >= 200 && r.status < 300) {
-    return r.json().then(resolve);
+    return r.json().then((d) => {
+      d.etag = r.headers.get('etag');
+      resolve(d);
+    });
   } else if (r.status === 400) {
     return r.json().then((data) => {
       const errors = {};
@@ -30,7 +33,16 @@ const go = (method, path, data) => {
     }
   };
   switch (method) {
+    case 'DELETE':
+      options.headers['If-Match'] = data;
+      break;
     case 'PATCH':
+      options.headers['If-Match'] = data.etag;
+      data = {...data};
+      delete data.id;
+      delete data.etag;
+      delete data.updated;
+    // eslint-disable-next-line no-fallthrough
     case 'POST':
       options.headers['Content-Type'] = 'application/json';
       options.body = JSON.stringify(data);
@@ -57,7 +69,7 @@ const defaultRetryPolicy = {
 
 export default {
   listCollections: () => go('GET', '/collections'),
-  retrieveCollection: (id) => go('GET', `collections/${id}`),
+  retrieveCollection: (id) => go('GET', `/collections/${id}`),
   saveCollection: (c) => {
     if (c.id) {
       return go('PATCH', `/collections/${c.id}`, c);
@@ -65,8 +77,8 @@ export default {
 
     return go('POST', '/collections', c);
   },
-  deleteCollection: (id) => {
-    return go('DELETE', `collections/${id}`);
+  deleteCollection: (id, etag) => {
+    return go('DELETE', `/collections/${id}`, etag);
   },
 
   listVariables: (collectionId) =>
@@ -104,11 +116,11 @@ export default {
 
     return go('POST', '/jobs', j);
   },
-  deleteJob: (id) => go('DELETE', `/jobs/${id}`),
+  deleteJob: (id, etag) => go('DELETE', `/jobs/${id}`, etag),
 
   retrieveJobStatus: (id) => go('GET', `/jobs/${id}/status`),
   patchJobStatus: (id, j) => go('PATCH', `/jobs/${id}/status`, j),
 
   listJobHistory: (id) => go('GET', `/jobs/${id}/history`),
-  deleteJobHistory: (id) => go('DELETE', `/jobs/${id}/history`)
+  deleteJobHistory: (id, etag) => go('DELETE', `/jobs/${id}/history`, etag)
 };
