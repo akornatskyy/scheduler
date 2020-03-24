@@ -17,7 +17,7 @@ func (r *sqlRepository) ListJobs(collectionID string) ([]*domain.JobItem, error)
 	defer rows.Close()
 	for rows.Next() {
 		j := &domain.JobItem{}
-		err := rows.Scan(&j.ID, &j.Name, &j.State, &j.Schedule)
+		err := rows.Scan(&j.ID, &j.CollectionID, &j.Name, &j.State, &j.Schedule)
 		if err != nil {
 			return nil, err
 		}

@@ -154,6 +154,8 @@ paths:
       operationId: ListJobs
       tags:
         - jobs
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
       responses:
         '200':
           description: ok
@@ -416,6 +418,8 @@ components:
         id:
           type: string
           readOnly: true
+        collectionId:
+          type: string
         name:
           type: string
           description: unique job name
@@ -439,8 +443,6 @@ components:
           type: string
           format: date-time
           readOnly: true
-        collectionId:
-          type: string
         action:
           $ref: '#/components/schemas/Action'
       required:
@@ -579,6 +581,12 @@ components:
       in: path
       name: id
       required: true
+      schema:
+        type: string
+    collectionId:
+      in: query
+      name: collectionId
+      required: false
       schema:
         type: string
     before:

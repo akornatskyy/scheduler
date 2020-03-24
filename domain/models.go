@@ -47,10 +47,11 @@ type (
 	}
 
 	JobItem struct {
-		ID       string   `json:"id"`
-		Name     string   `json:"name"`
-		State    JobState `json:"state"`
-		Schedule string   `json:"schedule"`
+		ID           string   `json:"id"`
+		Name         string   `json:"name"`
+		CollectionID string   `json:"collectionId"`
+		State        JobState `json:"state"`
+		Schedule     string   `json:"schedule"`
 	}
 
 	JobDefinition struct {

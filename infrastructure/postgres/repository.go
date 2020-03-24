@@ -107,7 +107,7 @@ func NewRepository(dsn string) domain.Repository {
 
 		selectJobs: sqlx.MustPrepare(db, `
 			SELECT
-				id, name, state_id, schedule
+				id, collection_id, name, state_id, schedule
 			FROM job
 			WHERE $1 = '' OR collection_id = $1
 			ORDER BY name`),

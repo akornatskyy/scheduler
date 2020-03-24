@@ -209,7 +209,8 @@ func (s *Server) listJobs() http.HandlerFunc {
 		Items []*domain.JobItem `json:"items"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		items, err := s.Service.ListJobs()
+		collectionID := r.URL.Query().Get("collectionId")
+		items, err := s.Service.ListJobs(collectionID)
 		if err != nil {
 			writeError(w, err)
 			return
