@@ -31,6 +31,14 @@ export default class Collections extends React.Component {
               <tr key={i.id}>
                 <td>
                   <Link to={`${url}/${i.id}`}>{i.name}</Link>
+                  <Link to={`variables?collectionId=${i.id}`}
+                    className="badge badge-light mx-1">
+                    variables
+                  </Link>
+                  <Link to={`jobs?collectionId=${i.id}`}
+                    className="badge badge-light">
+                    jobs
+                  </Link>
                 </td>
                 <td>{i.state}</td>
               </tr>

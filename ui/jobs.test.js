@@ -9,14 +9,16 @@ jest.mock('./api');
 describe('jobs renders', () => {
   const props = {
     match: {url: '/jobs'},
+    location: {}
   };
 
   it('empty list', () => {
+    api.listCollections.mockImplementation(resolvePromise({items: []}));
     api.listJobs.mockImplementation(resolvePromise({items: []}));
 
     const p = new Page(shallow(<Jobs {...props} />));
 
-    expect(api.listJobs).toBeCalledWith();
+    expect(api.listJobs).toBeCalledWith(null);
     expect(p.data()).toEqual({
       title: 'Jobs',
       items: []
@@ -44,9 +46,17 @@ describe('jobs renders', () => {
   });
 
   it('items', () => {
+    api.listCollections.mockImplementation(resolvePromise({
+      items: [{
+        id: '65ada2f9',
+        name: 'My App #1',
+        state: 'enabled'
+      }]
+    }));
     api.listJobs.mockImplementation(resolvePromise({
       items: [{
         id: '7ce1f17e',
+        collectionId: '65ada2f9',
         name: 'My Task #1',
         schedule: '@every 15s',
         state: 'disabled'
@@ -55,7 +65,7 @@ describe('jobs renders', () => {
 
     const p = new Page(shallow(<Jobs {...props} />));
 
-    expect(api.listJobs).toBeCalledWith();
+    expect(api.listJobs).toBeCalledWith(null);
     expect(p.data()).toEqual({
       title: 'Jobs',
       items: [
@@ -82,15 +92,17 @@ class Page {
   data() {
     return {
       title: this.w.find('Layout').props().title,
-      items: this.w.find('tbody tr').map((r) => {
-        const link = r.find('Link');
-        return {
-          to: link.props().to,
-          name: link.text(),
-          schedule: r.find('td ~ td').first().text(),
-          state: r.find('td ~ td ~ td').text()
-        };
-      }),
+      items: this.w.find('tbody tr')
+          .filterWhere((r) => r.exists('td ~ td'))
+          .map((r) => {
+            const link = r.find('Link').first();
+            return {
+              to: link.props().to,
+              name: link.text(),
+              schedule: r.find('td ~ td').first().text(),
+              state: r.find('td ~ td ~ td').text()
+            };
+          }),
     };
   }
 

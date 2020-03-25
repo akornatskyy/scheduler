@@ -96,7 +96,8 @@ export default {
     return go('DELETE', `/variables/${id}`, etag);
   },
 
-  listJobs: () => go('GET', '/jobs'),
+  listJobs: (collectionId) =>
+    go('GET', collectionId ? `/jobs?collectionId=${collectionId}` : '/jobs'),
   retrieveJob: (id) =>
     go('GET', `/jobs/${id}`).then((data) => {
       const a = data.action;

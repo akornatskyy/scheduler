@@ -81,7 +81,7 @@ class Page {
     return {
       title: this.w.find('Layout').props().title,
       items: this.w.find('tbody tr').map((r) => {
-        const link = r.find('Link');
+        const link = r.find('Link').first();
         return {
           to: link.props().to,
           name: link.text(),

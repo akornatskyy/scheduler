@@ -36,6 +36,10 @@ export default class Variables extends React.Component {
           <tr key={c.id}>
             <td colSpan="2">
               <Link to={`/collections/${c.id}`}>{c.name}</Link>
+              <Link to={`jobs?collectionId=${c.id}`}
+                className="badge badge-light">
+                jobs
+              </Link>
             </td>
           </tr>
       );
