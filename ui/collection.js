@@ -1,8 +1,9 @@
 import React from 'react';
+import {Link} from 'react-router-dom';
 import {Form, Button} from 'react-bootstrap';
 
 import api from './api';
-import {Layout, FieldError} from './shared';
+import {Layout, FieldError, Tip} from './shared';
 
 export default class Collection extends React.Component {
   state = {
@@ -42,15 +43,16 @@ export default class Collection extends React.Component {
   };
 
   handleDelete = () => {
-    const {id} = this.state.item;
+    const {id, etag} = this.state.item;
     this.setState({pending: true});
-    api.deleteCollection(id)
+    api.deleteCollection(id, etag)
         .then(() => this.props.history.goBack())
         .catch((errors) => this.setState({errors: errors, pending: false}));
   };
 
   render() {
     const {item, pending, errors} = this.state;
+    const {url} = this.props.match;
     return (
       <Layout title={`Collection ${item.name}`} errors={errors}>
         <Form autoComplete="off" onSubmit={this.handleSave}>
@@ -89,9 +91,34 @@ export default class Collection extends React.Component {
               onChange={this.handleChange} />
             <FieldError message={errors.state} />
           </Form.Group>
+          <Tip>
+            If you disable a collection, all related jobs will be inherently
+            inactive as well.
+          </Tip>
           <Button type="submit" disabled={pending}>
             Save
           </Button>
+          {item.id && (
+            <>
+              <Button
+                as={Link}
+                to={`/variables?collectionId=${item.id}`}
+                variant="outline-secondary"
+                disabled={pending}
+                className="ml-2">
+                  Variables
+              </Button>
+              <Button
+                as={Link}
+                to={`/jobs?collectionId=${item.id}`}
+                variant="outline-secondary"
+                disabled={pending}
+                className="ml-2">
+                  Jobs
+              </Button>
+            </>
+          )}
+
           {item.id && (
             <Button
               onClick={this.handleDelete}
