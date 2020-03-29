@@ -39,7 +39,8 @@ export default class JobHistory extends React.Component {
 
   handleRun = () => {
     const {id} = this.props.match.params;
-    api.patchJobStatus(id, {running: true})
+    const {etag} = this.state.status;
+    api.patchJobStatus(id, {running: true, etag: etag})
         .then(() => {
           api.retrieveJobStatus(id)
               .then((data) => this.setState({status: data}))
@@ -50,7 +51,8 @@ export default class JobHistory extends React.Component {
 
   handleDelete = () => {
     const {id} = this.props.match.params;
-    api.deleteJobHistory(id)
+    const {etag} = this.state.status;
+    api.deleteJobHistory(id, etag)
         .then(() => this.props.history.goBack())
         .catch((errors) => this.setState({errors: errors}));
   };
