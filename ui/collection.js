@@ -52,7 +52,6 @@ export default class Collection extends React.Component {
 
   render() {
     const {item, pending, errors} = this.state;
-    const {url} = this.props.match;
     return (
       <Layout title={`Collection ${item.name}`} errors={errors}>
         <Form autoComplete="off" onSubmit={this.handleSave}>

@@ -140,14 +140,15 @@ describe('collection', () => {
     props.match.params.id = '65ada2f9';
     api.retrieveCollection.mockImplementation(resolvePromise({
       id: '65ada2f9',
-      name: 'My App #1'
+      name: 'My App #1',
+      etag: '"1n9er1hz749r"'
     }));
     api.deleteCollection.mockImplementation(resolvePromise());
 
     const p = new Page(shallow(<Collection {...props} />));
     p.delete();
 
-    expect(api.deleteCollection).toBeCalledWith('65ada2f9');
+    expect(api.deleteCollection).toBeCalledWith('65ada2f9', '"1n9er1hz749r"');
     expect(props.history.goBack.mock.calls.length).toBe(1);
     expect(p.data()).toEqual({
       title: 'Collection My App #1',
