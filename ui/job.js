@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import {Form, Button, Col} from 'react-bootstrap';
 
 import api from './api';
-import {Layout, FieldError} from './shared';
+import {Layout, FieldError, Tip} from './shared';
 
 const httpMethodsWithBody = ['POST', 'PUT', 'PATCH'];
 
@@ -322,6 +322,10 @@ export default class Job extends React.Component {
             value={action.retryPolicy}
             errors={errors}
             onChange={this.handlePolicyChange} />
+          <Tip>
+            You can use variables for URI, header value
+            and body, e.g. {'{{.Host}}, {{.Token}}'}, etc.
+          </Tip>
           <Button type="submit" disabled={pending}>
             Save
           </Button>
