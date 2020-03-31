@@ -19,7 +19,7 @@ WORKDIR /src
 RUN set -ex \
     \
     && npm i \
-    && NODE_ENV=prod npm run build
+    && NODE_ENV=production npm run build
 
 FROM scratch
 
@@ -27,7 +27,10 @@ LABEL maintainer="Andriy Kornatskyy <andriy.kornatskyy@live.com>"
 
 COPY --from=g /src/scheduler /
 COPY --from=n /src/static /static
+COPY --from=n /etc/passwd /etc/passwd
 
+USER nobody
+STOPSIGNAL SIGINT
 EXPOSE 8080
 
 CMD ["/scheduler"]
