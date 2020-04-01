@@ -1,0 +1,25 @@
+{
+  "job": {
+    "id": "8a332e22-5b6d-4173-a61f-bc0863fb60bb",
+    "name": "my-task",
+    "collectionId": "f493d75f-3239-4136-ad39-19bff1d409ee",
+    "schedule": "@every 10s",
+    "action": {
+      "type": "HTTP",
+      "request": {
+        "uri": "ftp://localhost:33"
+      }
+    }
+  },
+  "err": {
+    "errors": [
+      {
+        "domain": "scheduler",
+        "type": "field",
+        "location": "uri",
+        "reason": "pattern",
+        "message": "Must begin with http or https."
+      }
+    ]
+  }
+}

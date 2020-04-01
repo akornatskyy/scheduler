@@ -1,0 +1,24 @@
+{
+  "collection": {
+    "id": "1234567890123456789012345678901234567",
+    "name": ""
+  },
+  "err": {
+    "errors": [
+      {
+        "domain": "scheduler",
+        "location": "id",
+        "message": "Exceeds maximum length of 36.",
+        "reason": "max length",
+        "type": "field"
+      },
+      {
+        "domain": "scheduler",
+        "location": "name",
+        "message": "Required field cannot be left blank.",
+        "reason": "required",
+        "type": "field"
+      }
+    ]
+  }
+}

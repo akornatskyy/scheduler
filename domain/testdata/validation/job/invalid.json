@@ -1,0 +1,37 @@
+{
+  "job": {
+    "schedule": "123456789"
+  },
+  "err": {
+    "errors": [
+      {
+        "domain": "scheduler",
+        "type": "field",
+        "location": "name",
+        "reason": "required",
+        "message": "Required field cannot be left blank."
+      },
+      {
+        "domain": "scheduler",
+        "type": "field",
+        "location": "collectionId",
+        "reason": "required",
+        "message": "Required field cannot be left blank."
+      },
+      {
+        "domain": "scheduler",
+        "type": "field",
+        "location": "schedule",
+        "reason": "pattern",
+        "message": "Unrecognized format: expected exactly 5 fields, found 1: [123456789]."
+      },
+      {
+        "domain": "scheduler",
+        "type": "field",
+        "location": "action",
+        "reason": "required",
+        "message": "Required object cannot be null."
+      }
+    ]
+  }
+}
