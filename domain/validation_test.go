@@ -16,7 +16,7 @@ func TestParseBefore(t *testing.T) {
 
 	actual, _ := ParseBefore(sample)
 
-	if actual != expected {
+	if actual.Format(time.RFC3339) != sample {
 		t.Errorf("ParseBefore() got: %s, expected: %s", actual, expected)
 	}
 }
