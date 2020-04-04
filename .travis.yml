@@ -11,11 +11,11 @@ matrix:
         - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci
 
     - language: node_js
-      node_js: "13"
+      node_js: "14"
       install:
         - npm i
       env:
-        - NODE_ENV=prod
+        - NODE_ENV=production
       script:
         - npm test -- --coverage
         - npm run lint
