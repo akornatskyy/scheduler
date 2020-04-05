@@ -14,9 +14,7 @@ matrix:
       node_js: "14"
       install:
         - npm i
-      env:
-        - NODE_ENV=production
       script:
         - npm test -- --coverage
         - npm run lint
-        - npm run build
+        - NODE_ENV=production npm run build
