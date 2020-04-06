@@ -21,6 +21,7 @@ type (
 	Duration         time.Duration
 	CollectionState  int
 	JobState         int
+	JobStatusCode    int
 	JobHistoryStatus int
 
 	CollectionItem struct {

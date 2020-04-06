@@ -18,6 +18,13 @@ const (
 )
 
 const (
+	JobStatusReady JobStatusCode = iota + 1
+	JobStatusRunning
+	JobStatusPassing
+	JobStatusFailing
+)
+
+const (
 	JobHistoryStatusCompleted JobHistoryStatus = iota + 1
 	JobHistoryStatusFailed
 )
@@ -44,6 +51,13 @@ var (
 	jobStateToID = map[string]JobState{
 		"enabled":  JobStateEnabled,
 		"disabled": JobStateDisabled,
+	}
+
+	jobStatusToString = map[JobStatusCode]string{
+		JobStatusReady:   "ready",
+		JobStatusRunning: "running",
+		JobStatusPassing: "passing",
+		JobStatusFailing: "failing",
 	}
 
 	jobHistoryStatusToString = map[JobHistoryStatus]string{
@@ -124,6 +138,19 @@ func (s *JobState) UnmarshalJSON(b []byte) error {
 		return errInvalidState
 	}
 	*s = id
+	return nil
+}
+
+// MarshalJSON marshals the enum as a quoted json string
+func (s JobStatusCode) MarshalJSON() ([]byte, error) {
+	buffer := bytes.NewBufferString(`"`)
+	buffer.WriteString(jobStatusToString[s])
+	buffer.WriteString(`"`)
+	return buffer.Bytes(), nil
+}
+
+// UnmarshalJSON unmashals a quoted json string to the enum value
+func (s *JobStatusCode) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
