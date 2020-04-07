@@ -57,9 +57,8 @@ type (
 
 	JobDefinition struct {
 		JobItem
-		Updated      time.Time `json:"updated"`
-		CollectionID string    `json:"collectionId"`
-		Action       *Action   `json:"action"`
+		Updated time.Time `json:"updated"`
+		Action  *Action   `json:"action"`
 	}
 
 	Action struct {
