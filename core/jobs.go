@@ -6,13 +6,16 @@ import (
 	"github.com/akornatskyy/scheduler/domain"
 )
 
-func (s *Service) ListJobs(collectionId string) ([]*domain.JobItem, error) {
+func (s *Service) ListJobs(collectionId string, fields []string) ([]*domain.JobItem, error) {
 	if collectionId != "" {
 		if err := domain.ValidateID(collectionId); err != nil {
 			return nil, err
 		}
 	}
-	return s.Repository.ListJobs(collectionId)
+	if err := domain.ValidateJobListFields(fields); err != nil {
+		return nil, err
+	}
+	return s.Repository.ListJobs(collectionId, fields)
 }
 
 func (s *Service) CreateJob(job *domain.JobDefinition) error {

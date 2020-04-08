@@ -8,7 +8,7 @@ import (
 	"github.com/akornatskyy/scheduler/domain"
 )
 
-func (r *sqlRepository) ListJobs(collectionID string) ([]*domain.JobItem, error) {
+func (r *sqlRepository) ListJobs(collectionID string, fields []string) ([]*domain.JobItem, error) {
 	items := make([]*domain.JobItem, 0, 10)
 	rows, err := r.selectJobs.Query(collectionID)
 	if err != nil {

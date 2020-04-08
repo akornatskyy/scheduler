@@ -15,7 +15,7 @@ func (s *Service) scheduleJobs() error {
 	added := make(map[string]bool)
 	n := 0
 	for _, c := range collections {
-		jobs, err := s.Repository.ListJobs(c.ID)
+		jobs, err := s.Repository.ListJobs(c.ID, []string{})
 		if err != nil {
 			return err
 		}

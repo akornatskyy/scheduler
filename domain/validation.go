@@ -94,6 +94,29 @@ func ValidateVariable(v *Variable) error {
 	return e.OrNil()
 }
 
+var allowedFields = map[string]bool{
+	"status":    true,
+}
+
+func ValidateJobListFields(fields []string) error {
+	e := &errorstate.ErrorState{
+		Domain: domain,
+	}
+	for _, field := range fields {
+		if !allowedFields[field] {
+			e.Add(&errorstate.Detail{
+				Domain:   domain,
+				Type:     "field",
+				Location: "fields",
+				Reason:   "unknown",
+				Message:  fmt.Sprintf("Unrecognized field: %s.", field),
+			})
+			break
+		}
+	}
+	return e.OrNil()
+}
+
 func ValidateJobDefinition(j *JobDefinition) error {
 	e := &errorstate.ErrorState{
 		Domain: domain,

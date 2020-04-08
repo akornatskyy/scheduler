@@ -3,6 +3,7 @@ package http
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/akornatskyy/goext/httpjson"
@@ -210,7 +211,12 @@ func (s *Server) listJobs() http.HandlerFunc {
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		collectionID := r.URL.Query().Get("collectionId")
-		items, err := s.Service.ListJobs(collectionID)
+		fields := strings.FieldsFunc(
+			r.URL.Query().Get("fields"),
+			func(c rune) bool {
+				return c == ','
+			})
+		items, err := s.Service.ListJobs(collectionID, fields)
 		if err != nil {
 			writeError(w, err)
 			return

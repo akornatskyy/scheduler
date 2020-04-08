@@ -48,11 +48,12 @@ type (
 	}
 
 	JobItem struct {
-		ID           string   `json:"id"`
-		Name         string   `json:"name"`
-		CollectionID string   `json:"collectionId"`
-		State        JobState `json:"state"`
-		Schedule     string   `json:"schedule"`
+		ID           string         `json:"id"`
+		Name         string         `json:"name"`
+		CollectionID string         `json:"collectionId"`
+		State        JobState       `json:"state"`
+		Schedule     string         `json:"schedule"`
+		Status       *JobStatusCode `json:"status,omitempty"`
 	}
 
 	JobDefinition struct {

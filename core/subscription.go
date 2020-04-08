@@ -47,7 +47,7 @@ func (s *Service) onCollectionUpdate(id string) error {
 	if err != nil {
 		return err
 	}
-	jobs, err := s.Repository.ListJobs(c.ID)
+	jobs, err := s.Repository.ListJobs(c.ID, []string{})
 	if err != nil {
 		return err
 	}

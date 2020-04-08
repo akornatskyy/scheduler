@@ -21,7 +21,7 @@ type Repository interface {
 	UpdateVariable(v *Variable) error
 	DeleteVariable(id string) error
 
-	ListJobs(collectionID string) ([]*JobItem, error)
+	ListJobs(collectionID string, fields []string) ([]*JobItem, error)
 	CreateJob(j *JobDefinition) error
 	RetrieveJob(id string) (*JobDefinition, error)
 	UpdateJob(j *JobDefinition) error

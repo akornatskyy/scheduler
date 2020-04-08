@@ -213,7 +213,7 @@ func (r *mockRepository) DeleteVariable(id string) error {
 	return r.err("delete-variable")
 }
 
-func (r *mockRepository) ListJobs(collectionID string) ([]*domain.JobItem, error) {
+func (r *mockRepository) ListJobs(collectionID string, fields []string) ([]*domain.JobItem, error) {
 	return r.Jobs, r.err("list-jobs")
 }
 
