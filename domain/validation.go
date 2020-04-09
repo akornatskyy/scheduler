@@ -95,7 +95,7 @@ func ValidateVariable(v *Variable) error {
 }
 
 var allowedFields = map[string]bool{
-	"status":    true,
+	"status": true,
 }
 
 func ValidateJobListFields(fields []string) error {
