@@ -107,8 +107,28 @@ func NewRepository(dsn string) domain.Repository {
 
 		selectJobs: sqlx.MustPrepare(db, `
 			SELECT
-				id, collection_id, name, state_id, schedule
-			FROM job
+				j.id, collection_id, name, state_id, schedule,
+				CASE WHEN 'status' = ANY($2) THEN (
+					SELECT
+						CASE WHEN js.running THEN 2
+						ELSE COALESCE((
+							SELECT
+								CASE jh.status_id
+									WHEN 1 THEN 3 -- passing
+									ELSE 4 -- failing
+								END
+							FROM job_history jh
+							WHERE jh.job_id = j.id
+								AND started > (now() at time zone 'utc' - '1d'::interval)
+							ORDER BY jh.finished DESC
+							LIMIT 1
+						), 1) -- ready
+						END AS status
+						FROM job_status js
+						WHERE js.id = j.id
+				)
+				END AS status
+			FROM job j
 			WHERE $1 = '' OR collection_id = $1
 			ORDER BY name`),
 		insertJob: sqlx.MustPrepare(db, `

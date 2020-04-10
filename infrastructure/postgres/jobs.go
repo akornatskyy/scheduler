@@ -6,18 +6,21 @@ import (
 	"time"
 
 	"github.com/akornatskyy/scheduler/domain"
+	"github.com/lib/pq"
 )
 
 func (r *sqlRepository) ListJobs(collectionID string, fields []string) ([]*domain.JobItem, error) {
 	items := make([]*domain.JobItem, 0, 10)
-	rows, err := r.selectJobs.Query(collectionID)
+	rows, err := r.selectJobs.Query(collectionID, pq.Array(fields))
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 	for rows.Next() {
 		j := &domain.JobItem{}
-		err := rows.Scan(&j.ID, &j.CollectionID, &j.Name, &j.State, &j.Schedule)
+		err := rows.Scan(
+			&j.ID, &j.CollectionID, &j.Name, &j.State, &j.Schedule,
+			&j.Status)
 		if err != nil {
 			return nil, err
 		}
