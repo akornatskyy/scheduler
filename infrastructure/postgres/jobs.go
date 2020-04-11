@@ -20,7 +20,7 @@ func (r *sqlRepository) ListJobs(collectionID string, fields []string) ([]*domai
 		j := &domain.JobItem{}
 		err := rows.Scan(
 			&j.ID, &j.CollectionID, &j.Name, &j.State, &j.Schedule,
-			&j.Status)
+			&j.Status, &j.ErrorRate)
 		if err != nil {
 			return nil, err
 		}

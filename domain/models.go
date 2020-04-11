@@ -54,6 +54,7 @@ type (
 		State        JobState       `json:"state"`
 		Schedule     string         `json:"schedule"`
 		Status       *JobStatusCode `json:"status,omitempty"`
+		ErrorRate    *float32       `json:"errorRate,omitempty"`
 	}
 
 	JobDefinition struct {

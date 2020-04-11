@@ -124,10 +124,19 @@ func NewRepository(dsn string) domain.Repository {
 							LIMIT 1
 						), 1) -- ready
 						END AS status
-						FROM job_status js
-						WHERE js.id = j.id
+					FROM job_status js
+					WHERE js.id = j.id
 				)
-				END AS status
+				END AS status,
+				CASE WHEN 'errorRate' = ANY($2) THEN (
+					SELECT
+						count(CASE WHEN status_id = 2 THEN true END)::float
+							/ CASE WHEN count(*) = 0 THEN 1 ELSE count(*) END
+					FROM job_history jh
+					WHERE jh.job_id = j.id
+						AND started > (now() at time zone 'utc' - '1d'::interval)
+				)
+				END AS error_rate
 			FROM job j
 			WHERE $1 = '' OR collection_id = $1
 			ORDER BY name`),
