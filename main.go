@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	log.Printf("starting...")
+	log.Printf("starting scheduler version %s...", domain.Version)
 
 	dsn := os.Getenv("DSN")
 	service := &core.Service{
