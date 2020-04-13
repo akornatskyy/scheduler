@@ -97,7 +97,9 @@ export default {
   },
 
   listJobs: (collectionId) =>
-    go('GET', collectionId ? `/jobs?collectionId=${collectionId}` : '/jobs'),
+    go('GET', collectionId ?
+    `/jobs?fields=status,errorRate&collectionId=${collectionId}` :
+    '/jobs?fields=status,errorRate'),
   retrieveJob: (id) =>
     go('GET', `/jobs/${id}`).then((data) => {
       const a = data.action;
