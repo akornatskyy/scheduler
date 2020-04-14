@@ -9,11 +9,20 @@ export default class Jobs extends React.Component {
   state = {jobs: [], collections: [], errors: {}};
 
   componentDidMount() {
-    const collectionId = new URLSearchParams(this.props.location.search)
-        .get('collectionId');
     api.listCollections()
         .then((data) => this.setState({collections: data.items}))
         .catch((errors) => this.setState({errors: errors}));
+    this.refresh();
+    this.timer = setInterval(() => this.refresh(), 10000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+
+  refresh() {
+    const collectionId = new URLSearchParams(this.props.location.search)
+        .get('collectionId');
     api.listJobs(collectionId)
         .then((data) => this.setState({jobs: data.items, errors: {}}))
         .catch((errors) => this.setState({errors: errors}));
@@ -51,10 +60,13 @@ export default class Jobs extends React.Component {
               {i.name}
             </Link>
           </td>
-          <td className={i.state === 'disabled'?'text-muted':''}>
+          <td className={i.state === 'disabled'?'text-muted':''}
+            title={i.state}>
             {i.schedule}
           </td>
-          <td>{i.state}</td>
+          <td>
+            <JobStatus job={i}/>
+          </td>
         </tr>
       )));
     });
@@ -65,7 +77,7 @@ export default class Jobs extends React.Component {
             <tr>
               <th>Name</th>
               <th className="w-25">Schedule</th>
-              <th className="w-25">State</th>
+              <th className="w-25">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -79,3 +91,30 @@ export default class Jobs extends React.Component {
     );
   }
 }
+
+const JobStatus = ({job}) => {
+  let style = 'secondary';
+  let text = job.status;
+  switch (job.status) {
+    case 'ready':
+      style = 'warning';
+      break;
+    case 'passing':
+      style = 'success';
+      text = `${Math.round((1-(job.errorRate || 0)) * 100)}% ${text}`;
+      break;
+    case 'failing':
+      style = 'danger';
+      text = `${Math.round((job.errorRate || 0) * 100)}% ${text}`;
+      break;
+    case 'running':
+      style = 'info';
+      break;
+  }
+  if (job.state === 'disabled') {
+    style = 'secondary font-weight-normal';
+  }
+  return (
+    <span className={`badge badge-${style}`}>{text}</span>
+  );
+};

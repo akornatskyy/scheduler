@@ -59,7 +59,9 @@ describe('jobs renders', () => {
         collectionId: '65ada2f9',
         name: 'My Task #1',
         schedule: '@every 15s',
-        state: 'disabled'
+        state: 'disabled',
+        status: 'passing',
+        errorRate: 0.2
       }]
     }));
 
@@ -73,7 +75,8 @@ describe('jobs renders', () => {
           to: '/jobs/7ce1f17e',
           name: 'My Task #1',
           schedule: '@every 15s',
-          state: 'disabled'
+          state: 'disabled',
+          status: '80% passing'
         }
       ]
     });
@@ -100,7 +103,9 @@ class Page {
               to: link.props().to,
               name: link.text(),
               schedule: r.find('td ~ td').first().text(),
-              state: r.find('td ~ td ~ td').text()
+              state: r.find('td ~ td').first().props().title,
+              status: r.find('td ~ td ~ td > JobStatus')
+                  .dive().find('span').text()
             };
           }),
     };
