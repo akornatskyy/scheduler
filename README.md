@@ -18,11 +18,15 @@ please!
 
 ## Screenshots
 
-| Collections Page                                             | Jobs Page                                                    |
+| Collections Page                                             | Collection Details Page                                      |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| ![Screenshot of collections screen](./misc/docs/img/collections.png) | ![Screenshot of jobs screen](./misc/docs/img/jobs.png)       |
-| Job Page                                                     | Job History Page                                             |
-| ![Screenshot of job screen](./misc/docs/img/job.png)         | ![Screenshot of job history screen](./misc/docs/img/job-history.png) |
+| ![Screenshot of collections screen](./misc/docs/img/collections.png) | ![Screenshot of collection details screen](./misc/docs/img/collection.png) |
+| **Variables Page**                                           | **Variable Details Page**                                    |
+| ![Screenshot of variables screen](./misc/docs/img/variables.png) | ![Screenshot of variable details screen](./misc/docs/img/variable.png) |
+| **Jobs Page**                                                | **Job Details Page**                                         |
+| ![Screenshot of jobs screen](./misc/docs/img/jobs.png)       | ![Screenshot of job details screen](./misc/docs/img/job.png) |
+| **General Error Page**                                       | **Job History Page**                                         |
+| ![Screenshot of general error screen](./misc/docs/img/general-error.png) | ![Screenshot of job history screen](./misc/docs/img/job-history.png) |
 
 ## Service Architecture
 
