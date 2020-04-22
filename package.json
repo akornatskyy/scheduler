@@ -53,7 +53,7 @@
     "jest": "^25.3.0",
     "react-hot-loader": "^4.12.20",
     "uglifyjs-webpack-plugin": "^2.2.0",
-    "webpack": "^4.42.1",
+    "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
   }
