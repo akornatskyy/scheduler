@@ -50,7 +50,7 @@
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-react": "^7.20.5",
     "html-webpack-plugin": "^4.3.0",
-    "jest": "^26.2.2",
+    "jest": "^26.3.0",
     "react-hot-loader": "^4.12.21",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.44.1",
