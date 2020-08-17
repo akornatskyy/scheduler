@@ -1,7 +1,7 @@
 matrix:
   include:
     - language: go
-      go: "1.14"
+      go: "1.15"
       before_install:
         - go get github.com/mattn/goveralls
       script:
