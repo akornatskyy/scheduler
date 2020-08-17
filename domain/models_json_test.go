@@ -33,7 +33,7 @@ func TestDurationUnmarshalJSON(t *testing.T) {
 	}{
 		{`10`, 0, "invalid duration"},
 		{`10s`, 0, "invalid character 's' after top-level value"},
-		{`"X"`, 0, "time: invalid duration X"},
+		{`"X"`, 0, "time: invalid duration \"X\""},
 		{`"10s"`, 10 * time.Second, ""},
 		{`"1h45m3s"`, 6303 * time.Second, ""},
 	}
