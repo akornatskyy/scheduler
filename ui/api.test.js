@@ -7,7 +7,7 @@ describe('api', () => {
   });
 
   it('unexpected error', () => {
-    global.fetch = jest.fn().mockImplementation(rejectPromise({
+    global.fetch = jest.fn(rejectPromise({
       message: 'unexpected error'
     }));
 
@@ -24,7 +24,7 @@ describe('api', () => {
   });
 
   it('not found', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 404,
       statusText: 'Not Found'
     }));
@@ -42,7 +42,7 @@ describe('api', () => {
   });
 
   it('bad request', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 400,
       json: () => {
         return {then: (f) => f({errors: [
@@ -66,7 +66,7 @@ describe('api', () => {
   });
 
   it('list collections', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
       json: () => {
@@ -88,7 +88,7 @@ describe('api', () => {
   });
 
   it('retrieve collection', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
       json: () => {
@@ -110,7 +110,7 @@ describe('api', () => {
   });
 
   it('save collection (post)', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 201
     }));
 
@@ -129,7 +129,7 @@ describe('api', () => {
   });
 
   it('save collection (patch)', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 204
     }));
 
@@ -152,7 +152,7 @@ describe('api', () => {
   });
 
   it('delete collection', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 204
     }));
 
@@ -168,7 +168,7 @@ describe('api', () => {
   });
 
   it('list jobs', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
       json: () => {
@@ -190,7 +190,7 @@ describe('api', () => {
   });
 
   it('retrieve job', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
       json: () => {
@@ -237,7 +237,7 @@ describe('api', () => {
   });
 
   it('retrieve job (complement with default policy)', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
       json: () => {
@@ -282,7 +282,7 @@ describe('api', () => {
   });
 
   it('save job (post)', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 201
     }));
 
@@ -301,7 +301,7 @@ describe('api', () => {
   });
 
   it('save job (patch)', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 204
     }));
 
@@ -324,7 +324,7 @@ describe('api', () => {
   });
 
   it('delete job', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 204
     }));
 
@@ -340,7 +340,7 @@ describe('api', () => {
   });
 
   it('retrieve job status', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
       json: () => {
@@ -364,7 +364,7 @@ describe('api', () => {
   });
 
   it('patch job status', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 204
     }));
 
@@ -387,7 +387,7 @@ describe('api', () => {
   });
 
   it('list job history', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
       json: () => {
@@ -411,7 +411,7 @@ describe('api', () => {
   });
 
   it('delete job history', () => {
-    global.fetch = jest.fn().mockImplementation(resolvePromise({
+    global.fetch = jest.fn(resolvePromise({
       status: 204
     }));
 
