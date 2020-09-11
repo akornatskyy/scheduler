@@ -20,11 +20,18 @@ describe('job history status', () => {
   it.each([
     [null, 'N/A'],
     [undefined, 'N/A'],
-    ['', 'N/A'],
-    ['2019-08-29T13:29:36.976Z', '8/29/2019, 4:29:36 PM']
+    ['', 'N/A']
   ])('format date %o to %o', (s, expected) => {
     expect(formatDate(s)).toEqual(expected);
   });
+});
+
+it('formats UTC date as local locale', () => {
+  expect(
+      formatDate('2019-08-29T13:29:36.976Z')
+  ).toEqual(
+      new Date('2019-08-29T13:29:36Z').toLocaleString()
+  );
 });
 
 describe('job history', () => {
@@ -78,22 +85,22 @@ describe('job history', () => {
       status: {
         running: 'Scheduled',
         runCount: '17 / 5',
-        lastRun: '8/29/2019, 4:29:36 PM',
+        lastRun: new Date('2019-08-29T13:29:36.976Z').toLocaleString(),
         nextRun: 'N/A'
       },
       items: [
         {
           action: 'HTTP',
-          started: '9/18/2019, 9:26:13 AM',
-          finished: '9/18/2019, 9:27:02 AM',
+          started: new Date('2019-09-18T06:26:13Z').toLocaleString(),
+          finished: new Date('2019-09-18T06:27:02Z').toLocaleString(),
           status: 'failed',
           retries: '3',
           message: '404 Not Found'
         },
         {
           action: 'HTTP',
-          started: '9/18/2019, 9:25:56 AM',
-          finished: '9/18/2019, 9:25:56 AM',
+          started: new Date('2019-09-18T06:25:56Z').toLocaleString(),
+          finished: new Date('2019-09-18T06:25:56Z').toLocaleString(),
           status: 'completed',
           retries: '',
           message: ''
