@@ -92,7 +92,7 @@ export default class Jobs extends React.Component {
   }
 }
 
-const JobStatus = ({job}) => {
+export const JobStatus = ({job}) => {
   let style = 'secondary';
   let text = job.status;
   switch (job.status) {

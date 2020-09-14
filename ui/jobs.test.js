@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 
 import api from './api';
-import Jobs from './jobs';
+import Jobs, {JobStatus} from './jobs';
 
 jest.mock('./api');
 
@@ -29,20 +29,24 @@ describe('jobs renders', () => {
     });
   });
 
-  it('summary error', () => {
+  it('does not show summary error when list collections fails', () => {
     const errors = {__ERROR__: 'The error text.'};
+    api.listCollections.mockImplementation(rejectPromise(errors));
+    api.listJobs.mockImplementation(resolvePromise({items: []}));
+
+    const p = new Page(shallow(<Jobs {...props} />));
+
+    expect(p.errors()).toEqual({});
+  });
+
+  it('shows summary error when list jobs fails', () => {
+    const errors = {__ERROR__: 'The error text.'};
+    api.listCollections.mockImplementation(resolvePromise({items: []}));
     api.listJobs.mockImplementation(rejectPromise(errors));
 
     const p = new Page(shallow(<Jobs {...props} />));
 
-    expect(p.data()).toEqual({
-      title: 'Jobs',
-      items: []
-    });
     expect(p.errors()).toEqual(errors);
-    expect(p.controls()).toEqual({
-      add: {to: '/jobs/add'}
-    });
   });
 
   it('items', () => {
@@ -51,6 +55,10 @@ describe('jobs renders', () => {
         id: '65ada2f9',
         name: 'My App #1',
         state: 'enabled'
+      }, {
+        id: '340de3dd',
+        name: 'My App #2',
+        state: 'disabled'
       }]
     }));
     api.listJobs.mockImplementation(resolvePromise({
@@ -62,6 +70,14 @@ describe('jobs renders', () => {
         state: 'disabled',
         status: 'passing',
         errorRate: 0.2
+      }, {
+        id: '8d9302ad',
+        collectionId: '340de3dd',
+        name: 'My Task #2',
+        schedule: '@every 30m',
+        state: 'enabled',
+        status: 'failing',
+        errorRate: 0.5
       }]
     }));
 
@@ -77,6 +93,13 @@ describe('jobs renders', () => {
           schedule: '@every 15s',
           state: 'disabled',
           status: '80% passing'
+        },
+        {
+          to: '/jobs/8d9302ad',
+          name: 'My Task #2',
+          schedule: '@every 30m',
+          state: 'enabled',
+          status: '50% failing'
         }
       ]
     });
@@ -84,6 +107,34 @@ describe('jobs renders', () => {
     expect(p.controls()).toEqual({
       add: {to: '/jobs/add'}
     });
+  });
+
+  it('clears timer on unmount', () => {
+    jest.useFakeTimers();
+    api.listCollections.mockImplementation(resolvePromise({items: []}));
+    api.listJobs.mockImplementation(resolvePromise({items: []}));
+
+    const w = shallow(<Jobs {...props} />);
+    w.unmount();
+
+    expect(setInterval).toHaveBeenCalled();
+    expect(clearInterval).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('job status', () => {
+  it.each(
+      ['disabled', 'enabled']
+          .map((state) => ['ready', 'passing', 'failing', 'running']
+              .map((status) => [state, status]))
+          .flatMap((e) => e)
+  )('renders %s and %s', (state, status) => {
+    const job = {state, status};
+
+    const w = shallow(<JobStatus job={job} />);
+
+    expect(w.find('span.badge').text())
+        .toEqual(expect.stringContaining(status));
   });
 });
 
