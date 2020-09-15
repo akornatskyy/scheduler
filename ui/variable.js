@@ -8,7 +8,7 @@ export default class Variable extends React.Component {
   state = {
     item: {
       name: '',
-      state: ''
+      value: ''
     },
     collections: [],
     pending: true,
@@ -22,7 +22,7 @@ export default class Variable extends React.Component {
           .then((data) => this.setState({item: data, pending: false}))
           .catch((errors) => this.setState({errors: errors, pending: false}));
     } else {
-      this.setState({item: {name: '', state: 'enabled'}, pending: false});
+      this.setState({item: {name: '', value: ''}, pending: false});
     }
     api.listCollections()
         .then((data) => {
@@ -106,7 +106,7 @@ export default class Variable extends React.Component {
             </Form.Group>
           </Form.Row>
           <Form.Row>
-            <Form.Group as={Col} controlId="body">
+            <Form.Group as={Col} controlId="value">
               <Form.Label>Value</Form.Label>
               <Form.Control
                 as="textarea"
