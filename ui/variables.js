@@ -12,13 +12,11 @@ export default class Variables extends React.Component {
   componentDidMount() {
     const collectionId = new URLSearchParams(this.props.location.search)
         .get('collectionId');
-    Promise
-        .all([
-          api.listCollections()
-              .then((data) => this.setState({collections: data.items})),
-          api.listVariables(collectionId)
-              .then((data) => this.setState({variables: data.items}))
-        ])
+    api.listCollections()
+        .then((data) => this.setState({collections: data.items}))
+        .catch((errors) => this.setState({errors: errors}));
+    api.listVariables(collectionId)
+        .then((data) => this.setState({variables: data.items, errors: {}}))
         .catch((errors) => this.setState({errors: errors}));
   }
 
@@ -56,7 +54,7 @@ export default class Variables extends React.Component {
     });
     return (
       <Layout title="Variables" errors={errors}>
-        <Table bordered striped hover responsive>
+        <Table bordered striped hover>
           <thead>
             <tr>
               <th>Name</th>
