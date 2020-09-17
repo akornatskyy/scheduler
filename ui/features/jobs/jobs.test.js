@@ -1,10 +1,10 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import api from './api';
+import api from '../../api';
 import Jobs, {JobStatus} from './jobs';
 
-jest.mock('./api');
+jest.mock('../../api');
 
 describe('jobs renders', () => {
   const props = {

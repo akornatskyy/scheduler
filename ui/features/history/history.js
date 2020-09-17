@@ -1,8 +1,8 @@
 import React from 'react';
 import {Table, Button, Row, Col} from 'react-bootstrap';
 
-import api from './api';
-import {Layout} from './shared';
+import api from '../../api';
+import {Layout} from '../../shared/shared';
 
 export default class JobHistory extends React.Component {
   state = {

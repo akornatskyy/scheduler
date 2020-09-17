@@ -2,8 +2,8 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import {Table, Button} from 'react-bootstrap';
 
-import api from './api';
-import {Layout, groupBy} from './shared';
+import api from '../../api';
+import {Layout, groupBy} from '../../shared/shared';
 
 export default class Jobs extends React.Component {
   state = {jobs: [], collections: [], errors: {}};

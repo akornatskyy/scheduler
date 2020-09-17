@@ -11,7 +11,7 @@
   },
   "jest": {
     "setupFilesAfterEnv": [
-      "<rootDir>/ui/setup-tests.js"
+      "<rootDir>/ui/shared/setup-tests.js"
     ]
   },
   "repository": {

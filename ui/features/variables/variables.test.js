@@ -1,10 +1,10 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import api from './api';
+import api from '../../api';
 import Variables from './variables';
 
-jest.mock('./api');
+jest.mock('../../api');
 
 describe('variables renders', () => {
   const props = {

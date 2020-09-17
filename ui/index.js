@@ -8,14 +8,14 @@ import {
   Route
 } from 'react-router-dom';
 
-import Collection from './collection';
-import Collections from './collections';
-import Variable from './variable';
-import Variables from './variables';
-import {Header, Footer} from './shared';
-import Job from './job';
-import JobHistory from './history';
-import Jobs from './jobs';
+import Collection from './features/collection/collection';
+import Collections from './features/collections/collections';
+import Job from './features/job/job';
+import JobHistory from './features/history/history';
+import Jobs from './features/jobs/jobs';
+import Variable from './features/variable/variable';
+import Variables from './features/variables/variables';
+import {Header, Footer} from './shared/shared';
 
 export const App = () => (
   <Container>
@@ -23,12 +23,12 @@ export const App = () => (
     <Switch>
       <Redirect exact path="/" to="/collections" />
       <Route exact path="/collections" component={Collections} />
-      <Route exact path="/jobs" component={Jobs} />
       <Route exact path="/collections/add" component={Collection} />
       <Route exact path="/collections/:id" component={Collection} />
       <Route exact path="/variables" component={Variables} />
       <Route exact path="/variables/add" component={Variable} />
       <Route exact path="/variables/:id" component={Variable} />
+      <Route exact path="/jobs" component={Jobs} />
       <Route exact path="/jobs/add" component={Job} />
       <Route exact path="/jobs/:id" component={Job} />
       <Route exact path="/jobs/:id/history" component={JobHistory} />

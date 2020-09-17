@@ -9,8 +9,7 @@ const plugins = [
     template: 'index.html',
     favicon: 'favicon.ico',
     minify: true
-  }),
-  new webpack.NoEmitOnErrorsPlugin()
+  })
 ];
 
 if (prod) {
@@ -38,6 +37,7 @@ module.exports = {
     maxAssetSize: 320000
   },
   optimization: {
+    noEmitOnErrors: true,
     splitChunks: {
       cacheGroups: {
         commons: {

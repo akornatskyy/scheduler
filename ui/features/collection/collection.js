@@ -2,8 +2,8 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import {Form, Button} from 'react-bootstrap';
 
-import api from './api';
-import {Layout, FieldError, Tip} from './shared';
+import api from '../../api';
+import {Layout, FieldError, Tip} from '../../shared/shared';
 
 export default class Collection extends React.Component {
   state = {

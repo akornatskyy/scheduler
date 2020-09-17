@@ -3,8 +3,8 @@ import update from 'immutability-helper';
 import {Link} from 'react-router-dom';
 import {Form, Button, Col} from 'react-bootstrap';
 
-import api from './api';
-import {Layout, FieldError, Tip} from './shared';
+import api from '../../api';
+import {Layout, FieldError, Tip} from '../../shared/shared';
 
 const httpMethodsWithBody = ['POST', 'PUT', 'PATCH'];
 
