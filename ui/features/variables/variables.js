@@ -2,8 +2,8 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import {Table, Button} from 'react-bootstrap';
 
-import api from '../../api';
 import {Layout, groupBy} from '../../shared/shared';
+import * as api from './variables-api';
 
 
 export default class Variables extends React.Component {

@@ -1,10 +1,10 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import api from '../../api';
+import * as api from './collections-api';
 import Collections from './collections';
 
-jest.mock('../../api');
+jest.mock('./collections-api');
 
 describe('collections renders', () => {
   const props = {

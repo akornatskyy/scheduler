@@ -2,8 +2,8 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import {Table, Button} from 'react-bootstrap';
 
-import api from '../../api';
 import {Layout} from '../../shared/shared';
+import * as api from './collections-api';
 
 export default class Collections extends React.Component {
   state = {items: [], errors: {}};

@@ -1,10 +1,10 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import api from '../../api';
+import * as api from './collection-api';
 import Collection from './collection';
 
-jest.mock('../../api');
+jest.mock('./collection-api');
 
 describe('collection', () => {
   let props = null;

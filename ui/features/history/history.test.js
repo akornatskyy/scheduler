@@ -1,11 +1,11 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import api from '../../api';
+import * as api from './history-api';
 import JobHistory from './history';
 import {formatRunning, formatDate} from './history';
 
-jest.mock('../../api');
+jest.mock('./history-api');
 
 describe('job history status', () => {
   it.each([
