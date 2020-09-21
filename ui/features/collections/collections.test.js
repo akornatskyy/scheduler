@@ -6,106 +6,37 @@ import Collections from './collections';
 
 jest.mock('./collections-api');
 
-describe('collections renders', () => {
-  const props = {
-    match: {url: '/collections'},
-  };
-
-  it('empty list', () => {
-    api.listCollections.mockImplementation(resolvePromise({items: []}));
-
-    const p = new Page(shallow(<Collections {...props} />));
-
-    expect(api.listCollections).toBeCalledWith();
-    expect(p.data()).toEqual({
-      title: 'Collections',
-      items: []
-    });
-    expect(p.errors()).toEqual({});
-    expect(p.controls()).toEqual({
-      add: {to: '/collections/add'}
-    });
+describe('collections', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('summary error', () => {
+  it('handles list error', () => {
     const errors = {__ERROR__: 'The error text.'};
     api.listCollections.mockImplementation(rejectPromise(errors));
 
-    const p = new Page(shallow(<Collections {...props} />));
+    const w = shallow(<Collections />);
 
-    expect(p.data()).toEqual({
-      title: 'Collections',
-      items: []
-    });
-    expect(p.errors()).toEqual(errors);
-    expect(p.controls()).toEqual({
-      add: {to: '/collections/add'}
-    });
+    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toBeCalledWith();
+    expect(w.state('errors')).toEqual(errors);
   });
 
-  it('items', () => {
-    api.listCollections.mockImplementation(resolvePromise({
-      items: [{
-        id: '65ada2f9',
-        name: 'My App #1',
-        state: 'enabled'
-      }]
-    }));
+  it('updates state with fetched items', () => {
+    const items = [{
+      id: '65ada2f9',
+      name: 'My App #1',
+      state: 'enabled'
+    }];
+    api.listCollections.mockImplementation(resolvePromise({items}));
 
-    const p = new Page(shallow(<Collections {...props} />));
+    const w = shallow(<Collections />);
 
+    expect(api.listCollections).toBeCalledTimes(1);
     expect(api.listCollections).toBeCalledWith();
-    expect(p.data()).toEqual({
-      title: 'Collections',
-      items: [
-        {
-          to: '/collections/65ada2f9',
-          name: 'My App #1',
-          state: 'enabled'
-        }
-      ]
-    });
-    expect(p.errors()).toEqual({});
-    expect(p.controls()).toEqual({
-      add: {to: '/collections/add'}
+    expect(w.state()).toEqual({
+      errors: {},
+      items
     });
   });
 });
-
-class Page {
-  constructor(w) {
-    this.w = w;
-  }
-
-  data() {
-    return {
-      title: this.w.find('Layout').props().title,
-      items: this.w.find('tbody tr').map((r) => {
-        const link = r.find('Link').first();
-        return {
-          to: link.props().to,
-          name: link.text(),
-          state: r.find('td ~ td').text()
-        };
-      }),
-    };
-  }
-
-  errors() {
-    const errors = {};
-    const c = this.w.find('Layout').dive()
-        .find('ErrorSummary').dive().find('h4');
-    if (c.exists()) {
-      errors.__ERROR__ = c.text();
-    }
-    return errors;
-  }
-
-  controls() {
-    return {
-      add: {
-        to: this.w.find('Button').props().to
-      }
-    };
-  }
-}

@@ -1,9 +1,8 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
-import {Form, Button} from 'react-bootstrap';
 
-import {Layout, FieldError, Tip} from '../../shared/shared';
+import {Layout} from '../../shared/shared';
 import * as api from './collection-api';
+import {CollectionForm} from './collection-components';
 
 export default class Collection extends React.Component {
   state = {
@@ -26,7 +25,7 @@ export default class Collection extends React.Component {
     }
   }
 
-  handleChange = ({target: {name, value}}) => {
+  handleChange = (name, value) => {
     this.setState({
       item: {...this.state.item,
         [name]: value
@@ -34,8 +33,7 @@ export default class Collection extends React.Component {
     });
   };
 
-  handleSave = (e) => {
-    e.preventDefault();
+  handleSave = () => {
     this.setState({pending: true});
     api.saveCollection(this.state.item)
         .then(() => this.props.history.goBack())
@@ -54,80 +52,13 @@ export default class Collection extends React.Component {
     const {item, pending, errors} = this.state;
     return (
       <Layout title={`Collection ${item.name}`} errors={errors}>
-        <Form autoComplete="off" onSubmit={this.handleSave}>
-          <Form.Group controlId="name">
-            <Form.Label>Name</Form.Label>
-            <Form.Control
-              name="name"
-              required
-              placeholder="Name"
-              type="text"
-              value={item.name}
-              isInvalid={!!errors.name}
-              onChange={this.handleChange} />
-            <FieldError message={errors.name} />
-          </Form.Group>
-          <Form.Group controlId="state">
-            <Form.Check
-              id="stateEnabled"
-              name="state"
-              inline
-              label="Enabled"
-              type="radio"
-              value="enabled"
-              checked={item.state === 'enabled'}
-              isInvalid={!!errors.state}
-              onChange={this.handleChange} />
-            <Form.Check
-              id="stateDisabled"
-              name="state"
-              inline
-              label="Disabled"
-              type="radio"
-              value="disabled"
-              checked={item.state === 'disabled'}
-              isInvalid={!!errors.state}
-              onChange={this.handleChange} />
-            <FieldError message={errors.state} />
-          </Form.Group>
-          <Tip>
-            If you disable a collection, all related jobs will be inherently
-            inactive as well.
-          </Tip>
-          <Button type="submit" disabled={pending}>
-            Save
-          </Button>
-          {item.id && (
-            <>
-              <Button
-                as={Link}
-                to={`/variables?collectionId=${item.id}`}
-                variant="outline-secondary"
-                disabled={pending}
-                className="ml-2">
-                  Variables
-              </Button>
-              <Button
-                as={Link}
-                to={`/jobs?collectionId=${item.id}`}
-                variant="outline-secondary"
-                disabled={pending}
-                className="ml-2">
-                  Jobs
-              </Button>
-            </>
-          )}
-
-          {item.id && (
-            <Button
-              onClick={this.handleDelete}
-              variant="danger"
-              className="float-right"
-              disabled={pending}>
-              Delete
-            </Button>
-          )}
-        </Form>
+        <CollectionForm
+          item={item}
+          pending={pending}
+          errors={errors}
+          onChange={this.handleChange}
+          onSave={this.handleSave}
+          onDelete={this.handleDelete} />
       </Layout>
     );
   }

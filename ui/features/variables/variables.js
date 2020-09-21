@@ -1,71 +1,32 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import {Table, Button} from 'react-bootstrap';
+import {Button} from 'react-bootstrap';
 
-import {Layout, groupBy} from '../../shared/shared';
+import {Layout} from '../../shared/shared';
 import * as api from './variables-api';
+import {VariableList} from './variables-components';
 
 
 export default class Variables extends React.Component {
-  state = {variables: [], collections: [], errors: {}};
+  state = {collections: [], variables: [], errors: {}};
 
   componentDidMount() {
     const collectionId = new URLSearchParams(this.props.location.search)
         .get('collectionId');
     api.listCollections()
-        .then((data) => this.setState({collections: data.items}))
-        .catch((errors) => this.setState({errors: errors}));
+        .then(({items}) => this.setState({collections: items}))
+        .catch((errors) => this.setState({errors}));
     api.listVariables(collectionId)
-        .then((data) => this.setState({variables: data.items, errors: {}}))
+        .then(({items}) => this.setState({variables: items}))
         .catch((errors) => this.setState({errors: errors}));
   }
 
   render() {
     const {variables, collections, errors} = this.state;
-    const grouped = groupBy(variables, 'collectionId');
-    const {url} = this.props.match;
-    const rows = [];
-    collections.forEach((c) => {
-      const variablesByCollection = grouped[c.id];
-      if (!variablesByCollection) {
-        return;
-      }
-      rows.push(
-          <tr key={c.id}>
-            <td colSpan="2">
-              <Link to={`/collections/${c.id}`}>{c.name}</Link>
-              <Link to={`jobs?collectionId=${c.id}`}
-                className="badge badge-light">
-                jobs
-              </Link>
-            </td>
-          </tr>
-      );
-      rows.push(variablesByCollection.map((i) => (
-        <tr key={i.id}>
-          <td>
-            <Link to={`${url}/${i.id}`}>{i.name}</Link>
-          </td>
-          <td>
-            {new Date(i.updated).toLocaleString()}
-          </td>
-        </tr>
-      )));
-    });
     return (
       <Layout title="Variables" errors={errors}>
-        <Table bordered striped hover>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th className="w-25">Updated</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows}
-          </tbody>
-        </Table>
-        <Button as={Link} to={`${url}/add`}>
+        <VariableList collections={collections} variables={variables} />
+        <Button as={Link} to='variables/add'>
           Add
         </Button>
       </Layout>

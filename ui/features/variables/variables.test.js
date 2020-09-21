@@ -6,133 +6,69 @@ import Variables from './variables';
 
 jest.mock('./variables-api');
 
-describe('variables renders', () => {
+describe('variables', () => {
   const props = {
-    match: {url: '/variables'},
-    location: {search: '?collectionId=123'}
+    location: {}
   };
 
-  it('empty list', () => {
-    api.listCollections.mockImplementation(resolvePromise({items: []}));
-    api.listVariables.mockImplementation(resolvePromise({items: []}));
-
-    const p = new Page(shallow(<Variables {...props} />));
-
-    expect(api.listCollections).toBeCalledWith();
-    expect(api.listVariables).toBeCalledWith('123');
-    expect(p.data()).toEqual({
-      title: 'Variables',
-      items: []
-    });
-    expect(p.errors()).toEqual({});
-    expect(p.controls()).toEqual({
-      add: {to: '/variables/add'}
-    });
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('does not show summary error when list collections fails', () => {
+  it('handles list collections error', () => {
     const errors = {__ERROR__: 'The error text.'};
     api.listCollections.mockImplementation(rejectPromise(errors));
     api.listVariables.mockImplementation(resolvePromise({items: []}));
 
-    const p = new Page(shallow(<Variables {...props} />));
+    const w = shallow(<Variables {...props} />);
 
-    expect(p.errors()).toEqual({});
+    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toBeCalledWith();
+    expect(api.listVariables).toBeCalledTimes(1);
+    expect(api.listVariables).toBeCalledWith(null);
+    expect(w.state('errors')).toEqual(errors);
   });
 
-  it('shows summary error when list variables fails', () => {
+  it('handles list variables error', () => {
     const errors = {__ERROR__: 'The error text.'};
     api.listCollections.mockImplementation(resolvePromise({items: []}));
     api.listVariables.mockImplementation(rejectPromise(errors));
 
-    const p = new Page(shallow(<Variables {...props} />));
+    const w = shallow(<Variables {...props} />);
 
-    expect(p.errors()).toEqual(errors);
+    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toBeCalledWith();
+    expect(api.listVariables).toBeCalledTimes(1);
+    expect(api.listVariables).toBeCalledWith(null);
+    expect(w.state('errors')).toEqual(errors);
   });
 
-  it('items', () => {
+  it('updates state with fetched items', () => {
+    const collections = [{
+      id: '65ada2f9'
+    }];
     api.listCollections.mockImplementation(resolvePromise({
-      items: [{
-        id: '65ada2f9',
-        name: 'My App #1',
-        state: 'enabled'
-      }, {
-        id: '340de3dd',
-        name: 'My App #2',
-        state: 'disabled'
-      }]
+      items: collections
     }));
+    const variables = [{
+      collectionId: '65ada2f9'
+    }];
     api.listVariables.mockImplementation(resolvePromise({
-      items: [{
-        id: 'ce3457aa',
-        collectionId: '65ada2f9',
-        name: 'My Var #1'
-      }, {
-        id: '562da233',
-        collectionId: '340de3dd',
-        name: 'My Var #2'
-      }]
+      items: variables
     }));
 
-    const p = new Page(shallow(<Variables {...props} />));
+    const w = shallow(
+        <Variables {...props} location={{search: '?collectionId=65ada2f9'}} />
+    );
 
-    expect(api.listVariables).toBeCalledWith('123');
-    expect(p.data()).toEqual({
-      title: 'Variables',
-      items: [
-        {
-          to: '/variables/ce3457aa',
-          name: 'My Var #1'
-        },
-        {
-          to: '/variables/562da233',
-          name: 'My Var #2'
-        }
-      ]
-    });
-    expect(p.errors()).toEqual({});
-    expect(p.controls()).toEqual({
-      add: {to: '/variables/add'}
+    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toBeCalledWith();
+    expect(api.listVariables).toBeCalledTimes(1);
+    expect(api.listVariables).toBeCalledWith('65ada2f9');
+    expect(w.state()).toEqual({
+      collections,
+      variables,
+      errors: {}
     });
   });
 });
-
-class Page {
-  constructor(w) {
-    this.w = w;
-    w.debug();
-  }
-
-  data() {
-    return {
-      title: this.w.find('Layout').props().title,
-      items: this.w.find('tbody tr')
-          .filterWhere((r) => r.exists('td ~ td'))
-          .map((r) => {
-            const link = r.find('Link').first();
-            return {
-              to: link.props().to,
-              name: link.text()
-            };
-          }),
-    };
-  }
-
-  errors() {
-    const errors = {};
-    const c = this.w.find('Layout').dive()
-        .find('ErrorSummary').dive().find('h4');
-    if (c.exists()) {
-      errors.__ERROR__ = c.text();
-    }
-    return errors;
-  }
-
-  controls() {
-    return {
-      add: {
-        to: this.w.find('Button').props().to
-      }
-    };
-  }
-}

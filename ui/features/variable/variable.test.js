@@ -23,21 +23,28 @@ describe('variable', () => {
         state: 'enabled'
       }
     ]}));
+    jest.clearAllMocks();
   });
 
-  it('renders add item', () => {
+  it('renders add item if no id specified', () => {
     props.match.params.id = null;
-    const p = new Page(shallow(<Variable {...props} />));
+    const w = shallow(<Variable {...props} />);
 
-    expect(p.data()).toEqual({
-      title: 'Variable ',
-      collectionId: '65ada2f9',
-      name: '',
-      value: ''
-    });
-    expect(p.errors()).toEqual({});
-    expect(p.controls()).toEqual({
-      save: {disabled: false}
+    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toBeCalledWith();
+    expect(w.state()).toEqual({
+      item: {
+        collectionId: '65ada2f9',
+        name: '',
+        value: ''
+      },
+      collections: [{
+        id: '65ada2f9',
+        name: 'My App #1',
+        state: 'enabled',
+      }],
+      pending: false,
+      errors: {}
     });
   });
 
@@ -48,33 +55,41 @@ describe('variable', () => {
       value: 'Some Value'
     }));
 
-    const p = new Page(shallow(<Variable {...props} />));
+    const w = shallow(<Variable {...props} />);
 
+    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toBeCalledWith();
+    expect(api.retrieveVariable).toBeCalledTimes(1);
     expect(api.retrieveVariable).toBeCalledWith('123de331');
-    expect(p.data()).toEqual({
-      title: 'Variable My Var #1',
-      collectionId: '65ada2f9',
-      name: 'My Var #1',
-      value: 'Some Value'
-    });
-    expect(p.errors()).toEqual({});
-    expect(p.controls()).toMatchObject({
-      save: {disabled: false},
-      delete: {disabled: false}
+    expect(w.state()).toEqual({
+      item: {
+        collectionId: '65ada2f9',
+        id: '123de331',
+        name: 'My Var #1',
+        value: 'Some Value'
+      },
+      collections: [{
+        id: '65ada2f9',
+        name: 'My App #1',
+        state: 'enabled',
+      }],
+      pending: false,
+      errors: {}
     });
   });
 
   it('shows field error when collections list is empty', () => {
     api.listCollections.mockImplementation(resolvePromise({items: []}));
 
-    const p = new Page(shallow(<Variable {...props} />));
+    const w = shallow(<Variable {...props} />);
 
-    expect(p.errors()).toEqual({
+    expect(w.state('pending')).toEqual(false);
+    expect(w.state('errors')).toEqual({
       collectionId: 'There is no collection available.'
     });
   });
 
-  it('selects a first items from collections list', () => {
+  it('selects a first item from collections list', () => {
     props.match.params.id = null;
     api.listCollections.mockImplementation(resolvePromise({items: [
       {
@@ -89,11 +104,9 @@ describe('variable', () => {
       }
     ]}));
 
-    const p = new Page(shallow(<Variable {...props} />));
+    const w = shallow(<Variable {...props} />);
 
-    expect(p.errors()).toEqual({});
-    expect(p.data()).toEqual({
-      title: 'Variable ',
+    expect(w.state('item')).toEqual({
       collectionId: '84432333',
       name: '',
       value: ''
@@ -120,12 +133,11 @@ describe('variable', () => {
       }
     ]}));
 
-    const p = new Page(shallow(<Variable {...props} />));
+    const w = shallow(<Variable {...props} />);
 
-    expect(p.errors()).toEqual({});
-    expect(p.data()).toEqual({
-      title: 'Variable My Var #1',
+    expect(w.state('item')).toEqual({
       collectionId: '65ada2f9',
+      id: '123de331',
       name: 'My Var #1',
       value: 'Some Value'
     });
@@ -135,57 +147,41 @@ describe('variable', () => {
     const errors = {__ERROR__: 'The error text.'};
     api.listCollections.mockImplementation(rejectPromise(errors));
 
-    const p = new Page(shallow(<Variable {...props} />));
+    const w = shallow(<Variable {...props} />);
 
-    expect(p.errors()).toEqual(errors);
+    expect(w.state('errors')).toEqual(errors);
   });
 
   it('retrieve error', () => {
     const errors = {__ERROR__: 'The error text.'};
     api.retrieveVariable.mockImplementation(rejectPromise(errors));
 
-    const p = new Page(shallow(<Variable {...props} />));
+    const w = shallow(<Variable {...props} />);
 
-    expect(p.data()).toEqual({
-      title: 'Variable ',
-      collectionId: '65ada2f9',
-      name: '',
-      value: ''
-    });
-    expect(p.errors()).toEqual(errors);
-    expect(p.controls()).toMatchObject({
-      save: {disabled: false}
-    });
+    expect(w.state('errors')).toEqual(errors);
   });
 
-  it('handle change', () => {
+  it('handles change', () => {
     const w = shallow(<Variable {...props} />);
-    w.find('FormControl[name="name"]').simulate('change', {
-      target: {
-        name: 'name',
-        value: 'My Other Var'
-      }
-    });
-    w.find('FormControl[name="value"]').simulate('change', {
-      target: {
-        name: 'value',
-        value: 'Hello'
-      }
-    });
+    const f = w.find('VariableForm');
+
+    f.simulate('change', 'collectionId', '123de331');
+    f.simulate('change', 'name', 'My Other Var');
+    f.simulate('change', 'value', 'Hello');
 
     expect(w.state('item')).toEqual({
-      collectionId: '65ada2f9',
+      collectionId: '123de331',
       name: 'My Other Var',
       value: 'Hello'
     });
   });
 
-  it('save item', () => {
+  it('saves item', () => {
     props.match.params.id = null;
     api.saveVariable.mockImplementation(resolvePromise());
+    const w = shallow(<Variable {...props} />);
 
-    const p = new Page(shallow(<Variable {...props} />));
-    p.save();
+    w.find('VariableForm').simulate('save');
 
     expect(api.saveVariable).toBeCalledWith({
       collectionId: '65ada2f9',
@@ -193,28 +189,19 @@ describe('variable', () => {
       value: ''
     });
     expect(props.history.goBack.mock.calls.length).toBe(1);
-    expect(p.data()).toEqual({
-      title: 'Variable ',
-      collectionId: '65ada2f9',
-      name: '',
-      value: ''
-    });
-    expect(p.errors()).toEqual({});
-    expect(p.controls()).toMatchObject({
-      save: {disabled: true}
-    });
+    expect(w.state('errors')).toEqual({});
   });
 
-  it('save returns errors', () => {
+  it('handles save errors', () => {
     props.match.params.id = null;
     const errors = {
       __ERROR__: 'The error text.',
       name: 'The field error message.'
     };
     api.saveVariable.mockImplementation(rejectPromise(errors));
+    const w = shallow(<Variable {...props} />);
 
-    const p = new Page(shallow(<Variable {...props} />));
-    p.save();
+    w.find('VariableForm').simulate('save');
 
     expect(api.saveVariable).toBeCalledWith({
       collectionId: '65ada2f9',
@@ -222,19 +209,10 @@ describe('variable', () => {
       value: ''
     });
     expect(props.history.goBack.mock.calls.length).toBe(0);
-    expect(p.data()).toEqual({
-      title: 'Variable ',
-      collectionId: '65ada2f9',
-      name: '',
-      value: ''
-    });
-    expect(p.errors()).toEqual(errors);
-    expect(p.controls()).toEqual({
-      save: {disabled: false}
-    });
+    expect(w.state('errors')).toEqual(errors);
   });
 
-  it('delete item', () => {
+  it('deletes item', () => {
     props.match.params.id = '65ada2f9';
     api.retrieveVariable.mockImplementation(resolvePromise({
       id: '65ada2f9',
@@ -243,26 +221,16 @@ describe('variable', () => {
       etag: '"1n9er1hz749r"'
     }));
     api.deleteVariable.mockImplementation(resolvePromise());
+    const w = shallow(<Variable {...props} />);
 
-    const p = new Page(shallow(<Variable {...props} />));
-    p.delete();
+    w.find('VariableForm').simulate('delete');
 
     expect(api.deleteVariable).toBeCalledWith('65ada2f9', '"1n9er1hz749r"');
     expect(props.history.goBack.mock.calls.length).toBe(1);
-    expect(p.data()).toEqual({
-      title: 'Variable My Var #1',
-      collectionId: '65ada2f9',
-      name: 'My Var #1',
-      value: 'Some Value'
-    });
-    expect(p.errors()).toEqual({});
-    expect(p.controls()).toEqual({
-      save: {disabled: true},
-      delete: {disabled: true}
-    });
+    expect(w.state('errors')).toEqual({});
   });
 
-  it('delete returns an error', () => {
+  it('handles delete error', () => {
     api.retrieveVariable.mockImplementation(resolvePromise({
       id: '123de331',
       name: 'My Var #1',
@@ -270,100 +238,11 @@ describe('variable', () => {
     }));
     const errors = {__ERROR__: 'The error text.'};
     api.deleteVariable.mockImplementation(rejectPromise(errors));
+    const w = shallow(<Variable {...props} />);
 
-    const p = new Page(shallow(<Variable {...props} />));
-    p.delete();
+    w.find('VariableForm').simulate('delete');
 
     expect(props.history.goBack.mock.calls.length).toBe(0);
-    expect(p.data()).toEqual({
-      title: 'Variable My Var #1',
-      collectionId: '65ada2f9',
-      name: 'My Var #1',
-      value: 'Some Value',
-    });
-    expect(p.errors()).toEqual(errors);
-    expect(p.controls()).toEqual({
-      save: {disabled: false},
-      delete: {disabled: false}
-    });
-  });
-
-  it('renders no errors', () => {
-    const p = new Page(shallow(<Variable {...props} />));
-
-    expect(p.errors()).toEqual({});
-  });
-
-  it('renders all errors', () => {
-    const w = shallow(<Variable {...props} />);
-    const p = new Page(w);
-
-    const errors = {
-      __ERROR__: 'The summary error text.',
-      collectionId: 'An error related to collection id.',
-      name: 'An error related to name.',
-      value: 'An error related to value.'
-    };
-    w.setState({errors: errors});
-
-    expect(p.errors()).toEqual(errors);
+    expect(w.state('errors')).toEqual(errors);
   });
 });
-
-class Page {
-  fields = ['name', 'collectionId', 'value'];
-
-  constructor(w) {
-    this.w = w;
-  }
-
-  data() {
-    return {
-      title: this.w.find('Layout').props().title,
-      collectionId: this.w.find(
-          'FormControl[name="collectionId"]'
-      ).props().value,
-      name: this.w.find('FormControl[name="name"]').props().value,
-      value: this.w.find('FormControl[name="value"]').props().value,
-    };
-  }
-
-  errors() {
-    const errors = {};
-    const c = this.w.find('Layout').dive()
-        .find('ErrorSummary').dive().find('h4');
-    if (c.exists()) {
-      errors.__ERROR__ = c.text();
-    }
-    this.w.find('FieldError').forEach((n, i) => {
-      const m = n.props().message;
-      if (m) {
-        errors[this.fields[i]] = m;
-      }
-    });
-    return errors;
-  }
-
-  controls() {
-    const controls = {
-      save: {
-        disabled: this.w.find('Button[type="submit"]').props().disabled
-      }
-    };
-    const b = this.w.find('Button[variant="danger"]');
-    if (b.exists()) {
-      controls.delete = {
-        disabled: b.props().disabled
-      };
-    }
-    return controls;
-  }
-
-  save() {
-    this.w.find('Form').simulate('submit', {preventDefault: () => {}});
-  }
-
-  delete() {
-    this.w.find('Button[variant="danger"]').simulate('click');
-  }
-}

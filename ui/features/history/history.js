@@ -1,8 +1,8 @@
 import React from 'react';
-import {Table, Button, Row, Col} from 'react-bootstrap';
 
 import {Layout} from '../../shared/shared';
 import * as api from './history-api';
+import {JobHistoryList} from './history-components';
 
 export default class JobHistory extends React.Component {
   state = {
@@ -10,7 +10,7 @@ export default class JobHistory extends React.Component {
       name: ''
     },
     status: {
-      running: null,
+      running: '',
       runCount: '',
       errorCount: '',
       lastRun: '',
@@ -24,13 +24,13 @@ export default class JobHistory extends React.Component {
     const {id} = this.props.match.params;
     api.retrieveJob(id)
         .then((data) => this.setState({job: data}))
-        .catch((errors) => this.setState({errors: errors}));
+        .catch((errors) => this.setState({errors}));
     api.retrieveJobStatus(id)
         .then((data) => this.setState({status: data}))
-        .catch((errors) => this.setState({errors: errors}));
+        .catch((errors) => this.setState({errors}));
     api.listJobHistory(id)
-        .then((data) => this.setState({items: data.items.slice(0, 7)}))
-        .catch((errors) => this.setState({errors: errors}));
+        .then(({items}) => this.setState({items: items.slice(0, 7)}))
+        .catch((errors) => this.setState({errors}));
   }
 
   handleBack = () => {
@@ -40,13 +40,13 @@ export default class JobHistory extends React.Component {
   handleRun = () => {
     const {id} = this.props.match.params;
     const {etag} = this.state.status;
-    api.patchJobStatus(id, {running: true, etag: etag})
-        .then(() => {
+    api.patchJobStatus(id, {running: true, etag})
+        .then(() =>
           api.retrieveJobStatus(id)
               .then((data) => this.setState({status: data}))
-              .catch((errors) => this.setState({errors: errors}));
-        })
-        .catch((errors) => this.setState({errors: errors}));
+              .catch((errors) => this.setState({errors}))
+        )
+        .catch((errors) => this.setState({errors}));
   }
 
   handleDelete = () => {
@@ -54,79 +54,20 @@ export default class JobHistory extends React.Component {
     const {etag} = this.state.status;
     api.deleteJobHistory(id, etag)
         .then(() => this.props.history.goBack())
-        .catch((errors) => this.setState({errors: errors}));
+        .catch((errors) => this.setState({errors}));
   };
 
   render() {
     const {job, status, items, errors} = this.state;
     return (
       <Layout title={`Job History ${job.name}`} errors={errors}>
-        <Row>
-          <Col><label>Status</label></Col>
-          <Col>{formatRunning(status.running)}</Col>
-          <Col><label>Run / Error Count</label></Col>
-          <Col>{status.runCount} / {status.errorCount}</Col>
-        </Row>
-        <Row>
-          <Col><label>Last Run</label></Col>
-          <Col>{formatDate(status.lastRun)}</Col>
-          <Col><label>Next Run</label></Col>
-          <Col>{formatDate(status.nextRun)}</Col>
-        </Row>
-        <Table bordered striped hover>
-          <thead>
-            <tr>
-              <th>Action</th>
-              <th>Started</th>
-              <th>Finished</th>
-              <th>Status</th>
-              <th>Retries</th>
-              <th>Message</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((i, index) => (
-              <tr key={index}>
-                <td>{i.action}</td>
-                <td>{formatDate(i.started)}</td>
-                <td>{formatDate(i.finished)}</td>
-                <td>{i.status}</td>
-                <td>{i.retryCount}</td>
-                <td>{i.message}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-        <Button onClick={this.handleBack}>
-          Back
-        </Button>
-        <Button
-          onClick={this.handleRun}
-          variant="outline-secondary"
-          disabled={status.running === true}
-          className="ml-2">
-          Run
-        </Button>
-        {items.length > 0 && (
-          <Button
-            onClick={this.handleDelete}
-            variant="danger"
-            className="float-right">
-            Delete
-          </Button>
-        )}
+        <JobHistoryList
+          status={status}
+          items={items}
+          onBack={this.handleBack}
+          onRun={this.handleRun}
+          onDelete={this.handleDelete} />
       </Layout>
     );
   }
 }
-
-export const formatRunning = (r) =>
-  r == null ? '' : r ? 'Running' : 'Scheduled';
-
-export const formatDate = (s) => {
-  if (!s) {
-    return 'N/A';
-  }
-
-  return new Date(s).toLocaleString();
-};
