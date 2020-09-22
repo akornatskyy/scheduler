@@ -49,7 +49,7 @@
     "eslint": "^7.9.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-react": "^7.20.6",
-    "html-webpack-plugin": "^4.4.1",
+    "html-webpack-plugin": "^4.5.0",
     "jest": "^26.4.2",
     "react-hot-loader": "^4.12.21",
     "uglifyjs-webpack-plugin": "^2.2.0",
