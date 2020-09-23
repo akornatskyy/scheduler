@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import {VariableList} from './variables-components';
+import {VariableList, GroupRow, ItemRow} from './variables-components';
 
 /**
  * @typedef {import('enzyme').ShallowWrapper} ShallowWrapper
@@ -62,6 +62,26 @@ describe('variables list component', () => {
   });
 });
 
+describe('variables group row component', () => {
+  it('renders collection name', () => {
+    const c = {name: 'My App #1'};
+
+    const w = shallow(<GroupRow collection={c} />);
+
+    expect(w.find('Link').first().text()).toEqual('My App #1');
+  });
+});
+
+describe('variables item row component', () => {
+  it('renders variable name', () => {
+    const v = {name: 'My Var'};
+
+    const w = shallow(<ItemRow variable={v} />);
+
+    expect(w.find('Link').text()).toEqual('My Var');
+  });
+});
+
 class Page {
   /**
    * @param {ShallowWrapper} w
@@ -72,15 +92,13 @@ class Page {
 
   data() {
     return {
-      items: this.w.find('tbody tr')
-          .filterWhere((r) => r.exists('td ~ td'))
-          .map((r) => {
-            const link = r.find('Link').first();
-            return {
-              to: link.props().to,
-              name: link.text()
-            };
-          }),
+      items: this.w.find('GroupByList').dive().find('ItemRow').map((r) => {
+        const link = r.dive().find('Link').first();
+        return {
+          to: link.props().to,
+          name: link.text()
+        };
+      }),
     };
   }
 }

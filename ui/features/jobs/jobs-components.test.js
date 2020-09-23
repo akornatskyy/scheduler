@@ -1,7 +1,7 @@
 import React from 'react';
 import {shallow} from 'enzyme';
 
-import {JobList, JobStatus} from './jobs-components';
+import {JobList, JobStatus, GroupRow, ItemRow} from './jobs-components';
 
 /**
  * @typedef {import('enzyme').ShallowWrapper} ShallowWrapper
@@ -94,6 +94,28 @@ describe('job status component', () => {
   });
 });
 
+describe('jobs group row component', () => {
+  it.each(
+      ['disabled', 'enabled']
+  )('renders collection name in state %s', (state) => {
+    const c = {name: 'My App #1', state};
+
+    const w = shallow(<GroupRow collection={c} />);
+
+    expect(w.find('Link').first().text()).toEqual('My App #1');
+  });
+});
+
+describe('jobs item row component', () => {
+  it('renders job name', () => {
+    const j = {name: 'My Job'};
+
+    const w = shallow(<ItemRow job={j} />);
+
+    expect(w.find('Link').text()).toEqual('My Job');
+  });
+});
+
 class Page {
   /**
    * @param {ShallowWrapper} w
@@ -104,19 +126,18 @@ class Page {
 
   data() {
     return {
-      items: this.w.find('tbody tr')
-          .filterWhere((r) => r.exists('td ~ td'))
-          .map((r) => {
-            const link = r.find('Link').first();
-            return {
-              to: link.props().to,
-              name: link.text(),
-              schedule: r.find('td ~ td').first().text(),
-              state: r.find('td ~ td').first().props().title,
-              status: r.find('td ~ td ~ td > JobStatus')
-                  .dive().find('span').text()
-            };
-          }),
+      items: this.w.find('GroupByList').dive().find('ItemRow').map((c) => {
+        const r = c.dive();
+        const link = r.find('Link').first();
+        return {
+          to: link.props().to,
+          name: link.text(),
+          schedule: r.find('td ~ td').first().text(),
+          state: r.find('td ~ td').first().props().title,
+          status: r.find('td ~ td ~ td > JobStatus')
+              .dive().find('span').text()
+        };
+      }),
     };
   }
 }

@@ -2,50 +2,49 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import {Table} from 'react-bootstrap';
 
-import {groupBy} from '../../shared/shared';
+import {GroupByList} from '../../shared/shared';
 
-
-export const VariableList = ({collections, variables}) => {
-  const grouped = groupBy(variables, 'collectionId');
-  const rows = [];
-  collections.forEach((c) => {
-    const variablesByCollection = grouped[c.id];
-    if (!variablesByCollection) {
-      return;
-    }
-    rows.push(
-        <tr key={c.id}>
-          <td colSpan="2">
-            <Link to={`collections/${c.id}`}>{c.name}</Link>
-            <Link to={`jobs?collectionId=${c.id}`}
-              className="badge badge-light">
-            jobs
-            </Link>
-          </td>
-        </tr>
-    );
-    rows.push(variablesByCollection.map((i) => (
-      <tr key={i.id}>
-        <td>
-          <Link to={`variables/${i.id}`}>{i.name}</Link>
-        </td>
-        <td>
-          {new Date(i.updated).toLocaleString()}
-        </td>
+export const VariableList = ({collections, variables}) => (
+  <Table bordered striped hover>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th className="w-25">Updated</th>
       </tr>
-    )));
-  });
-  return (
-    <Table bordered striped hover>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th className="w-25">Updated</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows}
-      </tbody>
-    </Table>
-  );
-};
+    </thead>
+    <tbody>
+      <GroupByList
+        groups={collections}
+        items={variables}
+        groupKey='collectionId'
+        groupRow={(c) => (<GroupRow key={c.id} collection={c} />)}
+        itemRow={(i) => (<ItemRow key={i.id} variable={i}/>)}
+      />
+    </tbody>
+  </Table>
+);
+
+export const GroupRow = ({collection}) => (
+  <tr>
+    <td colSpan="2">
+      <Link to={`collections/${collection.id}`}>
+        {collection.name}
+      </Link>
+      <Link to={`jobs?collectionId=${collection.id}`}
+        className="badge badge-light">
+        jobs
+      </Link>
+    </td>
+  </tr>
+);
+
+export const ItemRow = ({variable}) => (
+  <tr>
+    <td>
+      <Link to={`variables/${variable.id}`}>{variable.name}</Link>
+    </td>
+    <td>
+      {new Date(variable.updated).toLocaleString()}
+    </td>
+  </tr>
+);
