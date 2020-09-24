@@ -36,7 +36,7 @@ const year = new Date().getFullYear();
 export const Footer = () => (
   <footer>
     <p className="small text-center text-secondary py-3">
-        &copy; { year } 1.1.2 <a className="text-secondary"
+        &copy; { year } 1.1.3 <a className="text-secondary"
         href="https://github.com/akornatskyy/scheduler">Documentation</a>
     </p>
   </footer>
@@ -86,9 +86,7 @@ function groupBy(items, key) {
   }, {});
 }
 
-export const GroupByList = ({
-  groups, items, groupKey, groupRow, itemRow
-}) => {
+export const GroupByList = ({groups, items, groupKey, groupRow, itemRow}) => {
   const grouped = groupBy(items, groupKey);
   const rows = [];
   groups.forEach((c) => {
