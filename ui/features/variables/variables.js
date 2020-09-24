@@ -18,7 +18,7 @@ export default class Variables extends React.Component {
         .catch((errors) => this.setState({errors}));
     api.listVariables(collectionId)
         .then(({items}) => this.setState({variables: items}))
-        .catch((errors) => this.setState({errors: errors}));
+        .catch((errors) => this.setState({errors}));
   }
 
   render() {

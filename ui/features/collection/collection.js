@@ -19,7 +19,7 @@ export default class Collection extends React.Component {
     if (id) {
       api.retrieveCollection(id)
           .then((data) => this.setState({item: data, pending: false}))
-          .catch((errors) => this.setState({errors: errors, pending: false}));
+          .catch((errors) => this.setState({errors, pending: false}));
     } else {
       this.setState({item: {name: '', state: 'enabled'}, pending: false});
     }
@@ -37,7 +37,7 @@ export default class Collection extends React.Component {
     this.setState({pending: true});
     api.saveCollection(this.state.item)
         .then(() => this.props.history.goBack())
-        .catch((errors) => this.setState({errors: errors, pending: false}));
+        .catch((errors) => this.setState({errors, pending: false}));
   };
 
   handleDelete = () => {
@@ -45,7 +45,7 @@ export default class Collection extends React.Component {
     this.setState({pending: true});
     api.deleteCollection(id, etag)
         .then(() => this.props.history.goBack())
-        .catch((errors) => this.setState({errors: errors, pending: false}));
+        .catch((errors) => this.setState({errors, pending: false}));
   };
 
   render() {
