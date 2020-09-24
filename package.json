@@ -48,7 +48,7 @@
     "enzyme-adapter-react-16": "^1.15.4",
     "eslint": "^7.9.0",
     "eslint-config-google": "^0.14.0",
-    "eslint-plugin-react": "^7.21.0",
+    "eslint-plugin-react": "^7.21.1",
     "html-webpack-plugin": "^4.5.0",
     "jest": "^26.4.2",
     "react-hot-loader": "^4.13.0",
