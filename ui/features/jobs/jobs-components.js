@@ -2,7 +2,7 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import {Table} from 'react-bootstrap';
 
-import {GroupByList} from '../../shared/shared';
+import {GroupByList} from '../../shared/components';
 
 export const JobList = ({jobs, collections}) => (
   <Table bordered striped hover>

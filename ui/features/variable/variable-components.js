@@ -1,7 +1,7 @@
 import React from 'react';
 import {Form, Button, Col} from 'react-bootstrap';
 
-import {FieldError, Tip} from '../../shared/shared';
+import {FieldError, Tip} from '../../shared/components';
 
 export const VariableForm = ({
   item, collections, pending, errors, onChange, onSave, onDelete

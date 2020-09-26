@@ -2,7 +2,7 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import {Button} from 'react-bootstrap';
 
-import {Layout} from '../../shared/shared';
+import {Layout} from '../../shared/components';
 import * as api from './collections-api';
 import {CollectionList} from './collections-components';
 

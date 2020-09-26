@@ -2,7 +2,7 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import {Form, Button} from 'react-bootstrap';
 
-import {FieldError, Tip} from '../../shared/shared';
+import {FieldError, Tip} from '../../shared/components';
 
 export const CollectionForm = ({
   item, pending, errors, onChange, onSave, onDelete

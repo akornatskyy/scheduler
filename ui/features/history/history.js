@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Layout} from '../../shared/shared';
+import {Layout} from '../../shared/components';
 import * as api from './history-api';
 import {JobHistoryList} from './history-components';
 

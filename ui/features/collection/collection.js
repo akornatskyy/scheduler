@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Layout} from '../../shared/shared';
+import {Layout} from '../../shared/components';
 import * as api from './collection-api';
 import {CollectionForm} from './collection-components';
 

@@ -15,7 +15,7 @@ import JobHistory from './features/history/history';
 import Jobs from './features/jobs/jobs';
 import Variable from './features/variable/variable';
 import Variables from './features/variables/variables';
-import {Header, Footer} from './shared/shared';
+import {Header, Footer} from './shared/components';
 
 export const App = () => (
   <Container>

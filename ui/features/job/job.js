@@ -1,8 +1,8 @@
 import React from 'react';
 import update from 'immutability-helper';
 
+import {Layout} from '../../shared/components';
 import * as api from './job-api';
-import {Layout} from '../../shared/shared';
 import {JobForm} from './job-components';
 
 export default class Job extends React.Component {

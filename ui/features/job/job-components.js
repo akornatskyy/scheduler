@@ -2,7 +2,7 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import {Form, Button, Col} from 'react-bootstrap';
 
-import {FieldError, Tip} from '../../shared/shared';
+import {FieldError, Tip} from '../../shared/components';
 
 const httpMethodsWithBody = ['POST', 'PUT', 'PATCH'];
 
