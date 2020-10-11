@@ -1,53 +1,44 @@
-const prod = !!process.env.NODE_ENV && process.env.NODE_ENV.startsWith('prod');
 const path = require('path');
-const pkg = require('./package.json');
-const webpack = require('webpack');
 const HtmlPlugin = require('html-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 const plugins = [
   new HtmlPlugin({
     template: 'index.html',
-    favicon: 'favicon.ico',
-    minify: true
+    favicon: 'favicon.ico'
   })
 ];
 
-if (prod) {
-  const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-  plugins.push(
-      new webpack.optimize.OccurrenceOrderPlugin(),
-      new UglifyJsPlugin()
-  );
-}
-
 module.exports = {
-  mode: prod ? 'production' : 'development',
+  mode: 'development',
   context: path.resolve(__dirname, 'ui'),
   entry: {
-    lib: Object.keys(pkg.dependencies),
     app: ['./index.js']
   },
   output: {
     path: path.resolve(__dirname, 'static'),
     filename: 'js/[name].[chunkhash:5].js'
   },
+  devtool: 'source-map',
   plugins: plugins,
-  performance: {
-    maxEntrypointSize: 360000,
-    maxAssetSize: 320000
-  },
   optimization: {
-    noEmitOnErrors: true,
     splitChunks: {
       cacheGroups: {
-        commons: {
-          chunks: 'initial',
-          minChunks: 2,
+        lib: {
           name: 'lib',
-          minSize: 0
+          chunks: 'all',
+          test: /[\\/]node_modules[\\/]/
         }
       }
-    }
+    },
+    minimizer: [new TerserPlugin({
+      extractComments: false,
+      terserOptions: {
+        output: {
+          comments: false,
+        },
+      },
+    })],
   },
   module: {
     rules: [

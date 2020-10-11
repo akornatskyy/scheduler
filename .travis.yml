@@ -17,4 +17,4 @@ matrix:
       script:
         - npm test -- --coverage
         - npm run lint
-        - NODE_ENV=production npm run build
+        - npm run build -- --mode=production

@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/NYTimes/gziphandler"
 	"github.com/julienschmidt/httprouter"
@@ -29,7 +30,11 @@ func serveJavascript() httprouter.Handle {
 		req.URL.Path = p.ByName("filepath")
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("Cache-Control", "max-age=31536000, immutable")
-		w.Header().Set("Content-Type", "application/javascript; charset=UTF-8")
+		if strings.HasSuffix(req.URL.Path, ".map") {
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		} else {
+			w.Header().Set("Content-Type", "application/javascript; charset=UTF-8")
+		}
 		fileServer.ServeHTTP(w, req)
 	}
 }

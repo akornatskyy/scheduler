@@ -19,7 +19,7 @@ WORKDIR /src
 RUN set -ex \
     \
     && npm i \
-    && NODE_ENV=production npm run build
+    && npm run build -- --mode=production
 
 FROM scratch
 
