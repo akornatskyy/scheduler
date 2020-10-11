@@ -15,6 +15,6 @@ matrix:
       install:
         - npm i
       script:
-        - npm test -- --coverage
+        - npm test -- --coverage && npx coveralls < coverage/lcov.info
         - npm run lint
         - npm run build -- --mode=production
