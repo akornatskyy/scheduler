@@ -1,19 +1,18 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {render, screen} from '@testing-library/react';
 
 import FieldError from './FieldError';
 
 describe('field error', () => {
   it('handles no error', () => {
-    const w = shallow(<FieldError />);
+    const {container} = render(<FieldError />);
 
-    expect(w.getElement()).toBeNull();
+    expect(container.firstChild).toBeNull();
   });
 
   it('shows error', () => {
-    const w = shallow(<FieldError message="The error message." />);
+    render(<FieldError message="The error message." />);
 
-    expect(w.find('p').prop('className')).toMatch(/invalid-feedback/);
-    expect(w.find('p').text()).toBe('The error message.');
+    expect(screen.getByText('The error message.')).toBeVisible();
   });
 });

@@ -1,5 +1,6 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {MemoryRouter as Router} from 'react-router-dom';
+import {render, screen, waitFor} from '@testing-library/react';
 
 import * as api from './variables-api';
 import Variables from './variables';
@@ -15,60 +16,63 @@ describe('variables', () => {
     jest.clearAllMocks();
   });
 
-  it('handles list collections error', () => {
+  it('handles list collections error', async () => {
     const errors = {__ERROR__: 'The error text.'};
-    api.listCollections.mockImplementation(rejectPromise(errors));
-    api.listVariables.mockImplementation(resolvePromise({items: []}));
+    api.listCollections.mockRejectedValue(errors);
+    api.listVariables.mockResolvedValue({items: []});
 
-    const w = shallow(<Variables {...props} />);
+    render(<Router><Variables {...props} /></Router>);
 
-    expect(api.listCollections).toBeCalledTimes(1);
+    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
     expect(api.listCollections).toBeCalledWith();
     expect(api.listVariables).toBeCalledTimes(1);
     expect(api.listVariables).toBeCalledWith(null);
-    expect(w.state('errors')).toEqual(errors);
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
-  it('handles list variables error', () => {
+  it('handles list variables error', async () => {
     const errors = {__ERROR__: 'The error text.'};
-    api.listCollections.mockImplementation(resolvePromise({items: []}));
-    api.listVariables.mockImplementation(rejectPromise(errors));
+    api.listCollections.mockResolvedValue({items: []});
+    api.listVariables.mockRejectedValue(errors);
 
-    const w = shallow(<Variables {...props} />);
+    render(<Router><Variables {...props} /></Router>);
 
-    expect(api.listCollections).toBeCalledTimes(1);
+    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
     expect(api.listCollections).toBeCalledWith();
     expect(api.listVariables).toBeCalledTimes(1);
     expect(api.listVariables).toBeCalledWith(null);
-    expect(w.state('errors')).toEqual(errors);
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
-  it('updates state with fetched items', () => {
-    const collections = [{
-      id: '65ada2f9'
-    }];
-    api.listCollections.mockImplementation(resolvePromise({
-      items: collections
-    }));
-    const variables = [{
-      collectionId: '65ada2f9'
-    }];
-    api.listVariables.mockImplementation(resolvePromise({
-      items: variables
-    }));
+  it('updates state with fetched items', async () => {
+    api.listCollections.mockResolvedValue({
+      items: [{
+        id: '65ada2f9',
+        name: 'My App',
+      }]
+    });
+    api.listVariables.mockResolvedValue({
+      items: [{
+        id: 'c23abe44',
+        collectionId: '65ada2f9',
+        name: 'My Var',
+      }]
+    });
 
-    const w = shallow(
-        <Variables {...props} location={{search: '?collectionId=65ada2f9'}} />
+    render(
+        <Router>
+          <Variables
+            {...props}
+            location={{search: '?collectionId=65ada2f9'}}
+          />
+        </Router>
     );
 
-    expect(api.listCollections).toBeCalledTimes(1);
+    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
     expect(api.listCollections).toBeCalledWith();
     expect(api.listVariables).toBeCalledTimes(1);
     expect(api.listVariables).toBeCalledWith('65ada2f9');
-    expect(w.state()).toEqual({
-      collections,
-      variables,
-      errors: {}
-    });
+    expect(screen.getByText('My App')).toBeVisible();
+    expect(screen.getByText('My Var')).toBeVisible();
   });
 });

@@ -1,5 +1,6 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {MemoryRouter as Router} from 'react-router-dom';
+import {render, screen, waitFor} from '@testing-library/react';
 
 import * as api from './collections-api';
 import Collections from './collections';
@@ -11,32 +12,29 @@ describe('collections', () => {
     jest.clearAllMocks();
   });
 
-  it('handles list error', () => {
+  it('handles list error', async () => {
     const errors = {__ERROR__: 'The error text.'};
-    api.listCollections.mockImplementation(rejectPromise(errors));
+    api.listCollections.mockRejectedValue(errors);
 
-    const w = shallow(<Collections />);
+    render(<Router><Collections /></Router>);
 
-    expect(api.listCollections).toBeCalledTimes(1);
+    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
     expect(api.listCollections).toBeCalledWith();
-    expect(w.state('errors')).toEqual(errors);
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
-  it('updates state with fetched items', () => {
+  it('updates state with fetched items', async () => {
     const items = [{
       id: '65ada2f9',
       name: 'My App #1',
       state: 'enabled'
     }];
-    api.listCollections.mockImplementation(resolvePromise({items}));
+    api.listCollections.mockResolvedValue({items});
 
-    const w = shallow(<Collections />);
+    render(<Router><Collections /></Router>);
 
+    await waitFor(() => expect(api.listCollections).toBeCalled());
     expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
-    expect(w.state()).toEqual({
-      errors: {},
-      items
-    });
+    expect(screen.getByText('My App #1')).toBeVisible();
   });
 });

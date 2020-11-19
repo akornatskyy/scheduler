@@ -1,5 +1,6 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {MemoryRouter as Router} from 'react-router-dom';
+import {render, screen, waitFor} from '@testing-library/react';
 
 import * as api from './jobs-api';
 import Jobs from './jobs';
@@ -11,89 +12,81 @@ describe('jobs', () => {
     location: {}
   };
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+  beforeEach(() => jest.clearAllMocks());
 
-  it('handles list collections error', () => {
+  it('handles list collections error', async () => {
     const errors = {__ERROR__: 'The error text.'};
-    api.listCollections.mockImplementation(rejectPromise(errors));
-    api.listJobs.mockImplementation(resolvePromise({items: []}));
+    api.listCollections.mockRejectedValue(errors);
+    api.listJobs.mockResolvedValue({items: []});
 
-    const w = shallow(<Jobs {...props} />);
+    render(<Router><Jobs {...props} /></Router>);
 
+    await waitFor(() => expect(api.listCollections).toBeCalledWith());
     expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
     expect(api.listJobs).toBeCalledTimes(1);
     expect(api.listJobs).toBeCalledWith(null);
-    expect(w.state('errors')).toEqual(errors);
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
-  it('handles list jobs error', () => {
+  it('handles list jobs error', async () => {
     const errors = {__ERROR__: 'The error text.'};
-    api.listCollections.mockImplementation(resolvePromise({items: []}));
-    api.listJobs.mockImplementation(rejectPromise(errors));
+    api.listCollections.mockResolvedValue({items: []});
+    api.listJobs.mockRejectedValue(errors);
 
-    const w = shallow(<Jobs {...props} />);
+    render(<Router><Jobs {...props} /></Router>);
 
+    await waitFor(() => expect(api.listCollections).toBeCalledWith());
     expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
     expect(api.listJobs).toBeCalledTimes(1);
     expect(api.listJobs).toBeCalledWith(null);
-    expect(w.state('errors')).toEqual(errors);
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
-  it('updates state with fetched items', () => {
-    const collections = [{
-      id: '65ada2f9'
-    }];
-    api.listCollections.mockImplementation(resolvePromise({
-      items: collections
-    }));
-    const jobs = [{
-      collectionId: '65ada2f9'
-    }];
-    api.listJobs.mockImplementation(resolvePromise({
-      items: jobs
-    }));
+  it('updates state with fetched items', async () => {
+    api.listCollections.mockResolvedValue({
+      items: [{id: '65ada2f9'}]
+    });
+    api.listJobs.mockResolvedValue({
+      items: [{
+        id: '845ab32f',
+        collectionId: '65ada2f9'
+      }]
+    });
 
-    const w = shallow(
-        <Jobs {...props} location={{search: '?collectionId=65ada2f9'}} />
+    render(
+        <Router>
+          <Jobs {...props} location={{search: '?collectionId=65ada2f9'}} />
+        </Router>
     );
 
+    await waitFor(() => expect(api.listCollections).toBeCalledWith());
     expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
     expect(api.listJobs).toBeCalledTimes(1);
     expect(api.listJobs).toBeCalledWith('65ada2f9');
-    expect(w.state()).toEqual({
-      collections,
-      jobs,
-      errors: {}
-    });
   });
 
-  it('refreshes on timer', () => {
+  it('refreshes on timer', async () => {
     jest.useFakeTimers();
-    api.listCollections.mockImplementation(resolvePromise({items: []}));
-    api.listJobs.mockImplementation(resolvePromise({items: []}));
+    api.listCollections.mockResolvedValue({items: []});
+    api.listJobs.mockResolvedValue({items: []});
 
-    shallow(<Jobs {...props} />);
+    render(<Router><Jobs {...props} /></Router>);
     jest.runOnlyPendingTimers();
 
-    expect(api.listCollections).toBeCalledTimes(2);
+    await waitFor(() => expect(api.listCollections).toBeCalledTimes(2));
     expect(api.listJobs).toBeCalledTimes(2);
   });
 
-  it('clears timer on unmount', () => {
+  it('clears timer on unmount', async () => {
     jest.useFakeTimers();
-    api.listCollections.mockImplementation(resolvePromise({items: []}));
-    api.listJobs.mockImplementation(resolvePromise({items: []}));
-
-    const w = shallow(<Jobs {...props} />);
-    w.unmount();
-
-    expect(setInterval).toBeCalledTimes(1);
+    api.listCollections.mockResolvedValue({items: []});
+    api.listJobs.mockResolvedValue({items: []});
+    const {unmount} = render(<Router><Jobs {...props} /></Router>);
+    await waitFor(() => expect(setInterval).toBeCalledTimes(1));
     expect(setInterval).toBeCalledWith(expect.anything(), 10000);
+
+    unmount();
+
     expect(clearInterval).toBeCalledTimes(1);
   });
 });

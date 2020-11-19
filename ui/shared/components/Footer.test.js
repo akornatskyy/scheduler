@@ -1,12 +1,12 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {render, screen} from '@testing-library/react';
 
 import Footer from './Footer';
 
 describe('footer component', () => {
   it('renders a link to documentation', () => {
-    const w = shallow(<Footer />);
+    render(<Footer />);
 
-    expect(w.find('a').text()).toBe('Documentation');
+    expect(screen.getByText('Documentation')).toBeVisible();
   });
 });

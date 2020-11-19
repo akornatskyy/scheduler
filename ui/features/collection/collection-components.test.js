@@ -1,11 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {MemoryRouter as Router} from 'react-router-dom';
+import {render, screen, fireEvent} from '@testing-library/react';
 
 import {CollectionForm} from './collection-components';
-
-/**
- * @typedef {import('enzyme').ShallowWrapper} ShallowWrapper
- */
 
 describe('collection form component', () => {
   let props = null;
@@ -22,46 +19,50 @@ describe('collection form component', () => {
   });
 
   it('renders add item', () => {
-    const p = new Page(shallow(<CollectionForm {...props} />));
+    render(<CollectionForm {...props} />);
 
-    expect(p.data()).toEqual(props.item);
-    expect(p.controls()).toEqual({
-      save: {disabled: false}
-    });
+    expect(screen.getByRole('form')).toHaveFormValues(props.item);
+    expect(screen.getByText('Save')).toBeEnabled();
+    expect(screen.queryByText('Variables')).not.toBeInTheDocument();
+    expect(screen.queryByText('Jobs')).not.toBeInTheDocument();
+    expect(screen.queryByText('Delete')).not.toBeInTheDocument();
   });
 
   it('renders edit item', () => {
-    const p = new Page(shallow(
-        <CollectionForm {...props} item={{...props.item, id: '65ada2f9'}} />
-    ));
+    render(
+        <Router>
+          <CollectionForm {...props} item={{...props.item, id: '65ada2f9'}} />
+        </Router>
+    );
 
-    expect(p.data()).toEqual(props.item);
-    expect(p.controls()).toMatchObject({
-      save: {disabled: false},
-      delete: {disabled: false}
-    });
+    expect(screen.getByRole('form')).toHaveFormValues(props.item);
+    expect(screen.getByText('Save')).toBeEnabled();
+    expect(screen.getByText('Variables')).toBeEnabled();
+    expect(screen.getByText('Jobs')).toBeEnabled();
+    expect(screen.getByText('Delete')).toBeEnabled();
   });
 
   it('calls on change callback', () => {
-    const onChange = jest.fn();
-    const p = new Page(shallow(
-        <CollectionForm {...props} onChange={onChange} />
-    ));
+    const handler = jest.fn();
+    render(<CollectionForm {...props} onChange={handler} />);
 
-    p.change({name: 'My Other App', state: 'disabled'});
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: {
+        value: 'My Other App'
+      }
+    });
+    expect(handler).toBeCalledTimes(1);
 
-    expect(onChange).toBeCalledTimes(2);
-    expect(onChange).nthCalledWith(1, 'name', 'My Other App');
-    expect(onChange).nthCalledWith(2, 'state', 'disabled');
+    handler.mockClear();
+    fireEvent.click(screen.getByLabelText('Enabled'));
+    expect(handler).toBeCalledTimes(1);
   });
 
   it('calls on save callback', () => {
     const handler = jest.fn();
-    const p = new Page(shallow(
-        <CollectionForm {...props} onSave={handler} />
-    ));
+    render(<CollectionForm {...props} onSave={handler} />);
 
-    p.save();
+    fireEvent.click(screen.getByText('Save'));
 
     expect(handler).toBeCalledWith();
   });
@@ -69,28 +70,34 @@ describe('collection form component', () => {
   it('calls on delete callback', () => {
     props.item.id = '65ada2f9';
     const handler = jest.fn();
+    render(
+        <Router>
+          <CollectionForm {...props} onDelete={handler} />
+        </Router>
+    );
 
-    const p = new Page(shallow(
-        <CollectionForm {...props} onDelete={handler} />
-    ));
-    p.delete();
+    fireEvent.click(screen.getByText('Delete'));
 
-    expect(handler).toBeCalledWith();
+    expect(handler).toBeCalled();
   });
 
   it('handles undefined callbacks', () => {
     props.item.id = '65ada2f9';
-    const p = new Page(shallow(<CollectionForm {...props} />));
+    render(
+        <Router>
+          <CollectionForm {...props} />
+        </Router>
+    );
 
-    p.change({name: ''});
-    p.save();
-    p.delete();
+    fireEvent.change(screen.getByLabelText('Name'));
+    fireEvent.click(screen.getByText('Save'));
+    fireEvent.click(screen.getByText('Delete'));
   });
 
   it('renders no errors', () => {
-    const p = new Page(shallow(<CollectionForm {...props} />));
+    const {container} = render(<CollectionForm {...props} />);
 
-    expect(p.errors()).toEqual({});
+    expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
   });
 
   it('renders all errors', () => {
@@ -99,91 +106,10 @@ describe('collection form component', () => {
       state: 'An error related to state.'
     };
 
-    const p = new Page(shallow(
-        <CollectionForm {...props} errors={errors} />
-    ));
+    render(<CollectionForm {...props} errors={errors} />);
 
-    expect(p.errors()).toEqual(errors);
+    for (const name of Object.getOwnPropertyNames(errors)) {
+      expect(screen.getByText(errors[name])).toBeVisible();
+    }
   });
 });
-
-class Page {
-  fields = ['name', 'state']; // Must be listed in the same order as in form.
-  selectors = {
-    name: 'FormControl[name="name"]',
-    stateEnabled: '#stateEnabled',
-    stateDisabled: '#stateDisabled',
-    save: 'Button[type="submit"]',
-    delete: 'Button[variant="danger"]'
-  };
-
-  /**
-   * @param {ShallowWrapper} w
-   */
-  constructor(w) {
-    this.w = w;
-  }
-
-  data() {
-    return {
-      name: this.w.find(this.selectors.name).props().value,
-      state: this.w.find(
-          this.selectors.stateEnabled
-      ).props().checked ?
-        'enabled' :
-        this.w.find(this.selectors.stateDisabled).props().checked ?
-          'disabled' : ''
-    };
-  }
-
-  change(item) {
-    this.changeControl(this.selectors.name, 'name', item.name);
-    this.changeControl(this.selectors.stateEnabled, 'state', item.state);
-  }
-
-  changeControl(selector, name, value) {
-    if (value === undefined) {
-      return;
-    }
-    this.w.find(selector).simulate('change', {
-      target: {
-        name,
-        value
-      }
-    });
-  }
-
-  errors() {
-    const errors = {};
-    this.w.find('FieldError').forEach((n, i) => {
-      const m = n.props().message;
-      if (m) {
-        errors[this.fields[i]] = m;
-      }
-    });
-    return errors;
-  }
-
-  controls() {
-    const controls = {
-      save: {
-        disabled: this.w.find(this.selectors.save).props().disabled
-      }
-    };
-    const b = this.w.find(this.selectors.delete);
-    if (b.exists()) {
-      controls.delete = {
-        disabled: b.props().disabled
-      };
-    }
-    return controls;
-  }
-
-  save() {
-    this.w.find('Form').simulate('submit', {preventDefault: () => { }});
-  }
-
-  delete() {
-    this.w.find(this.selectors.delete).simulate('click');
-  }
-}

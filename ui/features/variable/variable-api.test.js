@@ -6,20 +6,19 @@ describe('variable api', () => {
     delete global.fetch;
   });
 
-  it('retrieve', () => {
-    global.fetch = jest.fn(resolvePromise({
+  it('retrieve', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => {
-        return {then: (f) => f({name: 'My Var'})};
-      }
-    }));
+      json: () => Promise.resolve({name: 'My Var'})
+    });
 
-    api.retrieveVariable('123').then((d) => expect(d).toEqual({
+    const d = await api.retrieveVariable('123');
+
+    expect(d).toEqual({
       etag: '"2hhaswzbz72p8"',
       name: 'My Var'
-    }));
-
+    });
     expect(global.fetch).toBeCalledWith('/variables/123', {
       method: 'GET',
       headers: {
@@ -28,14 +27,14 @@ describe('variable api', () => {
     });
   });
 
-  it('save (create)', () => {
-    global.fetch = jest.fn(resolvePromise({
+  it('save (create)', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
       status: 201
-    }));
+    });
 
-    api.saveVariable({
+    await api.saveVariable({
       name: 'My Var'
-    }).then(() => {});
+    });
 
     expect(global.fetch).toBeCalledWith('/variables', {
       method: 'POST',
@@ -47,17 +46,17 @@ describe('variable api', () => {
     });
   });
 
-  it('save (update)', () => {
-    global.fetch = jest.fn(resolvePromise({
+  it('save (update)', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
       status: 204
-    }));
+    });
 
-    api.saveVariable({
+    await api.saveVariable({
       id: '123',
       etag: '"2hhaswzbz72p8"',
       updated: '2019-08-29T13:29:36.976Z',
       name: 'My Var'
-    }).then(() => {});
+    });
 
     expect(global.fetch).toBeCalledWith('/variables/123', {
       method: 'PATCH',
@@ -70,12 +69,12 @@ describe('variable api', () => {
     });
   });
 
-  it('delete', () => {
-    global.fetch = jest.fn(resolvePromise({
+  it('delete', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
       status: 204
-    }));
+    });
 
-    api.deleteVariable('123', '"2hhaswzbz72p8"').then(() => {});
+    await api.deleteVariable('123', '"2hhaswzbz72p8"');
 
     expect(global.fetch).toBeCalledWith('/variables/123', {
       method: 'DELETE',

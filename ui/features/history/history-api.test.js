@@ -7,22 +7,19 @@ describe('history api', () => {
   });
 
   describe('job status', () => {
-    it('retrieve', () => {
-      global.fetch = jest.fn(resolvePromise({
+    it('retrieve', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
         status: 200,
         headers: {get: () => '"2hhaswzbz72p8"'},
-        json: () => {
-          return {then: (f) => f({
-            running: false
-          })};
-        }
-      }));
+        json: () => Promise.resolve({running: false})
+      });
 
-      api.retrieveJobStatus('123').then((d) => expect(d).toEqual({
+      const d = await api.retrieveJobStatus('123');
+
+      expect(d).toEqual({
         etag: '"2hhaswzbz72p8"',
         running: false
-      }));
-
+      });
       expect(global.fetch).toBeCalledWith('/jobs/123/status', {
         method: 'GET',
         headers: {
@@ -31,17 +28,17 @@ describe('history api', () => {
       });
     });
 
-    it('patch', () => {
-      global.fetch = jest.fn(resolvePromise({
+    it('patch', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
         status: 204
-      }));
+      });
 
-      api.patchJobStatus('123', {
+      await api.patchJobStatus('123', {
         id: '1234',
         etag: '"2hhaswzbz72p8"',
         updated: '2019-08-29T13:29:36.976Z',
         running: true
-      }).then(() => {});
+      });
 
       expect(global.fetch).toBeCalledWith('/jobs/123/status', {
         method: 'PATCH',
@@ -56,22 +53,19 @@ describe('history api', () => {
   });
 
   describe('job history', () => {
-    it('list job history', () => {
-      global.fetch = jest.fn(resolvePromise({
+    it('list job history', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
         status: 200,
         headers: {get: () => '"2hhaswzbz72p8"'},
-        json: () => {
-          return {then: (f) => f({
-            items: []
-          })};
-        }
-      }));
+        json: () => Promise.resolve({items: []})
+      });
 
-      api.listJobHistory('123').then((d) => expect(d).toEqual({
+      const d = await api.listJobHistory('123');
+
+      expect(d).toEqual({
         etag: '"2hhaswzbz72p8"',
         items: []
-      }));
-
+      });
       expect(global.fetch).toBeCalledWith('/jobs/123/history', {
         method: 'GET',
         headers: {
@@ -80,12 +74,12 @@ describe('history api', () => {
       });
     });
 
-    it('delete job history', () => {
-      global.fetch = jest.fn(resolvePromise({
+    it('delete job history', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
         status: 204
-      }));
+      });
 
-      api.deleteJobHistory('123', '"2hhaswzbz72p8"').then(() => {});
+      await api.deleteJobHistory('123', '"2hhaswzbz72p8"');
 
       expect(global.fetch).toBeCalledWith('/jobs/123/history', {
         method: 'DELETE',

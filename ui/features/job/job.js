@@ -118,7 +118,7 @@ export default class Job extends React.Component {
         action: {
           request: {
             headers: {
-              [i]: {name: {$set: name}, value: {$set: value}}
+              [i]: {[name]: {$set: value}}
             }
           }
         }

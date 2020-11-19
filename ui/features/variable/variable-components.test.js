@@ -1,11 +1,8 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {render, screen, fireEvent} from '@testing-library/react';
 
 import {VariableForm} from './variable-components';
 
-/**
- * @typedef {import('enzyme').ShallowWrapper} ShallowWrapper
- */
 
 describe('variable', () => {
   let props = null;
@@ -17,96 +14,95 @@ describe('variable', () => {
         name: 'My Var #1',
         value: 'Some Value'
       },
-      collections: [{id: '65ada2f9', name: 'My App #1'}],
+      collections: [
+        {id: '65ada2f9', name: 'My App #1'},
+        {id: 'de1044cc', name: 'My App #2'},
+      ],
       pending: false,
       errors: {}
     };
   });
 
   it('renders add item', () => {
-    const p = new Page(shallow(<VariableForm {...props} />));
+    render(<VariableForm {...props} />);
 
-    expect(p.data()).toEqual({
-      collectionId: '65ada2f9',
-      name: 'My Var #1',
-      value: 'Some Value'
-    });
-    expect(p.controls()).toEqual({
-      save: {disabled: false}
-    });
+    expect(screen.getByLabelText('Name')).toHaveValue('My Var #1');
+    expect(screen.getByLabelText('Value')).toHaveValue('Some Value');
+    expect(screen.getByLabelText('Collection')).toHaveTextContent('My App #1');
+    expect(screen.getByText('Save')).toBeVisible();
+    expect(screen.queryByText('Delete')).not.toBeInTheDocument();
   });
 
   it('renders edit item', () => {
-    const p = new Page(shallow(
+    render(
         <VariableForm {...props} item={{...props.item, id: '123de331'}} />
-    ));
+    );
 
-    expect(p.data()).toEqual({
-      collectionId: '65ada2f9',
-      name: 'My Var #1',
-      value: 'Some Value'
-    });
-    expect(p.controls()).toEqual({
-      save: {disabled: false},
-      delete: {disabled: false}
-    });
+    expect(screen.getByLabelText('Name')).toHaveValue('My Var #1');
+    expect(screen.getByLabelText('Collection')).toHaveTextContent('My App #1');
+    expect(screen.getByLabelText('Value')).toHaveValue('Some Value');
+    expect(screen.getByText('Save')).toBeVisible();
+    expect(screen.getByText('Delete')).toBeVisible();
   });
 
   it('calls on change callback', () => {
     const handler = jest.fn();
-    const p = new Page(shallow(
-        <VariableForm {...props} onChange={handler} />
-    ));
+    render(<VariableForm {...props} onChange={handler} />);
 
-    p.change({
-      collectionId: 'de1044cc',
-      name: 'My Other Var',
-      value: 'Hello'
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: {
+        value: 'My Other Var'
+      }
+    });
+    fireEvent.change(screen.getByLabelText('Collection'), {
+      target: {
+        value: 'de1044cc'
+      }
+    });
+    fireEvent.change(screen.getByLabelText('Value'), {
+      target: {
+        value: 'Hello'
+      }
     });
 
     expect(handler).toBeCalledTimes(3);
-    expect(handler).nthCalledWith(1, 'collectionId', 'de1044cc');
-    expect(handler).nthCalledWith(2, 'name', 'My Other Var');
+    expect(handler).nthCalledWith(1, 'name', 'My Other Var');
+    expect(handler).nthCalledWith(2, 'collectionId', 'de1044cc');
     expect(handler).nthCalledWith(3, 'value', 'Hello');
   });
 
   it('calls on save callback', () => {
     const handler = jest.fn();
+    render(<VariableForm {...props} onSave={handler} />);
 
-    const p = new Page(shallow(
-        <VariableForm {...props} onSave={handler} />
-    ));
-    p.save();
+    fireEvent.click(screen.getByText('Save'));
 
-    expect(handler).toBeCalledWith();
+    expect(handler).toBeCalled();
   });
 
   it('calls on delete callback', () => {
     props.item.id = '65ada2f9';
     const handler = jest.fn();
+    render(<VariableForm {...props} onDelete={handler} />);
 
-    const p = new Page(shallow(
-        <VariableForm {...props} onDelete={handler} />
-    ));
-    p.delete();
+    fireEvent.click(screen.getByText('Delete'));
 
-    expect(handler).toBeCalledWith();
+    expect(handler).toBeCalled();
   });
 
   it('handles undefined callbacks', () => {
     props.item.id = '65ada2f9';
+    render(<VariableForm {...props} />);
 
-    const p = new Page(shallow(<VariableForm {...props} />));
-
-    p.change({name: ''});
-    p.save();
-    p.delete();
+    fireEvent.change(screen.getByLabelText('Name'));
+    fireEvent.click(screen.getByText('Save'));
+    fireEvent.click(screen.getByText('Delete'));
   });
 
   it('renders no errors', () => {
-    const p = new Page(shallow(<VariableForm {...props} />));
+    const {container} = render(<VariableForm {...props} />);
 
-    expect(p.errors()).toEqual({});
+    expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
   });
 
   it('renders all errors', () => {
@@ -116,89 +112,10 @@ describe('variable', () => {
       value: 'An error related to value.'
     };
 
-    const p = new Page(shallow(<VariableForm {...props} errors={errors} />));
+    render(<VariableForm {...props} errors={errors} />);
 
-    expect(p.errors()).toEqual(errors);
+    for (const name of Object.getOwnPropertyNames(errors)) {
+      expect(screen.getByText(errors[name])).toBeVisible();
+    }
   });
 });
-
-class Page {
-  fields = ['name', 'collectionId', 'value'];
-  selectors = {
-    collectionId: 'FormControl[name="collectionId"]',
-    name: 'FormControl[name="name"]',
-    value: 'FormControl[name="value"]',
-    save: 'Button[type="submit"]',
-    delete: 'Button[variant="danger"]'
-  };
-
-  /**
-   * @param {ShallowWrapper} w
-   */
-  constructor(w) {
-    this.w = w;
-  }
-
-  data() {
-    return {
-      collectionId: this.w.find(
-          'FormControl[name="collectionId"]'
-      ).props().value,
-      name: this.w.find('FormControl[name="name"]').props().value,
-      value: this.w.find('FormControl[name="value"]').props().value,
-    };
-  }
-
-  change(item) {
-    this.changeControl(
-        this.selectors.collectionId, 'collectionId', item.collectionId);
-    this.changeControl(this.selectors.name, 'name', item.name);
-    this.changeControl(this.selectors.value, 'value', item.value);
-  }
-
-  changeControl(selector, name, value) {
-    if (value === undefined) {
-      return;
-    }
-    this.w.find(selector).simulate('change', {
-      target: {
-        name,
-        value
-      }
-    });
-  }
-
-  errors() {
-    const errors = {};
-    this.w.find('FieldError').forEach((n, i) => {
-      const m = n.props().message;
-      if (m) {
-        errors[this.fields[i]] = m;
-      }
-    });
-    return errors;
-  }
-
-  controls() {
-    const controls = {
-      save: {
-        disabled: this.w.find('Button[type="submit"]').props().disabled
-      }
-    };
-    const b = this.w.find('Button[variant="danger"]');
-    if (b.exists()) {
-      controls.delete = {
-        disabled: b.props().disabled
-      };
-    }
-    return controls;
-  }
-
-  save() {
-    this.w.find('Form').simulate('submit', {preventDefault: () => {}});
-  }
-
-  delete() {
-    this.w.find('Button[variant="danger"]').simulate('click');
-  }
-}

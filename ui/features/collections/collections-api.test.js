@@ -6,20 +6,19 @@ describe('collections api', () => {
     delete global.fetch;
   });
 
-  it('list', () => {
-    global.fetch = jest.fn(resolvePromise({
+  it('list', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => {
-        return {then: (f) => f({items: []})};
-      }
-    }));
+      json: () => Promise.resolve({items: []})
+    });
 
-    api.listCollections().then((d) => expect(d).toEqual({
+    const d = await api.listCollections();
+
+    expect(d).toEqual({
       etag: '"2hhaswzbz72p8"',
       items: []
-    }));
-
+    });
     expect(global.fetch).toBeCalledWith('/collections', {
       method: 'GET',
       headers: {

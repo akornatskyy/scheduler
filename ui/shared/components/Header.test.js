@@ -1,13 +1,15 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {MemoryRouter as Router} from 'react-router-dom';
+import {render, screen} from '@testing-library/react';
 
 import Header from './Header';
 
 describe('header component', () => {
   it('renders links', () => {
-    const w = shallow(<Header />);
+    render(<Router><Header /></Router>);
 
-    expect(w.find('NavLink').map((l) => l.props().to))
-        .toEqual(['/collections', '/variables', '/jobs']);
+    expect(screen.getByText('Collections')).toBeVisible();
+    expect(screen.getByText('Variables')).toBeVisible();
+    expect(screen.getByText('Jobs')).toBeVisible();
   });
 });

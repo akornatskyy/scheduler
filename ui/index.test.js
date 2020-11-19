@@ -1,10 +1,8 @@
 import React from 'react';
-import {mount} from 'enzyme';
-import {MemoryRouter} from 'react-router-dom';
+import {MemoryRouter as Router} from 'react-router-dom';
+import {render, screen} from '@testing-library/react';
 
 import {App} from './index';
-
-jest.mock('react-dom');
 
 describe('index', () => {
   it.each([
@@ -15,16 +13,14 @@ describe('index', () => {
     ['/collections/65ada2f9', 'Collection'],
     ['/jobs/add', 'Job'],
     ['/jobs/7ce1f17e', 'Job'],
-    ['/jobs/7ce1f17e/history', 'JobHistory'],
+    ['/jobs/7ce1f17e/history', 'Job History'],
   ])('routes %s to %s', (path, component) => {
-    const w = mount(
-        <MemoryRouter initialEntries={[path]}>
+    render(
+        <Router initialEntries={[path]}>
           <App />
-        </MemoryRouter>
+        </Router>
     );
 
-    expect(w.exists('Header')).toBe(true);
-    expect(w.exists(component)).toBe(true);
-    expect(w.exists('Footer')).toBe(true);
+    expect(screen.getByRole('heading')).toHaveTextContent(component);
   });
 });

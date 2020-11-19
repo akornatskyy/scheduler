@@ -1,11 +1,7 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {render, screen, fireEvent} from '@testing-library/react';
 
 import {JobHistoryList, formatRunning, formatDate} from './history-components';
-
-/**
- * @typedef {import('enzyme').ShallowWrapper} ShallowWrapper
- */
 
 describe('job history status', () => {
   it.each([
@@ -38,20 +34,11 @@ describe('job history component', () => {
   const props = {status: {}, items: []};
 
   it('renders empty list', () => {
-    const p = new Page(shallow(
+    const {container} = render(
         <JobHistoryList {...props} />
-    ));
+    );
 
-    expect(p.data()).toEqual({
-      status: {
-        lastRun: 'N/A',
-        nextRun: 'N/A',
-        runCount: ' / ',
-        running: '',
-      },
-      items: []
-    });
-    expect(p.controls()).toEqual({run: {disabled: false}});
+    expect(container.querySelector('tbody')).toBeEmptyDOMElement();
   });
 
   it('renders items', () => {
@@ -78,138 +65,53 @@ describe('job history component', () => {
       }
     ];
 
-    const p = new Page(shallow(
-        <JobHistoryList status={status} items={items} />
-    ));
+    render(<JobHistoryList status={status} items={items} />);
 
-    expect(p.data()).toEqual({
-      status: {
-        running: 'Scheduled',
-        runCount: '17 / 5',
-        lastRun: new Date('2019-08-29T13:29:36.976Z').toLocaleString(),
-        nextRun: 'N/A'
-      },
-      items: [
-        {
-          action: 'HTTP',
-          started: new Date('2019-09-18T06:26:13Z').toLocaleString(),
-          finished: new Date('2019-09-18T06:27:02Z').toLocaleString(),
-          status: 'failed',
-          retries: '3',
-          message: '404 Not Found'
-        },
-        {
-          action: 'HTTP',
-          started: new Date('2019-09-18T06:25:56Z').toLocaleString(),
-          finished: new Date('2019-09-18T06:25:56Z').toLocaleString(),
-          status: 'completed',
-          retries: '',
-          message: ''
-        }
-      ]
-    });
-    expect(p.controls()).toEqual({run: {disabled: false}, delete: {}});
+    expect(screen.getByText('Scheduled')).toBeVisible();
+    expect(screen.getByText('17 / 5')).toBeVisible();
+    expect(screen.getByText(
+        new Date('2019-08-29T13:29:36.976Z').toLocaleString())).toBeVisible();
+    expect(screen.getByText('N/A')).toBeVisible();
+    expect(screen.getByText('failed')).toBeVisible();
+    expect(screen.getByText('completed')).toBeVisible();
+
+    expect(screen.getByText('Back')).toBeEnabled();
+    expect(screen.getByText('Run')).toBeEnabled();
+    expect(screen.getByText('Delete')).toBeEnabled();
   });
 
   it('calls on back callback', () => {
     const handler = jest.fn();
+    render(<JobHistoryList {...props} onBack={handler} />);
 
-    const p = new Page(shallow(
-        <JobHistoryList {...props} onBack={handler} />
-    ));
-    p.back();
+    fireEvent.click(screen.getByText('Back'));
 
-    expect(handler).toBeCalledWith();
+    expect(handler).toBeCalled();
   });
 
   it('calls on run callback', () => {
     const handler = jest.fn();
+    render(<JobHistoryList {...props} onRun={handler} />);
 
-    const p = new Page(shallow(
-        <JobHistoryList {...props} onRun={handler} />
-    ));
-    p.run();
+    fireEvent.click(screen.getByText('Run'));
 
-    expect(handler).toBeCalledWith();
+    expect(handler).toBeCalled();
   });
 
   it('calls on delete callback', () => {
     const handler = jest.fn();
+    render(<JobHistoryList {...props} items={[{}]} onDelete={handler} />);
 
-    const p = new Page(shallow(
-        <JobHistoryList {...props} items={[{}]} onDelete={handler} />
-    ));
-    p.delete();
+    fireEvent.click(screen.getByText('Delete'));
 
-    expect(handler).toBeCalledWith();
+    expect(handler).toBeCalled();
   });
 
   it('handles undefined callbacks', () => {
-    const p = new Page(shallow(
-        <JobHistoryList {...props} items={[{}]} />
-    ));
+    render(<JobHistoryList {...props} items={[{}]} />);
 
-    p.back();
-    p.run();
-    p.delete();
+    fireEvent.click(screen.getByText('Back'));
+    fireEvent.click(screen.getByText('Run'));
+    fireEvent.click(screen.getByText('Delete'));
   });
 });
-
-
-class Page {
-  /**
-   * @param {ShallowWrapper} w
-   */
-  constructor(w) {
-    this.w = w;
-  }
-
-  data() {
-    const cols = this.w.find('Col');
-    return {
-      status: {
-        running: cols.at(1).text(),
-        runCount: cols.at(3).text(),
-        lastRun: cols.at(5).text(),
-        nextRun: cols.at(7).text()
-      },
-      items: this.w.find('tbody tr').map((r) => {
-        const c = r.find('td');
-        return {
-          action: c.at(0).text(),
-          started: c.at(1).text(),
-          finished: c.at(2).text(),
-          status: c.at(3).text(),
-          retries: c.at(4).text(),
-          message: c.at(5).text()
-        };
-      })
-    };
-  }
-
-  controls() {
-    const controls = {
-      run: {
-        disabled: this.w.find('Button[variant="outline-secondary"]')
-            .props().disabled
-      }
-    };
-    const b = this.w.find('Button[variant="danger"]');
-    if (b.exists()) {
-      controls.delete = {};
-    }
-    return controls;
-  }
-
-  back() {
-    this.w.find('Button').first().simulate('click');
-  }
-
-  run() {
-    this.w.find('Button[variant="outline-secondary"]').simulate('click');
-  }
-
-  delete() {
-    this.w.find('Button[variant="danger"]').simulate('click');
-  }
-}

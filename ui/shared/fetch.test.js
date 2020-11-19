@@ -7,12 +7,12 @@ describe('fetch go', () => {
   });
 
   describe('handles error: ', () => {
-    it('unexpected', () => {
-      global.fetch = jest.fn(rejectPromise({
+    it('unexpected', async () => {
+      global.fetch = jest.fn().mockRejectedValue({
         message: 'unexpected error'
-      }));
+      });
 
-      go('GET', '/').catch((e) => expect(e).toEqual({
+      await go('GET', '/').catch((e) => expect(e).toEqual({
         __ERROR__: 'unexpected error'
       }));
 
@@ -24,13 +24,13 @@ describe('fetch go', () => {
       });
     });
 
-    it('not found', () => {
-      global.fetch = jest.fn(resolvePromise({
+    it('not found', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
         status: 404,
         statusText: 'Not Found'
-      }));
+      });
 
-      go('GET', '/').catch((e) => expect(e).toEqual({
+      await go('GET', '/').catch((e) => expect(e).toEqual({
         __ERROR__: '404: Not Found'
       }));
 
@@ -42,8 +42,8 @@ describe('fetch go', () => {
       });
     });
 
-    it('bad request', () => {
-      global.fetch = jest.fn(resolvePromise({
+    it('bad request', async () => {
+      global.fetch = jest.fn().mockResolvedValue({
         status: 400,
         json: () => {
           return {then: (f) => f({errors: [
@@ -57,9 +57,9 @@ describe('fetch go', () => {
             }
           ]})};
         }
-      }));
+      });
 
-      go('POST', '/').catch((e) => expect(e).toEqual({
+      await go('POST', '/').catch((e) => expect(e).toEqual({
         name: 'Required field cannot be left blank.'
       }));
 

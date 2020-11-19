@@ -8,11 +8,10 @@ export const VariableForm = ({
 }) => {
   const handleChange = ({target: {name, value}}) => onChange?.(name, value);
   return (
-    <Form autoComplete="off"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSave?.();
-      }}>
+    <Form autoComplete="off" role="form" onSubmit={(e) => {
+      e.preventDefault();
+      onSave?.();
+    }}>
       <Form.Row>
         <Form.Group as={Col} controlId="name">
           <Form.Label>Name</Form.Label>

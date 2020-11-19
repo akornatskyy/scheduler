@@ -1,5 +1,6 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {MemoryRouter as Router} from 'react-router-dom';
+import {render, screen, waitFor, fireEvent} from '@testing-library/react';
 
 import * as api from './collection-api';
 import Collection from './collection';
@@ -20,112 +21,135 @@ describe('collection', () => {
   });
 
   it('renders add item if no id specified', () => {
-    const w = shallow(<Collection {...props} />);
+    render(<Collection {...props} />);
 
     expect(api.retrieveCollection).toBeCalledTimes(0);
-    expect(w.state()).toEqual({
-      item: {name: '', state: 'enabled'},
-      pending: false,
-      errors: {},
+    expect(screen.getByRole('form')).toHaveFormValues({
+      name: '',
+      state: 'enabled',
     });
   });
 
-  it('renders edit item', () => {
+  it('renders edit item', async () => {
     props.match.params.id = '65ada2f9';
-    api.retrieveCollection.mockImplementation(resolvePromise({
+    api.retrieveCollection.mockResolvedValue({
       name: 'My Other App',
-      state: 'disabled'
-    }));
+      state: 'disabled',
+    });
 
-    const w = shallow(<Collection {...props} />);
+    render(<Collection {...props} />);
 
-    expect(api.retrieveCollection).toBeCalledWith('65ada2f9');
-    expect(w.state()).toEqual({
-      item: {name: 'My Other App', state: 'disabled'},
-      pending: false,
-      errors: {},
+    await waitFor(() => expect(api.retrieveCollection).toBeCalledWith(
+        '65ada2f9'
+    ));
+    expect(screen.getByRole('form')).toHaveFormValues({
+      name: 'My Other App',
+      state: 'disabled',
     });
   });
 
-  it('handles retrieve error', () => {
+  it('handles retrieve error', async () => {
     props.match.params.id = '65ada2f9';
     const errors = {__ERROR__: 'The error text.'};
-    api.retrieveCollection.mockImplementation(rejectPromise(errors));
+    api.retrieveCollection.mockRejectedValue(errors);
 
-    const w = shallow(<Collection {...props} />);
+    render(<Collection {...props} />);
 
-    expect(w.state('errors')).toEqual(errors);
+    await waitFor(() => expect(api.retrieveCollection).toBeCalled());
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
   it('handles change', () => {
-    const w = shallow(<Collection {...props} />);
-    const f = w.find('CollectionForm');
+    render(<Collection {...props} />);
 
-    f.simulate('change', 'name', 'My Other App');
-    f.simulate('change', 'state', 'disabled');
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: {
+        value: 'My Other App'
+      }
+    });
+    fireEvent.click(screen.getByLabelText('Disabled'));
 
-    expect(w.state('item')).toEqual({
+    expect(screen.getByRole('form')).toHaveFormValues({
       name: 'My Other App',
-      state: 'disabled'
+      state: 'disabled',
     });
   });
 
-  it('saves item', () => {
-    api.saveCollection.mockImplementation(resolvePromise());
-    const w = shallow(<Collection {...props} />);
+  it('saves item', async () => {
+    api.saveCollection.mockResolvedValue();
+    render(<Collection {...props} />);
 
-    w.find('CollectionForm').simulate('save');
+    fireEvent.click(screen.getByText('Save'));
 
-    expect(api.saveCollection).toBeCalledWith({name: '', state: 'enabled'});
+    await waitFor(() => expect(api.saveCollection).toBeCalledWith({
+      name: '',
+      state: 'enabled',
+    }));
     expect(props.history.goBack.mock.calls.length).toBe(1);
-    expect(w.state('errors')).toEqual({});
   });
 
-  it('handles save errors', () => {
+  it('handles save errors', async () => {
     const errors = {
       __ERROR__: 'The error text.',
       name: 'The field error message.'
     };
-    api.saveCollection.mockImplementation(rejectPromise(errors));
-    const w = shallow(<Collection {...props} />);
+    api.saveCollection.mockRejectedValue(errors);
+    render(<Collection {...props} />);
 
-    w.find('CollectionForm').simulate('save');
+    fireEvent.click(screen.getByText('Save'));
 
-    expect(api.saveCollection).toBeCalledTimes(1);
+    await waitFor(() => expect(api.saveCollection).toBeCalledTimes(1));
     expect(props.history.goBack.mock.calls.length).toBe(0);
-    expect(w.state('errors')).toEqual(errors);
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByText(errors.name)).toBeVisible();
   });
 
-  it('deletes item', () => {
+  it('deletes item', async () => {
     props.match.params.id = '65ada2f9';
-    api.retrieveCollection.mockImplementation(resolvePromise({
+    api.retrieveCollection.mockResolvedValue({
       id: '65ada2f9',
-      etag: '"1n9er1hz749r"'
-    }));
-    api.deleteCollection.mockImplementation(resolvePromise());
-    const w = shallow(<Collection {...props} />);
+      name: '',
+      etag: '"1n9er1hz749r"',
+    });
+    api.deleteCollection.mockResolvedValue();
+    const {container} = render(
+        <Router>
+          <Collection {...props} />
+        </Router>
+    );
+    await waitFor(() => expect(api.retrieveCollection).toBeCalled());
 
-    w.find('CollectionForm').simulate('delete');
+    fireEvent.click(screen.getByText('Delete'));
 
-    expect(api.deleteCollection).toBeCalledWith('65ada2f9', '"1n9er1hz749r"');
+    await waitFor(() => expect(api.deleteCollection).toBeCalledWith(
+        '65ada2f9', '"1n9er1hz749r"',
+    ));
     expect(props.history.goBack.mock.calls.length).toBe(1);
-    expect(w.state('errors')).toEqual({});
+    expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
   });
 
-  it('handles delete error', () => {
+  it('handles delete error', async () => {
     props.match.params.id = '65ada2f9';
-    api.retrieveCollection.mockImplementation(resolvePromise({
+    api.retrieveCollection.mockResolvedValue({
       id: '65ada2f9',
-      etag: '"1n9er1hz749r"'
-    }));
+      name: '',
+      etag: '"1n9er1hz749r"',
+    });
     const errors = {__ERROR__: 'The error text.'};
-    api.deleteCollection.mockImplementation(rejectPromise(errors));
-    const w = shallow(<Collection {...props} />);
+    api.deleteCollection.mockRejectedValue(errors);
+    const {container} = render(
+        <Router>
+          <Collection {...props} />
+        </Router>
+    );
+    await waitFor(() => expect(api.retrieveCollection).toBeCalled());
 
-    w.find('CollectionForm').simulate('delete');
+    fireEvent.click(screen.getByText('Delete'));
 
-    expect(api.deleteCollection).toBeCalledWith('65ada2f9', '"1n9er1hz749r"');
+    await waitFor(() => expect(api.deleteCollection).toBeCalledWith(
+        '65ada2f9', '"1n9er1hz749r"',
+    ));
     expect(props.history.goBack.mock.calls.length).toBe(0);
-    expect(w.state('errors')).toEqual(errors);
+    expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
   });
 });

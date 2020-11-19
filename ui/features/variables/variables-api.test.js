@@ -6,20 +6,19 @@ describe('variables api', () => {
     delete global.fetch;
   });
 
-  it('list', () => {
-    global.fetch = jest.fn(resolvePromise({
+  it('list', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => {
-        return {then: (f) => f({items: []})};
-      }
-    }));
+      json: () => Promise.resolve({items: []})
+    });
 
-    api.listVariables().then((d) => expect(d).toEqual({
+    const d = await api.listVariables();
+
+    expect(d).toEqual({
       etag: '"2hhaswzbz72p8"',
       items: []
-    }));
-
+    });
     expect(global.fetch).toBeCalledWith('/variables', {
       method: 'GET',
       headers: {
@@ -28,20 +27,19 @@ describe('variables api', () => {
     });
   });
 
-  it('list by collection id', () => {
-    global.fetch = jest.fn(resolvePromise({
+  it('list by collection id', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => {
-        return {then: (f) => f({items: []})};
-      }
-    }));
+      json: () => Promise.resolve({items: []})
+    });
 
-    api.listVariables('123').then((d) => expect(d).toEqual({
+    const d = await api.listVariables('123');
+
+    expect(d).toEqual({
       etag: '"2hhaswzbz72p8"',
       items: []
-    }));
-
+    });
     expect(global.fetch).toBeCalledWith('/variables?collectionId=123', {
       method: 'GET',
       headers: {

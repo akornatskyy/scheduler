@@ -22,7 +22,7 @@ export class JobForm extends React.Component {
   handlePolicyChange = ({target: {name, value}}) => {
     this.props.onPolicyChange?.(
         name,
-      name === 'retryCount' ? parseInt(value) : value);
+        name === 'retryCount' && value.length > 0 ? parseInt(value) : value);
   };
 
   handleHeaderChange = ({target: {name, value}}, i) => {
@@ -69,7 +69,7 @@ export class JobForm extends React.Component {
       );
     }
     return (
-      <Form autoComplete="off" onSubmit={this.handleSave}>
+      <Form autoComplete="off" role="form" onSubmit={this.handleSave}>
         <Form.Row>
           <Form.Group as={Col} controlId="name">
             <Form.Label>Name</Form.Label>

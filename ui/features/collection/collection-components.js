@@ -9,11 +9,10 @@ export const CollectionForm = ({
 }) => {
   const handleChange = ({target: {name, value}}) => onChange?.(name, value);
   return (
-    <Form autoComplete="off"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSave?.();
-      }}>
+    <Form autoComplete="off" role="form" onSubmit={(e) => {
+      e.preventDefault();
+      onSave?.();
+    }}>
       <Form.Group controlId="name">
         <Form.Label>Name</Form.Label>
         <Form.Control
@@ -74,16 +73,14 @@ export const CollectionForm = ({
             className="ml-2">
             Jobs
           </Button>
+          <Button
+            onClick={onDelete}
+            variant="danger"
+            className="float-right"
+            disabled={pending}>
+            Delete
+          </Button>
         </>
-      )}
-      {item.id && (
-        <Button
-          onClick={onDelete}
-          variant="danger"
-          className="float-right"
-          disabled={pending}>
-          Delete
-        </Button>
       )}
     </Form>
   );

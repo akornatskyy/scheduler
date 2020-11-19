@@ -6,20 +6,19 @@ describe('jobs api', () => {
     delete global.fetch;
   });
 
-  it('list', () => {
-    global.fetch = jest.fn(resolvePromise({
+  it('list', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => {
-        return {then: (f) => f({items: []})};
-      }
-    }));
+      json: () => Promise.resolve({items: []})
+    });
 
-    api.listJobs().then((d) => expect(d).toEqual({
+    const d = await api.listJobs();
+
+    expect(d).toEqual({
       etag: '"2hhaswzbz72p8"',
       items: []
-    }));
-
+    });
     expect(global.fetch).toBeCalledWith('/jobs?fields=status,errorRate', {
       method: 'GET',
       headers: {
@@ -28,26 +27,27 @@ describe('jobs api', () => {
     });
   });
 
-  it('list by collection id', () => {
-    global.fetch = jest.fn(resolvePromise({
+  it('list by collection id', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => {
-        return {then: (f) => f({items: []})};
-      }
-    }));
+      json: () => Promise.resolve({items: []})
+    });
 
-    api.listJobs('123').then((d) => expect(d).toEqual({
+    const d = await api.listJobs('123');
+
+    expect(d).toEqual({
       etag: '"2hhaswzbz72p8"',
       items: []
-    }));
-
-    expect(global.fetch)
-        .toBeCalledWith('/jobs?fields=status,errorRate&collectionId=123', {
+    });
+    expect(global.fetch).toBeCalledWith(
+        '/jobs?fields=status,errorRate&collectionId=123',
+        {
           method: 'GET',
           headers: {
             'X-Requested-With': 'XMLHttpRequest',
           }
-        });
+        }
+    );
   });
 });

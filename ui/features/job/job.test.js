@@ -1,5 +1,6 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {MemoryRouter as Router} from 'react-router-dom';
+import {render, screen, fireEvent, waitFor} from '@testing-library/react';
 
 import * as api from './job-api';
 import Job from './job';
@@ -7,297 +8,296 @@ import Job from './job';
 jest.mock('./job-api');
 
 describe('job', () => {
+  const sampleJob = {
+    id: '7ce1f17e',
+    name: 'My Job #1',
+    state: 'disabled',
+    schedule: 'every 5m',
+    collectionId: '65ada2f9',
+    action: {
+      type: 'HTTP',
+      request: {
+        method: 'POST',
+        uri: 'http://localhost:8080',
+        headers: [{name: '', value: ''}],
+        body: '{}',
+      },
+      retryPolicy: {
+        retryCount: 2,
+        retryInterval: '30s',
+        deadline: '2m',
+      },
+    },
+  };
   let props = null;
 
   beforeEach(() => {
     props = {
       match: {params: {id: '7ce1f17e'}},
       history: {
-        goBack: jest.fn()
-      }
+        goBack: jest.fn(),
+      },
     };
-    api.listCollections.mockImplementation(resolvePromise({
+    api.listCollections.mockResolvedValue({
       items: [
         {
           id: '65ada2f9',
           name: 'My App #1',
-          state: 'enabled'
-        }
-      ]
-    }));
+          state: 'enabled',
+        },
+        {
+          id: '123de331',
+          name: 'My App #2',
+          state: 'disabled',
+        },
+      ],
+    });
     jest.clearAllMocks();
   });
 
   it('renders add item if no id specified', () => {
     props.match.params.id = null;
-    const w = shallow(<Job {...props} />);
+    render(<Job {...props} />);
 
     expect(api.listCollections).toBeCalledTimes(1);
     expect(api.listCollections).toBeCalledWith();
-    expect(w.state()).toEqual({
-      item: {
-        name: '',
-        state: 'enabled',
-        schedule: '',
-        collectionId: '65ada2f9',
-        action: {
-          type: 'HTTP',
-          request: {
-            method: 'GET',
-            uri: '',
-            headers: [],
-            body: ''
-          },
-          retryPolicy: {
-            retryCount: 3,
-            retryInterval: '10s',
-            deadline: '1m'
-          }
-        }
-      },
-      collections: [{
-        id: '65ada2f9',
-        name: 'My App #1',
-        state: 'enabled',
-      }],
-      pending: false,
-      errors: {}
-    });
   });
 
-  it('renders edit item', () => {
-    api.retrieveJob.mockImplementation(resolvePromise({
-      id: '7ce1f17e',
-      name: 'My Job #1',
-      state: 'disabled',
-      schedule: 'every 5m',
-      collectionId: '65ada2f9',
-      action: {
-        type: 'HTTP',
-        request: {
-          method: 'POST',
-          uri: 'http://localhost:8080',
-          headers: [{name: '', value: ''}],
-          body: '{}'
+  it('renders edit item', async () => {
+    api.retrieveJob.mockResolvedValue(sampleJob);
+
+    render(<Router><Job {...props} /></Router>);
+
+    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toBeCalledWith();
+    expect(api.retrieveJob).toBeCalledWith('7ce1f17e');
+
+    await waitFor(() => expect(screen.getByText('Delete')).toBeVisible());
+  });
+
+  it('shows field error when collections list is empty', async () => {
+    props.match.params.id = null;
+    api.listCollections.mockResolvedValue({items: []});
+
+    render(<Job {...props} />);
+
+    await waitFor(
+        () => expect(screen.getByText('There is no collection available.'))
+            .toBeVisible()
+    );
+  });
+
+  it('selects a first item from collections list', async () => {
+    props.match.params.id = null;
+    api.listCollections.mockResolvedValue({
+      items: [
+        {
+          id: '84432333',
+          name: 'My App',
+          state: 'enabled',
         },
-        retryPolicy: {
-          retryCount: 2,
-          retryInterval: '30s',
-          deadline: '2m'
-        }
-      }
-    }));
+        {
+          id: '65ada2f9',
+          name: 'My Other App',
+          state: 'enabled',
+        },
+      ],
+    });
 
-    const w = shallow(<Job {...props} />);
+    render(<Job {...props} />);
+
+    await waitFor(
+        () => expect(screen.getByLabelText('Collection'))
+            .toHaveValue('84432333')
+    );
+  });
+
+  it('list collections fails', async () => {
+    props.match.params.id = null;
+    const errors = {__ERROR__: 'The error text.'};
+    api.listCollections.mockRejectedValue(errors);
+
+    render(<Job {...props} />);
 
     expect(api.listCollections).toBeCalledTimes(1);
     expect(api.listCollections).toBeCalledWith();
-    expect(w.state()).toEqual({
-      item: {
-        id: '7ce1f17e',
-        name: 'My Job #1',
-        state: 'disabled',
-        schedule: 'every 5m',
-        collectionId: '65ada2f9',
-        action: {
-          type: 'HTTP',
-          request: {
-            method: 'POST',
-            uri: 'http://localhost:8080',
-            headers: [{name: '', value: ''}],
-            body: '{}'
-          },
-          retryPolicy: {
-            retryCount: 2,
-            retryInterval: '30s',
-            deadline: '2m'
-          }
-        }
-      },
-      collections: [{
-        id: '65ada2f9',
-        name: 'My App #1',
-        state: 'enabled',
-      }],
-      pending: false,
-      errors: {}
-    });
+    await waitFor(
+        () => expect(screen.getByText(errors.__ERROR__)).toBeVisible()
+    );
   });
 
-  it('shows field error when collections list is empty', () => {
-    props.match.params.id = null;
-    api.listCollections.mockImplementation(resolvePromise({items: []}));
-
-    const w = shallow(<Job {...props} />);
-
-    expect(w.state('pending')).toEqual(false);
-    expect(w.state('errors')).toEqual({
-      collectionId: 'There is no collection available.'
-    });
-  });
-
-  it('selects a first item from collections list', () => {
-    props.match.params.id = null;
-    api.listCollections.mockImplementation(resolvePromise({items: [
-      {
-        id: '84432333',
-        name: 'My App',
-        state: 'enabled'
-      },
-      {
-        id: '65ada2f9',
-        name: 'My Other App',
-        state: 'enabled'
-      }
-    ]}));
-
-    const w = shallow(<Job {...props} />);
-
-    expect(w.state('item').collectionId).toEqual('84432333');
-  });
-
-  it('list collections fails', () => {
-    props.match.params.id = null;
+  it('handles retrieve job error', async () => {
     const errors = {__ERROR__: 'The error text.'};
-    api.listCollections.mockImplementation(rejectPromise(errors));
+    api.retrieveJob.mockRejectedValue(errors);
 
-    const w = shallow(<Job {...props} />);
-
-    expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
-    expect(w.state('errors')).toEqual(errors);
-  });
-
-  it('handles retrieve job error', () => {
-    const errors = {__ERROR__: 'The error text.'};
-    api.retrieveJob.mockImplementation(rejectPromise(errors));
-
-    const w = shallow(<Job {...props} />);
+    render(<Job {...props} />);
 
     expect(api.retrieveJob).toBeCalledTimes(1);
     expect(api.retrieveJob).toBeCalledWith('7ce1f17e');
-    expect(w.state('errors')).toEqual(errors);
+    await waitFor(
+        () => expect(screen.getByText(errors.__ERROR__)).toBeVisible()
+    );
   });
 
-  it('handles item change', () => {
-    const w = shallow(<Job {...props} />);
-    const f = w.find('JobForm');
+  it('handles item change', async () => {
+    render(<Job {...props} />);
+    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
 
-    f.simulate('itemChange', 'collectionId', '123de331');
-    f.simulate('itemChange', 'name', 'My Other Task');
-    f.simulate('itemChange', 'state', 'disabled');
-    f.simulate('itemChange', 'schedule', '@every 15s');
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: {
+        value: 'My Other Task'
+      }
+    });
+    fireEvent.click(screen.getByLabelText('Disabled'));
+    fireEvent.change(screen.getByLabelText('Collection'), {
+      target: {
+        value: '123de331'
+      }
+    });
+    fireEvent.change(
+        screen.getByLabelText((component) => component.startsWith('Schedule')),
+        {
+          target: {
+            value: '@every 15s'
+          }
+        }
+    );
 
-    expect(w.state('item')).toMatchObject({
-      collectionId: '123de331',
+    expect(screen.getByRole('form')).toHaveFormValues({
       name: 'My Other Task',
       state: 'disabled',
-      schedule: '@every 15s'
+      collectionId: '123de331',
+      schedule: '@every 15s',
     });
   });
 
   it('handles action change', () => {
-    const w = shallow(<Job {...props} />);
-    const f = w.find('JobForm');
+    render(<Job {...props} />);
 
-    f.simulate('actionChange', 'type', 'HTTP');
+    fireEvent.change(screen.getByLabelText('Action'), {
+      target: {
+        value: 'HTTP'
+      }
+    });
 
-    expect(w.state('item').action).toMatchObject({
-      type: 'HTTP'
+    expect(screen.getByRole('form')).toHaveFormValues({
+      type: 'HTTP',
     });
   });
 
   it('handles request change', () => {
-    const w = shallow(<Job {...props} />);
-    const f = w.find('JobForm');
+    render(<Job {...props} />);
 
-    f.simulate('requestChange', 'method', 'POST');
-    f.simulate('requestChange', 'uri', 'https://localhost');
-    f.simulate('requestChange', 'body', '{}');
+    fireEvent.change(screen.getByLabelText('Method'), {
+      target: {
+        value: 'POST'
+      }
+    });
+    fireEvent.change(screen.getByLabelText('URI'), {
+      target: {
+        value: 'http://localhost'
+      }
+    });
+    fireEvent.change(screen.getByLabelText('Body'), {
+      target: {
+        value: '{}'
+      }
+    });
 
-    expect(w.state('item').action.request).toEqual({
+    expect(screen.getByRole('form')).toHaveFormValues({
       method: 'POST',
-      uri: 'https://localhost',
-      headers: [],
-      body: '{}'
+      uri: 'http://localhost',
+      body: '{}',
     });
   });
 
   it('handles policy change', () => {
-    const w = shallow(<Job {...props} />);
-    const f = w.find('JobForm');
+    render(<Job {...props} />);
 
-    f.simulate('policyChange', 'retryCount', 7);
-    f.simulate('policyChange', 'retryInterval', '45s');
-    f.simulate('policyChange', 'deadline', '3m');
+    fireEvent.change(screen.getByLabelText('Retry Count'), {
+      target: {
+        value: '7'
+      }
+    });
+    fireEvent.change(screen.getByLabelText('Interval'), {
+      target: {
+        value: '45s'
+      }
+    });
+    fireEvent.change(screen.getByLabelText('Deadline'), {
+      target: {
+        value: '3m'
+      }
+    });
 
-    expect(w.state('item').action.retryPolicy).toEqual({
+    expect(screen.getByRole('form')).toHaveFormValues({
       retryCount: 7,
       retryInterval: '45s',
-      deadline: '3m'
+      deadline: '3m',
     });
   });
 
-  it('handles add header', () => {
-    const w = shallow(<Job {...props} />);
-    const f = w.find('JobForm');
+  it('handles add header', async () => {
+    render(<Job {...props} />);
+    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
 
-    f.simulate('addHeader');
+    // Add header
+    fireEvent.click(screen.getByRole('button', {name: ''}));
 
-    expect(w.state('item').action.request.headers).toEqual([{
-      name: '', value: ''
-    }]);
+    expect(screen.getByRole('form')).toHaveFormValues({
+      name: ['', ''],
+      value: '',
+    });
   });
 
-  it('handles delete header', () => {
-    const w = shallow(<Job {...props} />);
-    const f = w.find('JobForm');
-    f.simulate('addHeader');
+  it('handles delete header', async () => {
+    render(<Job {...props} />);
+    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
+    // Add header
+    fireEvent.click(screen.getByRole('button', {name: ''}));
+    expect(screen.getByPlaceholderText('Value')).toBeVisible();
 
-    f.simulate('deleteHeader', 0);
+    // Delete header
+    fireEvent.click(
+        screen.getByRole((content, element) =>
+          content === 'button' && element.querySelector('i.fa-times') != null)
+    );
 
-    expect(w.state('item').action.request.headers).toEqual([]);
+    expect(screen.queryByPlaceholderText('Value')).not.toBeInTheDocument();
   });
 
-  it('handles header change', () => {
-    const w = shallow(<Job {...props} />);
-    const f = w.find('JobForm');
-    f.simulate('addHeader');
+  it('handles header change', async () => {
+    render(<Job {...props} />);
+    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
+    // Add header
+    fireEvent.click(screen.getByRole('button', {name: ''}));
+    fireEvent.change(
+        screen.getAllByPlaceholderText('Name')[1], {
+          target: {
+            value: 'X-Requested-With'
+          }
+        });
+    fireEvent.change(screen.getByPlaceholderText('Value'), {
+      target: {
+        value: 'XMLHttpRequest'
+      }
+    });
 
-    f.simulate('headerChange', 'X-Requested-With', 'XMLHttpRequest', 0);
-
-    expect(w.state('item').action.request.headers).toEqual([{
-      name: 'X-Requested-With', value: 'XMLHttpRequest'
-    }]);
+    expect(screen.getByRole('form')).toHaveFormValues({
+      name: ['', 'X-Requested-With'],
+      value: 'XMLHttpRequest',
+    });
   });
 
-  it('handles header mutiple changes', () => {
-    const w = shallow(<Job {...props} />);
-    const f = w.find('JobForm');
-
-    for (let i = 0; i < 8; i++) {
-      f.simulate('addHeader');
-      f.simulate('headerChange', `Name-${i}`, `Value-${i}`, i);
-    }
-    for (let i = 6; i > 1; i--) {
-      f.simulate('deleteHeader', i);
-    }
-
-    expect(w.state('item').action.request.headers).toEqual([
-      {name: 'Name-0', value: 'Value-0'},
-      {name: 'Name-1', value: 'Value-1'},
-      {name: 'Name-7', value: 'Value-7'}
-    ]);
-  });
-
-  it('saves item', () => {
+  it('saves item', async () => {
     props.match.params.id = null;
-    api.saveJob.mockImplementation(resolvePromise());
-    const w = shallow(<Job {...props} />);
+    api.saveJob.mockResolvedValue();
+    render(<Job {...props} />);
+    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
 
-    w.find('JobForm').simulate('save');
+    fireEvent.click(screen.getByText('Save'));
 
-    expect(api.saveJob).toBeCalledWith({
+    await waitFor(() => expect(api.saveJob).toBeCalledWith({
       name: '',
       state: 'enabled',
       collectionId: '65ada2f9',
@@ -308,61 +308,65 @@ describe('job', () => {
           method: 'GET',
           uri: '',
           headers: [],
-          body: ''
+          body: '',
         },
         retryPolicy: {
           retryCount: 3,
           retryInterval: '10s',
-          deadline: '1m'
-        }
-      }
-    });
+          deadline: '1m',
+        },
+      },
+    }));
     expect(props.history.goBack.mock.calls.length).toBe(1);
   });
 
-  it('handles save errors', () => {
+  it('handles save errors', async () => {
     const errors = {
       __ERROR__: 'The error text.',
-      name: 'The field error message.'
+      name: 'The field error message.',
     };
-    api.saveJob.mockImplementation(rejectPromise(errors));
-    const w = shallow(<Job {...props} />);
+    api.saveJob.mockRejectedValue(errors);
+    render(<Job {...props} />);
+    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
 
-    w.find('JobForm').simulate('save');
+    fireEvent.click(screen.getByText('Save'));
 
+    await waitFor(() => expect(api.saveJob).toBeCalled());
     expect(props.history.goBack.mock.calls.length).toBe(0);
-    expect(w.state('errors')).toEqual(errors);
+    expect(screen.getByText(errors.name)).toBeVisible();
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
-  it('deletes item', () => {
-    api.retrieveJob.mockImplementation(resolvePromise({
-      id: '65ada2f9',
+  it('deletes item', async () => {
+    api.retrieveJob.mockResolvedValue({
       etag: '"2hhaswzbz72p8"',
-      action: {request: {headers: []}, retryPolicy: {}}
-    }));
-    api.deleteJob.mockImplementation(resolvePromise());
-    const w = shallow(<Job {...props} />);
+      ...sampleJob,
+    });
+    api.deleteJob.mockResolvedValue();
+    render(<Router><Job {...props} /></Router>);
+    await waitFor(() => expect(api.retrieveJob).toBeCalledWith('7ce1f17e'));
 
-    w.find('JobForm').simulate('delete');
+    fireEvent.click(screen.getByText('Delete'));
 
-    expect(api.deleteJob).toBeCalledWith('65ada2f9', '"2hhaswzbz72p8"');
+    await waitFor(() => expect(api.deleteJob).toBeCalledWith(
+        '7ce1f17e', '"2hhaswzbz72p8"'
+    ));
     expect(props.history.goBack.mock.calls.length).toBe(1);
-    expect(w.state('errors')).toEqual({});
   });
 
-  it('handles delete errors', () => {
-    api.retrieveJob.mockImplementation(resolvePromise({
-      id: '65ada2f9',
-      etag: '"2hhaswzbz72p8"',
-      action: {request: {headers: []}, retryPolicy: {}}
-    }));
+  it('handles delete errors', async () => {
+    api.retrieveJob.mockResolvedValue(sampleJob);
     const errors = {__ERROR__: 'The error text.'};
-    api.deleteJob.mockImplementation(rejectPromise(errors));
-    const w = shallow(<Job {...props} />);
+    api.deleteJob.mockRejectedValue(errors);
+    render(<Router><Job {...props} /></Router>);
+    await waitFor(() => expect(api.retrieveJob).toBeCalledWith('7ce1f17e'));
 
-    w.find('JobForm').simulate('delete');
+    fireEvent.click(screen.getByText('Delete'));
 
+    await waitFor(() => expect(api.deleteJob).toBeCalledWith(
+        '7ce1f17e', undefined,
+    ));
     expect(props.history.goBack.mock.calls.length).toBe(0);
-    expect(w.state('errors')).toEqual(errors);
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 });

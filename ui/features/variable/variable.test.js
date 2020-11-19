@@ -1,5 +1,5 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {render, screen, waitFor, fireEvent} from '@testing-library/react';
 
 import * as api from './variable-api';
 import Variable from './variable';
@@ -16,82 +16,69 @@ describe('variable', () => {
         goBack: jest.fn()
       }
     };
-    api.listCollections.mockImplementation(resolvePromise({items: [
+    api.listCollections.mockResolvedValue({items: [
       {
         id: '65ada2f9',
         name: 'My App #1',
         state: 'enabled'
+      },
+      {
+        id: '123de331',
+        name: 'My App #2',
+        state: 'disabled'
       }
-    ]}));
+    ]});
     jest.clearAllMocks();
   });
 
-  it('renders add item if no id specified', () => {
+  it('renders add item if no id specified', async () => {
     props.match.params.id = null;
-    const w = shallow(<Variable {...props} />);
+    render(<Variable {...props} />);
 
-    expect(api.listCollections).toBeCalledTimes(1);
+    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
     expect(api.listCollections).toBeCalledWith();
-    expect(w.state()).toEqual({
-      item: {
-        collectionId: '65ada2f9',
-        name: '',
-        value: ''
-      },
-      collections: [{
-        id: '65ada2f9',
-        name: 'My App #1',
-        state: 'enabled',
-      }],
-      pending: false,
-      errors: {}
+    expect(api.retrieveVariable).toBeCalledTimes(0);
+    expect(screen.getByRole('form')).toHaveFormValues({
+      name: '',
+      collectionId: '65ada2f9',
+      value: '',
     });
   });
 
-  it('renders edit item', () => {
-    api.retrieveVariable.mockImplementation(resolvePromise({
+  it('renders edit item', async () => {
+    api.retrieveVariable.mockResolvedValue({
       id: '123de331',
+      collectionId: '65ada2f9',
       name: 'My Var #1',
       value: 'Some Value'
-    }));
+    });
 
-    const w = shallow(<Variable {...props} />);
+    render(<Variable {...props} />);
 
-    expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
-    expect(api.retrieveVariable).toBeCalledTimes(1);
+    await waitFor(() => expect(api.retrieveVariable).toBeCalledTimes(1));
     expect(api.retrieveVariable).toBeCalledWith('123de331');
-    expect(w.state()).toEqual({
-      item: {
-        collectionId: '65ada2f9',
-        id: '123de331',
-        name: 'My Var #1',
-        value: 'Some Value'
-      },
-      collections: [{
-        id: '65ada2f9',
-        name: 'My App #1',
-        state: 'enabled',
-      }],
-      pending: false,
-      errors: {}
+    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toBeCalledWith();
+    expect(screen.getByRole('form')).toHaveFormValues({
+      name: 'My Var #1',
+      collectionId: '65ada2f9',
+      value: 'Some Value',
     });
   });
 
-  it('shows field error when collections list is empty', () => {
-    api.listCollections.mockImplementation(resolvePromise({items: []}));
-
-    const w = shallow(<Variable {...props} />);
-
-    expect(w.state('pending')).toEqual(false);
-    expect(w.state('errors')).toEqual({
-      collectionId: 'There is no collection available.'
-    });
-  });
-
-  it('selects a first item from collections list', () => {
+  it('shows field error when collections list is empty', async () => {
     props.match.params.id = null;
-    api.listCollections.mockImplementation(resolvePromise({items: [
+    api.listCollections.mockResolvedValue({items: []});
+
+    render(<Variable {...props} />);
+
+    await waitFor(() => expect(api.listCollections).toBeCalled());
+    expect(screen.getByText('There is no collection available.')).toBeVisible();
+  });
+
+  it('selects a first item from collections list', async () => {
+    props.match.params.id = null;
+    api.listCollections.mockResolvedValue({items: [
       {
         id: '84432333',
         name: 'My App',
@@ -102,25 +89,26 @@ describe('variable', () => {
         name: 'My Other App',
         state: 'enabled'
       }
-    ]}));
+    ]});
 
-    const w = shallow(<Variable {...props} />);
+    render(<Variable {...props} />);
 
-    expect(w.state('item')).toEqual({
+    await waitFor(() => expect(api.listCollections).toBeCalled());
+    expect(screen.getByRole('form')).toHaveFormValues({
+      name: '',
       collectionId: '84432333',
-      name: '',
-      value: ''
+      value: '',
     });
   });
 
-  it('selects collection list', () => {
-    api.retrieveVariable.mockImplementation(resolvePromise({
+  it('selects collection list', async () => {
+    api.retrieveVariable.mockResolvedValue({
       id: '123de331',
       collectionId: '65ada2f9',
       name: 'My Var #1',
       value: 'Some Value'
-    }));
-    api.listCollections.mockImplementation(resolvePromise({items: [
+    });
+    api.listCollections.mockResolvedValue({items: [
       {
         id: '84432333',
         name: 'My App',
@@ -131,118 +119,138 @@ describe('variable', () => {
         name: 'My Other App',
         state: 'enabled'
       }
-    ]}));
+    ]});
 
-    const w = shallow(<Variable {...props} />);
+    render(<Variable {...props} />);
 
-    expect(w.state('item')).toEqual({
-      collectionId: '65ada2f9',
-      id: '123de331',
+    await waitFor(() => expect(api.listCollections).toBeCalled());
+    expect(screen.getByRole('form')).toHaveFormValues({
       name: 'My Var #1',
-      value: 'Some Value'
+      collectionId: '65ada2f9',
+      value: 'Some Value',
     });
   });
 
-  it('shows summary error when list collections fails', () => {
+  it('shows summary error when list collections fails', async () => {
     const errors = {__ERROR__: 'The error text.'};
-    api.listCollections.mockImplementation(rejectPromise(errors));
+    api.listCollections.mockRejectedValue(errors);
 
-    const w = shallow(<Variable {...props} />);
+    render(<Variable {...props} />);
 
-    expect(w.state('errors')).toEqual(errors);
+    await waitFor(() => expect(api.listCollections).toBeCalled());
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
-  it('retrieve error', () => {
+  it('retrieve error', async () => {
     const errors = {__ERROR__: 'The error text.'};
-    api.retrieveVariable.mockImplementation(rejectPromise(errors));
+    api.retrieveVariable.mockRejectedValue(errors);
 
-    const w = shallow(<Variable {...props} />);
+    render(<Variable {...props} />);
 
-    expect(w.state('errors')).toEqual(errors);
+    await waitFor(() => expect(api.retrieveVariable).toBeCalled());
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
-  it('handles change', () => {
-    const w = shallow(<Variable {...props} />);
-    const f = w.find('VariableForm');
+  it('handles change', async () => {
+    render(<Variable {...props} />);
+    await waitFor(() => expect(api.listCollections).toBeCalled());
 
-    f.simulate('change', 'collectionId', '123de331');
-    f.simulate('change', 'name', 'My Other Var');
-    f.simulate('change', 'value', 'Hello');
+    fireEvent.change(screen.getByLabelText('Name'), {
+      target: {
+        value: 'My Other Var'
+      }
+    });
+    fireEvent.change(screen.getByLabelText('Collection'), {
+      target: {
+        value: '123de331'
+      }
+    });
+    fireEvent.change(screen.getByLabelText('Value'), {
+      target: {
+        value: 'Hello'
+      }
+    });
 
-    expect(w.state('item')).toEqual({
-      collectionId: '123de331',
+    expect(screen.getByRole('form')).toHaveFormValues({
       name: 'My Other Var',
-      value: 'Hello'
+      collectionId: '123de331',
+      value: 'Hello',
     });
   });
 
-  it('saves item', () => {
+  it('saves item', async () => {
     props.match.params.id = null;
-    api.saveVariable.mockImplementation(resolvePromise());
-    const w = shallow(<Variable {...props} />);
+    api.saveVariable.mockResolvedValue();
+    render(<Variable {...props} />);
+    await waitFor(() => expect(api.listCollections).toBeCalled());
 
-    w.find('VariableForm').simulate('save');
+    fireEvent.click(screen.getByText('Save'));
 
-    expect(api.saveVariable).toBeCalledWith({
+    await waitFor(() => expect(api.saveVariable).toBeCalledWith({
       collectionId: '65ada2f9',
       name: '',
       value: ''
-    });
+    }));
     expect(props.history.goBack.mock.calls.length).toBe(1);
-    expect(w.state('errors')).toEqual({});
   });
 
-  it('handles save errors', () => {
+  it('handles save errors', async () => {
     props.match.params.id = null;
     const errors = {
       __ERROR__: 'The error text.',
       name: 'The field error message.'
     };
-    api.saveVariable.mockImplementation(rejectPromise(errors));
-    const w = shallow(<Variable {...props} />);
+    api.saveVariable.mockRejectedValue(errors);
+    render(<Variable {...props} />);
+    await waitFor(() => expect(api.listCollections).toBeCalled());
 
-    w.find('VariableForm').simulate('save');
+    fireEvent.click(screen.getByText('Save'));
 
-    expect(api.saveVariable).toBeCalledWith({
+    await waitFor(() => expect(api.saveVariable).toBeCalledWith({
       collectionId: '65ada2f9',
       name: '',
       value: ''
-    });
+    }));
     expect(props.history.goBack.mock.calls.length).toBe(0);
-    expect(w.state('errors')).toEqual(errors);
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByText(errors.name)).toBeVisible();
   });
 
-  it('deletes item', () => {
+  it('deletes item', async () => {
     props.match.params.id = '65ada2f9';
-    api.retrieveVariable.mockImplementation(resolvePromise({
+    api.retrieveVariable.mockResolvedValue({
       id: '65ada2f9',
       name: 'My Var #1',
       value: 'Some Value',
       etag: '"1n9er1hz749r"'
-    }));
-    api.deleteVariable.mockImplementation(resolvePromise());
-    const w = shallow(<Variable {...props} />);
+    });
+    api.deleteVariable.mockResolvedValue();
+    render(<Variable {...props} />);
+    await waitFor(() => expect(api.listCollections).toBeCalled());
 
-    w.find('VariableForm').simulate('delete');
+    fireEvent.click(screen.getByText('Delete'));
 
-    expect(api.deleteVariable).toBeCalledWith('65ada2f9', '"1n9er1hz749r"');
+    await waitFor(() => expect(api.deleteVariable).toBeCalledWith(
+        '65ada2f9', '"1n9er1hz749r"'
+    ));
     expect(props.history.goBack.mock.calls.length).toBe(1);
-    expect(w.state('errors')).toEqual({});
   });
 
-  it('handles delete error', () => {
-    api.retrieveVariable.mockImplementation(resolvePromise({
+  it('handles delete error', async () => {
+    api.retrieveVariable.mockResolvedValue({
       id: '123de331',
       name: 'My Var #1',
       value: 'Some Value',
-    }));
+    });
     const errors = {__ERROR__: 'The error text.'};
-    api.deleteVariable.mockImplementation(rejectPromise(errors));
-    const w = shallow(<Variable {...props} />);
+    api.deleteVariable.mockRejectedValue(errors);
+    render(<Variable {...props} />);
+    await waitFor(() => expect(api.listCollections).toBeCalled());
 
-    w.find('VariableForm').simulate('delete');
+    fireEvent.click(screen.getByText('Delete'));
 
+    await waitFor(() => expect(api.deleteVariable).toBeCalled());
     expect(props.history.goBack.mock.calls.length).toBe(0);
-    expect(w.state('errors')).toEqual(errors);
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 });

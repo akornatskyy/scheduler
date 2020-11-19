@@ -39,5 +39,5 @@ export const App = () => (
 
 ReactDOM.render(
     <Router><App /></Router>,
-    document.getElementById('root')
+    document.getElementById('root') || document.createElement('div')
 );

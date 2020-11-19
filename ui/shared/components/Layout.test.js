@@ -1,17 +1,17 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {render, screen} from '@testing-library/react';
 
 import Layout from './Layout';
 
 describe('layout component', () => {
   it('renders title, errors summary and child', () => {
-    const w = shallow(
-        <Layout title="My Title">
+    render(
+        <Layout title="My Title" errors={{}}>
           Child
         </Layout>
     );
 
-    expect(w.find('h1').text()).toBe('My Title');
-    expect(w.find('article').text()).toBe('<ErrorSummary />Child');
+    expect(screen.getByRole('heading')).toHaveTextContent('My Title');
+    expect(screen.getByText('Child')).toBeVisible();
   });
 });
