@@ -33,7 +33,7 @@
   "dependencies": {
     "immutability-helper": "^3.1.1",
     "react": "^17.0.1",
-    "react-bootstrap": "^1.4.0",
+    "react-bootstrap": "^1.4.3",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0"
   },
@@ -43,21 +43,21 @@
     "@babel/plugin-proposal-optional-chaining": "^7.12.7",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-react": "^7.12.10",
-    "@testing-library/jest-dom": "^5.11.6",
-    "@testing-library/react": "^11.2.2",
-    "@types/jest": "^26.0.19",
+    "@testing-library/jest-dom": "^5.11.8",
+    "@testing-library/react": "^11.2.3",
+    "@types/jest": "^26.0.20",
     "@types/react": "^17.0.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
-    "eslint": "^7.16.0",
+    "eslint": "^7.17.0",
     "eslint-config-google": "^0.14.0",
-    "eslint-plugin-react": "^7.21.5",
-    "html-webpack-plugin": "^4.5.0",
+    "eslint-plugin-react": "^7.22.0",
+    "html-webpack-plugin": "^4.5.1",
     "jest": "^26.6.3",
     "react-hot-loader": "^4.13.0",
-    "terser-webpack-plugin": "^5.0.3",
-    "webpack": "^5.11.0",
-    "webpack-cli": "^4.2.0",
-    "webpack-dev-server": "^3.11.0"
+    "terser-webpack-plugin": "^5.1.1",
+    "webpack": "^5.13.0",
+    "webpack-cli": "^4.3.1",
+    "webpack-dev-server": "^3.11.1"
   }
 }
