@@ -6,7 +6,7 @@ branches:
 matrix:
   include:
     - language: go
-      go: "1.15"
+      go: "1.16"
       before_install:
         - go get github.com/mattn/goveralls
       script:
