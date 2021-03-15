@@ -75,6 +75,7 @@ describe('jobs', () => {
 
     await waitFor(() => expect(api.listCollections).toBeCalledTimes(2));
     expect(api.listJobs).toBeCalledTimes(2);
+    expect(setInterval).toBeCalledTimes(1);
   });
 
   it('clears timer on unmount', async () => {
@@ -82,7 +83,9 @@ describe('jobs', () => {
     api.listCollections.mockResolvedValue({items: []});
     api.listJobs.mockResolvedValue({items: []});
     const {unmount} = render(<Router><Jobs {...props} /></Router>);
-    await waitFor(() => expect(setInterval).toBeCalledTimes(1));
+    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
+    expect(api.listJobs).toBeCalledTimes(1);
+    expect(setInterval).toBeCalledTimes(1);
     expect(setInterval).toBeCalledWith(expect.anything(), 10000);
 
     unmount();
