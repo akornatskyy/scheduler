@@ -67,6 +67,7 @@ describe('jobs', () => {
 
   it('refreshes on timer', async () => {
     jest.useFakeTimers();
+    jest.spyOn(global, 'setInterval');
     api.listCollections.mockResolvedValue({items: []});
     api.listJobs.mockResolvedValue({items: []});
 
@@ -80,6 +81,8 @@ describe('jobs', () => {
 
   it('clears timer on unmount', async () => {
     jest.useFakeTimers();
+    jest.spyOn(global, 'setInterval');
+    jest.spyOn(global, 'clearInterval');
     api.listCollections.mockResolvedValue({items: []});
     api.listJobs.mockResolvedValue({items: []});
     const {unmount} = render(<Router><Jobs {...props} /></Router>);
