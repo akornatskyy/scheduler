@@ -1,0 +1,148 @@
+version: 2
+updates:
+- package-ecosystem: gomod
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "03:00"
+  open-pull-requests-limit: 15
+  ignore:
+  - dependency-name: github.com/lib/pq
+    versions:
+    - 1.10.0
+  - dependency-name: github.com/akornatskyy/goext
+    versions:
+    - 1.4.2
+    - 1.4.3
+- package-ecosystem: docker
+  directory: "/misc/docker"
+  schedule:
+    interval: daily
+    time: "03:00"
+  open-pull-requests-limit: 15
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "03:00"
+  open-pull-requests-limit: 15
+  ignore:
+  - dependency-name: "@testing-library/jest-dom"
+    versions:
+    - 5.11.10
+    - 5.11.9
+    - 5.12.0
+  - dependency-name: webpack
+    versions:
+    - 5.18.0
+    - 5.19.0
+    - 5.20.0
+    - 5.20.1
+    - 5.20.2
+    - 5.21.2
+    - 5.22.0
+    - 5.23.0
+    - 5.24.0
+    - 5.24.1
+    - 5.24.2
+    - 5.24.3
+    - 5.24.4
+    - 5.25.1
+    - 5.26.0
+    - 5.26.2
+    - 5.26.3
+    - 5.27.1
+    - 5.28.0
+    - 5.30.0
+    - 5.31.0
+    - 5.31.2
+    - 5.32.0
+    - 5.33.2
+    - 5.34.0
+    - 5.35.0
+  - dependency-name: "@babel/core"
+    versions:
+    - 7.12.13
+    - 7.12.16
+    - 7.12.17
+    - 7.13.1
+    - 7.13.10
+    - 7.13.13
+    - 7.13.14
+    - 7.13.15
+    - 7.13.16
+  - dependency-name: eslint
+    versions:
+    - 7.18.0
+    - 7.19.0
+    - 7.20.0
+    - 7.21.0
+    - 7.22.0
+    - 7.23.0
+    - 7.24.0
+  - dependency-name: eslint-plugin-react
+    versions:
+    - 7.23.0
+    - 7.23.1
+    - 7.23.2
+  - dependency-name: "@babel/preset-env"
+    versions:
+    - 7.12.13
+    - 7.12.16
+    - 7.12.17
+    - 7.13.0
+    - 7.13.10
+    - 7.13.12
+    - 7.13.15
+    - 7.13.5
+    - 7.13.9
+  - dependency-name: "@testing-library/react"
+    versions:
+    - 11.2.5
+    - 11.2.6
+  - dependency-name: "@babel/preset-react"
+    versions:
+    - 7.12.13
+    - 7.13.13
+  - dependency-name: webpack-cli
+    versions:
+    - 4.4.0
+    - 4.5.0
+    - 4.6.0
+  - dependency-name: "@types/jest"
+    versions:
+    - 26.0.21
+    - 26.0.22
+  - dependency-name: "@babel/plugin-proposal-optional-chaining"
+    versions:
+    - 7.12.13
+    - 7.12.16
+    - 7.12.17
+    - 7.13.0
+    - 7.13.12
+  - dependency-name: react-dom
+    versions:
+    - 17.0.2
+  - dependency-name: react-bootstrap
+    versions:
+    - 1.5.0
+    - 1.5.1
+    - 1.5.2
+  - dependency-name: html-webpack-plugin
+    versions:
+    - 5.1.0
+    - 5.2.0
+    - 5.3.0
+    - 5.3.1
+  - dependency-name: "@types/react"
+    versions:
+    - 17.0.1
+    - 17.0.2
+    - 17.0.3
+  - dependency-name: "@babel/plugin-proposal-class-properties"
+    versions:
+    - 7.12.13
+    - 7.13.0
+  - dependency-name: webpack-dev-server
+    versions:
+    - 3.11.2
