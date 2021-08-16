@@ -50,10 +50,12 @@ module.exports = {
     ]
   },
   devServer: {
-    contentBase: path.join(__dirname, 'ui/'),
-    compress: true,
-    host: '0.0.0.0',
+    static: {
+      directory: path.join(__dirname, 'ui/'),
+    },
+    host: '127.0.0.1',
     port: 3000,
+    compress: true,
     proxy: [
       {
         target: 'http://127.0.0.1:8080',
