@@ -146,6 +146,8 @@ paths:
           description: validation errors
         '404':
           description: not found
+        '409':
+          description: conflict
         '412':
           description: precondition failed
   /jobs:
@@ -273,6 +275,8 @@ paths:
           description: validation errors
         '404':
           description: not found
+        '409':
+          description: conflict
         '412':
           description: precondition failed
   /jobs/{id}/status:
@@ -363,6 +367,8 @@ paths:
           description: validation errors
         '404':
           description: not found
+        '409':
+          description: conflict
   /health:
     get:
       summary: Queries health-related information
@@ -423,17 +429,14 @@ components:
         name:
           type: string
           description: unique job name
-          readOnly: true
           example: 'My Task #1'
         state:
           type: string
-          readOnly: true
           enum:
             - enabled
             - disabled
         schedule:
           type: string
-          readOnly: true
           example: '@every 1h'
     JobDefinition:
       allOf:
