@@ -13,7 +13,7 @@ export const CollectionForm = ({
       e.preventDefault();
       onSave?.();
     }}>
-      <Form.Group controlId="name">
+      <Form.Group controlId="name" className="mb-3">
         <Form.Label>Name</Form.Label>
         <Form.Control
           name="name"
@@ -25,7 +25,7 @@ export const CollectionForm = ({
           onChange={handleChange} />
         <FieldError message={errors.name} />
       </Form.Group>
-      <Form.Group controlId="state">
+      <Form.Group controlId="state" className="mb-3">
         <Form.Check
           id="stateEnabled"
           name="state"
@@ -62,21 +62,20 @@ export const CollectionForm = ({
             to={`/variables?collectionId=${item.id}`}
             variant="outline-secondary"
             disabled={pending}
-            className="ml-2">
+            className="mx-2">
             Variables
           </Button>
           <Button
             as={Link}
             to={`/jobs?collectionId=${item.id}`}
             variant="outline-secondary"
-            disabled={pending}
-            className="ml-2">
+            disabled={pending}>
             Jobs
           </Button>
           <Button
             onClick={onDelete}
             variant="danger"
-            className="float-right"
+            className="float-end"
             disabled={pending}>
             Delete
           </Button>

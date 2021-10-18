@@ -9,7 +9,7 @@ const ErrorSummary = ({errors}) => {
   return (
     <Alert variant="danger">
       <h4 className="alert-heading">
-        <i className="fa fa-exclamation fs-lg mr-2" aria-hidden="true" />
+        <i className="fa fa-exclamation fs-lg me-2" aria-hidden="true" />
         {message}
       </h4>
       <p className="mb-0">

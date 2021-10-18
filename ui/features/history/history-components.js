@@ -4,19 +4,19 @@ import {Table, Button, Row, Col} from 'react-bootstrap';
 
 export const JobHistoryList = ({status, items, onBack, onRun, onDelete}) => (
   <>
-    <Row>
+    <Row className="mb-3">
       <Col><label>Status</label></Col>
       <Col>{formatRunning(status.running)}</Col>
       <Col><label>Run / Error Count</label></Col>
       <Col>{status.runCount} / {status.errorCount}</Col>
     </Row>
-    <Row>
+    <Row className="mb-3">
       <Col><label>Last Run</label></Col>
       <Col>{formatDate(status.lastRun)}</Col>
       <Col><label>Next Run</label></Col>
       <Col>{formatDate(status.nextRun)}</Col>
     </Row>
-    <Table bordered striped hover>
+    <Table striped hover>
       <thead>
         <tr>
           <th>Action</th>
@@ -47,14 +47,14 @@ export const JobHistoryList = ({status, items, onBack, onRun, onDelete}) => (
       onClick={onRun}
       variant="outline-secondary"
       disabled={status.running === true}
-      className="ml-2">
+      className="ms-2">
       Run
     </Button>
     {items.length > 0 && (
       <Button
         onClick={onDelete}
         variant="danger"
-        className="float-right">
+        className="float-end">
         Delete
       </Button>
     )}

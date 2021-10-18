@@ -17,9 +17,9 @@ export const JobList = ({jobs, collections}) => (
       <GroupByList
         groups={collections}
         items={jobs}
-        groupKey='collectionId'
-        groupRow={(c) => (<GroupRow key={c.id} collection={c} />)}
-        itemRow={(i) => (<ItemRow key={i.id} job={i} />)}
+        groupKey="collectionId"
+        groupRow={(c) => <GroupRow key={c.id} collection={c} />}
+        itemRow={(i) => <ItemRow key={i.id} job={i} />}
       />
     </tbody>
   </Table>
@@ -28,13 +28,14 @@ export const JobList = ({jobs, collections}) => (
 export const GroupRow = ({collection}) => (
   <tr title={collection.state}>
     <td colSpan="3">
-      <Link to={`/collections/${collection.id}`}
-        className={collection.state === 'disabled' ? 'text-muted' : ''}>
+      <Link
+        to={`/collections/${collection.id}`}
+        className={collection.state === 'disabled' ? 'text-muted' : ''}
+      >
         {collection.name}
       </Link>
-      <Link to={`variables?collectionId=${collection.id}`}
-        className="badge badge-light mx-1">
-        variables
+      <Link to={`variables?collectionId=${collection.id}`}>
+        <span className="badge bg-light mx-1">variables</span>
       </Link>
     </td>
   </tr>
@@ -43,13 +44,17 @@ export const GroupRow = ({collection}) => (
 export const ItemRow = ({job}) => (
   <tr>
     <td>
-      <Link to={`jobs/${job.id}`}
-        className={job.state === 'disabled' ? 'text-muted' : ''}>
+      <Link
+        to={`jobs/${job.id}`}
+        className={job.state === 'disabled' ? 'text-muted' : ''}
+      >
         {job.name}
       </Link>
     </td>
-    <td className={job.state === 'disabled' ? 'text-muted' : ''}
-      title={job.state}>
+    <td
+      className={job.state === 'disabled' ? 'text-muted' : ''}
+      title={job.state}
+    >
       {job.schedule}
     </td>
     <td>
@@ -78,9 +83,7 @@ export const JobStatus = ({job}) => {
       break;
   }
   if (job.state === 'disabled') {
-    style = 'secondary font-weight-normal';
+    style = 'secondary fw-normal';
   }
-  return (
-    <span className={`badge badge-${style}`}>{text}</span>
-  );
+  return <span className={`badge bg-${style}`}>{text}</span>;
 };

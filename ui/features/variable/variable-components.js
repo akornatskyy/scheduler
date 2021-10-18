@@ -1,5 +1,5 @@
 import React from 'react';
-import {Form, Button, Col} from 'react-bootstrap';
+import {Form, Button, Col, Row} from 'react-bootstrap';
 
 import {FieldError, Tip} from '../../shared/components';
 
@@ -12,8 +12,8 @@ export const VariableForm = ({
       e.preventDefault();
       onSave?.();
     }}>
-      <Form.Row>
-        <Form.Group as={Col} controlId="name">
+      <Row className="mb-3">
+        <Form.Group as={Col} controlId="name" >
           <Form.Label>Name</Form.Label>
           <Form.Control
             name="name"
@@ -42,8 +42,8 @@ export const VariableForm = ({
           </Form.Control>
           <FieldError message={errors.collectionId} />
         </Form.Group>
-      </Form.Row>
-      <Form.Row>
+      </Row>
+      <Row className="mb-3">
         <Form.Group as={Col} controlId="value">
           <Form.Label>Value</Form.Label>
           <Form.Control
@@ -55,7 +55,7 @@ export const VariableForm = ({
             onChange={handleChange} />
           <FieldError message={errors.value} />
         </Form.Group>
-      </Form.Row>
+      </Row>
       <Tip>
         You can override environment variable, e.g.
         variable <i>HOST</i> overrides
@@ -68,7 +68,7 @@ export const VariableForm = ({
         <Button
           onClick={onDelete}
           variant="danger"
-          className="float-right"
+          className="float-end"
           disabled={pending}>
           Delete
         </Button>

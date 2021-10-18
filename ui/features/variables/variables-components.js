@@ -16,9 +16,9 @@ export const VariableList = ({collections, variables}) => (
       <GroupByList
         groups={collections}
         items={variables}
-        groupKey='collectionId'
-        groupRow={(c) => (<GroupRow key={c.id} collection={c} />)}
-        itemRow={(i) => (<ItemRow key={i.id} variable={i}/>)}
+        groupKey="collectionId"
+        groupRow={(c) => <GroupRow key={c.id} collection={c} />}
+        itemRow={(i) => <ItemRow key={i.id} variable={i} />}
       />
     </tbody>
   </Table>
@@ -27,12 +27,9 @@ export const VariableList = ({collections, variables}) => (
 export const GroupRow = ({collection}) => (
   <tr>
     <td colSpan="2">
-      <Link to={`collections/${collection.id}`}>
-        {collection.name}
-      </Link>
-      <Link to={`jobs?collectionId=${collection.id}`}
-        className="badge badge-light">
-        jobs
+      <Link to={`collections/${collection.id}`}>{collection.name}</Link>
+      <Link to={`jobs?collectionId=${collection.id}`}>
+        <span className="badge bg-light">jobs</span>
       </Link>
     </td>
   </tr>
@@ -43,8 +40,6 @@ export const ItemRow = ({variable}) => (
     <td>
       <Link to={`variables/${variable.id}`}>{variable.name}</Link>
     </td>
-    <td>
-      {new Date(variable.updated).toLocaleString()}
-    </td>
+    <td>{new Date(variable.updated).toLocaleString()}</td>
   </tr>
 );
