@@ -19,7 +19,7 @@ var (
 			Required().Min(3).Max(36).
 			Pattern(idPattern, idMessage).Build()
 	Schedule = validator.String("schedule").
-			Required().Min(9).Max(64).Build()
+			Required().Min(6).Max(64).Build()
 	ActionType = validator.String("type").
 			Required().Exactly(4).Pattern("^HTTP$", "Must be 'HTTP' only.").Build()
 	Method = validator.String("method").
