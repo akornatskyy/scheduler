@@ -35,7 +35,7 @@ export default class JobHistory extends React.Component {
 
   handleBack = () => {
     this.props.history.goBack();
-  }
+  };
 
   handleRun = () => {
     const {id} = this.props.match.params;
@@ -47,7 +47,7 @@ export default class JobHistory extends React.Component {
               .catch((errors) => this.setState({errors}))
         )
         .catch((errors) => this.setState({errors}));
-  }
+  };
 
   handleDelete = () => {
     const {id} = this.props.match.params;

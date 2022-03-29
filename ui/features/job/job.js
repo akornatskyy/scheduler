@@ -124,7 +124,7 @@ export default class Job extends React.Component {
         }
       })
     });
-  }
+  };
 
   handleAddHeader = () => {
     this.setState({
@@ -138,7 +138,7 @@ export default class Job extends React.Component {
         }
       })
     });
-  }
+  };
 
   handleDeleteHeader = (i) => {
     this.setState({
@@ -152,7 +152,7 @@ export default class Job extends React.Component {
         }
       })
     });
-  }
+  };
 
   handleSave = () => {
     this.setState({pending: true});
