@@ -1,0 +1,47 @@
+name: tests
+
+on:
+  schedule:
+    - cron: "0 3 * * 0"  # At 03:00 on Sunday.
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'misc/docs/**'
+      - '**.md'
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        go: ['1.17', '1.18']
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.go }}
+      - run: go test ./...
+
+  js:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node: [16, 17]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm t
+      - run: npm run build -- --mode=production
