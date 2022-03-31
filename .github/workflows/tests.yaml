@@ -28,7 +28,7 @@ jobs:
           go-version: ${{ matrix.go }}
       - run: go test ./...
 
-  js:
+  node:
     runs-on: ubuntu-latest
 
     strategy:
@@ -45,3 +45,16 @@ jobs:
       - run: npm run lint
       - run: npm t
       - run: npm run build -- --mode=production
+
+  analyze:
+    runs-on: ubuntu-latest
+
+    permissions:
+      security-events: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: github/codeql-action/init@v2
+        with:
+          languages: go, javascript
+      - uses: github/codeql-action/analyze@v2
