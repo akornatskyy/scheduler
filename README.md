@@ -1,6 +1,6 @@
 # Scheduler
 
-[![Build Status](https://travis-ci.org/akornatskyy/scheduler.svg?branch=master)](https://travis-ci.org/akornatskyy/scheduler) [![Coverage Status](https://coveralls.io/repos/github/akornatskyy/scheduler/badge.svg?branch=master)](https://coveralls.io/github/akornatskyy/scheduler?branch=master)
+[![tests](https://github.com/akornatskyy/scheduler/actions/workflows/tests.yaml/badge.svg)](https://github.com/akornatskyy/scheduler/actions/workflows/tests.yaml) [![Coverage Status](https://coveralls.io/repos/github/akornatskyy/scheduler/badge.svg?branch=master)](https://coveralls.io/github/akornatskyy/scheduler?branch=master)
 
 The scheduler is a fully managed cron job scheduler. It allows you to schedule
 virtually any job (e.g. such as calling HTTP/S endpoints). You can automate
