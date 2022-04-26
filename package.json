@@ -48,7 +48,7 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^12.1.5",
     "@types/jest": "^27.4.1",
-    "@types/react": "^17.0.44",
+    "@types/react": "^18.0.8",
     "babel-loader": "^8.2.5",
     "eslint": "^8.14.0",
     "eslint-config-google": "^0.14.0",
