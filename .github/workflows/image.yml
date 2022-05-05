@@ -28,7 +28,7 @@ jobs:
         run: |
           echo ::set-output name=tag::$(echo ${{ github.ref_name }} | sed s/v//)
       - name: build and push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: .
           file: misc/docker/Dockerfile
