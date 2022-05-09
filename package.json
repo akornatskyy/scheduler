@@ -50,7 +50,7 @@
     "@types/jest": "^27.4.1",
     "@types/react": "^17.0.44",
     "babel-loader": "^8.2.5",
-    "eslint": "^8.14.0",
+    "eslint": "^8.15.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-react": "^7.29.4",
     "html-webpack-plugin": "^5.5.0",
