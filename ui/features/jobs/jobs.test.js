@@ -1,9 +1,9 @@
+import {act, render, screen, waitFor} from '@testing-library/react';
 import React from 'react';
 import {MemoryRouter as Router} from 'react-router-dom';
-import {render, screen, waitFor} from '@testing-library/react';
 
-import * as api from './jobs-api';
 import Jobs from './jobs';
+import * as api from './jobs-api';
 
 jest.mock('./jobs-api');
 
@@ -19,9 +19,11 @@ describe('jobs', () => {
     api.listCollections.mockRejectedValue(errors);
     api.listJobs.mockResolvedValue({items: []});
 
-    render(<Router><Jobs {...props} /></Router>);
+    await act(async () => {
+      render(<Router><Jobs {...props} /></Router>);
+    });
 
-    await waitFor(() => expect(api.listCollections).toBeCalledWith());
+    expect(api.listCollections).toBeCalledWith();
     expect(api.listCollections).toBeCalledTimes(1);
     expect(api.listJobs).toBeCalledTimes(1);
     expect(api.listJobs).toBeCalledWith(null);
@@ -33,9 +35,11 @@ describe('jobs', () => {
     api.listCollections.mockResolvedValue({items: []});
     api.listJobs.mockRejectedValue(errors);
 
-    render(<Router><Jobs {...props} /></Router>);
+    await act(async () => {
+      render(<Router><Jobs {...props} /></Router>);
+    });
 
-    await waitFor(() => expect(api.listCollections).toBeCalledWith());
+    expect(api.listCollections).toBeCalledWith();
     expect(api.listCollections).toBeCalledTimes(1);
     expect(api.listJobs).toBeCalledTimes(1);
     expect(api.listJobs).toBeCalledWith(null);
@@ -53,13 +57,15 @@ describe('jobs', () => {
       }]
     });
 
-    render(
-        <Router>
-          <Jobs {...props} location={{search: '?collectionId=65ada2f9'}} />
-        </Router>
-    );
+    await act(async () => {
+      render(
+          <Router>
+            <Jobs {...props} location={{search: '?collectionId=65ada2f9'}} />
+          </Router>
+      );
+    });
 
-    await waitFor(() => expect(api.listCollections).toBeCalledWith());
+    expect(api.listCollections).toBeCalledWith();
     expect(api.listCollections).toBeCalledTimes(1);
     expect(api.listJobs).toBeCalledTimes(1);
     expect(api.listJobs).toBeCalledWith('65ada2f9');

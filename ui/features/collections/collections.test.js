@@ -1,9 +1,9 @@
+import {act, render, screen} from '@testing-library/react';
 import React from 'react';
 import {MemoryRouter as Router} from 'react-router-dom';
-import {render, screen, waitFor} from '@testing-library/react';
 
-import * as api from './collections-api';
 import Collections from './collections';
+import * as api from './collections-api';
 
 jest.mock('./collections-api');
 
@@ -16,9 +16,10 @@ describe('collections', () => {
     const errors = {__ERROR__: 'The error text.'};
     api.listCollections.mockRejectedValue(errors);
 
-    render(<Router><Collections /></Router>);
-
-    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
+    await act(async () => {
+      render(<Router><Collections /></Router>);
+    });
+    expect(api.listCollections).toBeCalledTimes(1);
     expect(api.listCollections).toBeCalledWith();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
@@ -31,9 +32,11 @@ describe('collections', () => {
     }];
     api.listCollections.mockResolvedValue({items});
 
-    render(<Router><Collections /></Router>);
+    await act(async () => {
+      render(<Router><Collections /></Router>);
+    });
 
-    await waitFor(() => expect(api.listCollections).toBeCalled());
+    expect(api.listCollections).toBeCalled();
     expect(api.listCollections).toBeCalledTimes(1);
     expect(screen.getByText('My App #1')).toBeVisible();
   });

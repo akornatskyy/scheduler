@@ -1,9 +1,9 @@
+import {act, render, screen} from '@testing-library/react';
 import React from 'react';
 import {MemoryRouter as Router} from 'react-router-dom';
-import {render, screen, waitFor} from '@testing-library/react';
 
-import * as api from './variables-api';
 import Variables from './variables';
+import * as api from './variables-api';
 
 jest.mock('./variables-api');
 
@@ -21,9 +21,11 @@ describe('variables', () => {
     api.listCollections.mockRejectedValue(errors);
     api.listVariables.mockResolvedValue({items: []});
 
-    render(<Router><Variables {...props} /></Router>);
+    await act(async () => {
+      render(<Router><Variables {...props} /></Router>);
+    });
 
-    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
+    expect(api.listCollections).toBeCalledTimes(1);
     expect(api.listCollections).toBeCalledWith();
     expect(api.listVariables).toBeCalledTimes(1);
     expect(api.listVariables).toBeCalledWith(null);
@@ -35,9 +37,11 @@ describe('variables', () => {
     api.listCollections.mockResolvedValue({items: []});
     api.listVariables.mockRejectedValue(errors);
 
-    render(<Router><Variables {...props} /></Router>);
+    await act(async () => {
+      render(<Router><Variables {...props} /></Router>);
+    });
 
-    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
+    expect(api.listCollections).toBeCalledTimes(1);
     expect(api.listCollections).toBeCalledWith();
     expect(api.listVariables).toBeCalledTimes(1);
     expect(api.listVariables).toBeCalledWith(null);
@@ -59,16 +63,18 @@ describe('variables', () => {
       }]
     });
 
-    render(
-        <Router>
-          <Variables
-            {...props}
-            location={{search: '?collectionId=65ada2f9'}}
-          />
-        </Router>
-    );
+    await act(async () => {
+      render(
+          <Router>
+            <Variables
+              {...props}
+              location={{search: '?collectionId=65ada2f9'}}
+            />
+          </Router>
+      );
+    });
 
-    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
+    expect(api.listCollections).toBeCalledTimes(1);
     expect(api.listCollections).toBeCalledWith();
     expect(api.listVariables).toBeCalledTimes(1);
     expect(api.listVariables).toBeCalledWith('65ada2f9');

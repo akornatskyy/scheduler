@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {createRoot} from 'react-dom/client';
 import {Container} from 'react-bootstrap';
 import {
   HashRouter as Router,
@@ -37,7 +37,12 @@ export const App = () => (
   </Container>
 );
 
-ReactDOM.render(
-    <Router><App /></Router>,
-    document.getElementById('root') || document.createElement('div')
+
+const root = createRoot(
+    document.querySelector('#root') || document.createElement('div'),
+);
+root.render(
+    <Router>
+      <App />
+    </Router>,
 );

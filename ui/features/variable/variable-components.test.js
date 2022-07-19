@@ -75,7 +75,7 @@ describe('variable', () => {
     const handler = jest.fn();
     render(<VariableForm {...props} onSave={handler} />);
 
-    fireEvent.click(screen.getByText('Save'));
+    fireEvent.submit(screen.getByText('Save'));
 
     expect(handler).toBeCalled();
   });

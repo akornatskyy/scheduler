@@ -62,7 +62,7 @@ describe('collection form component', () => {
     const handler = jest.fn();
     render(<CollectionForm {...props} onSave={handler} />);
 
-    fireEvent.click(screen.getByText('Save'));
+    fireEvent.submit(screen.getByText('Save'));
 
     expect(handler).toBeCalledWith();
   });

@@ -1,11 +1,10 @@
+import {act, fireEvent, render, screen, waitFor} from '@testing-library/react';
 import React from 'react';
-import {render, screen, waitFor, fireEvent} from '@testing-library/react';
 
-import * as api from './history-api';
 import JobHistory from './history';
+import * as api from './history-api';
 
 jest.mock('./history-api');
-
 
 describe('job history', () => {
   let props = null;
@@ -14,12 +13,11 @@ describe('job history', () => {
     props = {
       match: {params: {id: '65ada2f9'}},
       history: {
-        goBack: jest.fn()
-      }
+        goBack: jest.fn(),
+      },
     };
+    jest.clearAllMocks();
   });
-
-  beforeEach(() => jest.clearAllMocks());
 
   it('handles retrieve job error', async () => {
     const errors = {__ERROR__: 'The error text.'};
@@ -27,9 +25,11 @@ describe('job history', () => {
     api.retrieveJobStatus.mockResolvedValue({});
     api.listJobHistory.mockResolvedValue({items: []});
 
-    render(<JobHistory {...props} />);
+    await act(async () => {
+      render(<JobHistory {...props} />);
+    });
 
-    await waitFor(() => expect(api.retrieveJob).toBeCalledTimes(1));
+    expect(api.retrieveJob).toBeCalledTimes(1);
     expect(api.retrieveJob).toBeCalledWith('65ada2f9');
     expect(api.retrieveJobStatus).toBeCalledTimes(1);
     expect(api.retrieveJobStatus).toBeCalledWith('65ada2f9');
@@ -44,9 +44,11 @@ describe('job history', () => {
     api.retrieveJobStatus.mockRejectedValue(errors);
     api.listJobHistory.mockResolvedValue({items: []});
 
-    render(<JobHistory {...props} />);
+    await act(async () => {
+      render(<JobHistory {...props} />);
+    });
 
-    await waitFor(() => expect(api.retrieveJob).toBeCalledTimes(1));
+    expect(api.retrieveJob).toBeCalledTimes(1);
     expect(api.retrieveJob).toBeCalledWith('65ada2f9');
     expect(api.retrieveJobStatus).toBeCalledTimes(1);
     expect(api.retrieveJobStatus).toBeCalledWith('65ada2f9');
@@ -61,9 +63,10 @@ describe('job history', () => {
     api.retrieveJobStatus.mockResolvedValue({});
     api.listJobHistory.mockRejectedValue(errors);
 
-    render(<JobHistory {...props} />);
+    await act(async () => {
+      render(<JobHistory {...props} />);
+    });
 
-    await waitFor(() => expect(api.retrieveJob).toBeCalledTimes(1));
     expect(api.retrieveJob).toBeCalledWith('65ada2f9');
     expect(api.retrieveJobStatus).toBeCalledTimes(1);
     expect(api.retrieveJobStatus).toBeCalledWith('65ada2f9');
@@ -80,9 +83,11 @@ describe('job history', () => {
     api.retrieveJobStatus.mockResolvedValue(status);
     api.listJobHistory.mockResolvedValue({items});
 
-    render(<JobHistory {...props} />);
+    await act(async () => {
+      render(<JobHistory {...props} />);
+    });
 
-    await waitFor(() => expect(api.retrieveJob).toBeCalledTimes(1));
+    expect(api.retrieveJob).toBeCalledTimes(1);
     expect(api.retrieveJob).toBeCalledWith('65ada2f9');
     expect(api.retrieveJobStatus).toBeCalledTimes(1);
     expect(api.retrieveJobStatus).toBeCalledWith('65ada2f9');
@@ -90,11 +95,13 @@ describe('job history', () => {
     expect(api.listJobHistory).toBeCalledWith('65ada2f9');
   });
 
-  it('handles on back', () => {
+  it('handles on back', async () => {
     api.retrieveJob.mockResolvedValue({});
     api.retrieveJobStatus.mockResolvedValue({});
     api.listJobHistory.mockResolvedValue({items: []});
-    render(<JobHistory {...props} />);
+    await act(async () => {
+      render(<JobHistory {...props} />);
+    });
 
     fireEvent.click(screen.getByText('Back'));
 
@@ -107,14 +114,20 @@ describe('job history', () => {
     api.retrieveJobStatus.mockResolvedValue(status);
     api.listJobHistory.mockResolvedValue({items: []});
     api.patchJobStatus.mockResolvedValue();
-    render(<JobHistory {...props} />);
-    await waitFor(() => expect(api.retrieveJob).toBeCalled());
+    await act(async () => {
+      render(<JobHistory {...props} />);
+    });
+    expect(api.retrieveJob).toBeCalled();
 
-    fireEvent.click(screen.getByText('Run'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Run'));
+    });
 
-    await waitFor(() => expect(api.patchJobStatus).toBeCalledTimes(1));
-    expect(api.patchJobStatus).toBeCalledWith(
-        '65ada2f9', {running: true, etag: '"1n9er1hz749r"'});
+    expect(api.patchJobStatus).toBeCalledTimes(1);
+    expect(api.patchJobStatus).toBeCalledWith('65ada2f9', {
+      running: true,
+      etag: '"1n9er1hz749r"',
+    });
     expect(api.retrieveJobStatus).toBeCalledTimes(2);
     expect(api.retrieveJobStatus).toBeCalledWith('65ada2f9');
   });
@@ -126,14 +139,20 @@ describe('job history', () => {
     api.retrieveJobStatus.mockResolvedValue(status);
     api.listJobHistory.mockResolvedValue({items: []});
     api.patchJobStatus.mockRejectedValue(errors);
-    render(<JobHistory {...props} />);
-    await waitFor(() => expect(api.retrieveJob).toBeCalled());
+    await act(async () => {
+      render(<JobHistory {...props} />);
+    });
+    expect(api.retrieveJob).toBeCalled();
 
-    fireEvent.click(screen.getByText('Run'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Run'));
+    });
 
-    await waitFor(() => expect(api.patchJobStatus).toBeCalledTimes(1));
-    expect(api.patchJobStatus).toBeCalledWith(
-        '65ada2f9', {running: true, etag: '"1n9er1hz749r"'});
+    expect(api.patchJobStatus).toBeCalledTimes(1);
+    expect(api.patchJobStatus).toBeCalledWith('65ada2f9', {
+      running: true,
+      etag: '"1n9er1hz749r"',
+    });
     expect(api.retrieveJobStatus).toBeCalledTimes(1);
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
@@ -146,14 +165,20 @@ describe('job history', () => {
     api.retrieveJobStatus.mockRejectedValue(errors);
     api.listJobHistory.mockResolvedValue({items: []});
     api.patchJobStatus.mockResolvedValue();
-    render(<JobHistory {...props} />);
-    await waitFor(() => expect(api.retrieveJob).toBeCalled());
+    await act(async () => {
+      render(<JobHistory {...props} />);
+    });
+    expect(api.retrieveJob).toBeCalled();
 
-    fireEvent.click(screen.getByText('Run'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Run'));
+    });
 
-    await waitFor(() => expect(api.patchJobStatus).toBeCalledTimes(1));
-    expect(api.patchJobStatus).toBeCalledWith(
-        '65ada2f9', {running: true, etag: '"1n9er1hz749r"'});
+    expect(api.patchJobStatus).toBeCalledTimes(1);
+    expect(api.patchJobStatus).toBeCalledWith('65ada2f9', {
+      running: true,
+      etag: '"1n9er1hz749r"',
+    });
     expect(api.retrieveJobStatus).toBeCalledTimes(2);
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
@@ -164,8 +189,10 @@ describe('job history', () => {
     api.retrieveJobStatus.mockResolvedValue(status);
     api.listJobHistory.mockResolvedValue({items: [{}]});
     api.deleteJobHistory.mockResolvedValue();
-    render(<JobHistory {...props} />);
-    await waitFor(() => expect(api.retrieveJob).toBeCalled());
+    await act(async () => {
+      render(<JobHistory {...props} />);
+    });
+    expect(api.retrieveJob).toBeCalled();
 
     fireEvent.click(screen.getByText('Delete'));
 
@@ -180,12 +207,16 @@ describe('job history', () => {
     api.retrieveJobStatus.mockResolvedValue(status);
     api.listJobHistory.mockResolvedValue({items: [{}]});
     api.deleteJobHistory.mockRejectedValue(errors);
-    render(<JobHistory {...props} />);
-    await waitFor(() => expect(api.retrieveJob).toBeCalled());
+    await act(async () => {
+      render(<JobHistory {...props} />);
+    });
+    expect(api.retrieveJob).toBeCalled();
 
-    fireEvent.click(screen.getByText('Delete'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Delete'));
+    });
 
-    await waitFor(() => expect(api.deleteJobHistory).toBeCalledTimes(1));
+    expect(api.deleteJobHistory).toBeCalledTimes(1);
     expect(api.deleteJobHistory).toBeCalledWith('65ada2f9', '"1n9er1hz749r"');
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });

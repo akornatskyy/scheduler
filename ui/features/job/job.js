@@ -49,23 +49,24 @@ export default class Job extends React.Component {
       });
     }
     api.listCollections()
-        .then(({items}) => {
-          const s = {collections: items};
-          if (!this.state.item.collectionId) {
-            if (items.length > 0) {
-              s.item = {
-                ...this.state.item,
-                collectionId: items[0].id
-              };
-            } else {
-              s.errors = {
-                collectionId: 'There is no collection available.'
-              };
+        .then(({items}) =>
+          this.setState(({item}) => {
+            const s = {collections: items};
+            if (!item.collectionId) {
+              if (items.length > 0) {
+                s.item = {
+                  ...item,
+                  collectionId: items[0].id
+                };
+              } else {
+                s.errors = {
+                  collectionId: 'There is no collection available.'
+                };
+              }
             }
-          }
 
-          this.setState(s);
-        })
+            return s;
+          }))
         .catch((errors) => this.setState({errors}));
   }
 

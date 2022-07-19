@@ -1,9 +1,9 @@
+import {act, fireEvent, render, screen} from '@testing-library/react';
 import React from 'react';
 import {MemoryRouter as Router} from 'react-router-dom';
-import {render, screen, waitFor, fireEvent} from '@testing-library/react';
 
-import * as api from './collection-api';
 import Collection from './collection';
+import * as api from './collection-api';
 
 jest.mock('./collection-api');
 
@@ -14,8 +14,8 @@ describe('collection', () => {
     props = {
       match: {params: {}},
       history: {
-        goBack: jest.fn()
-      }
+        goBack: jest.fn(),
+      },
     };
     jest.clearAllMocks();
   });
@@ -37,11 +37,11 @@ describe('collection', () => {
       state: 'disabled',
     });
 
-    render(<Collection {...props} />);
+    await act(async () => {
+      render(<Collection {...props} />);
+    });
 
-    await waitFor(() => expect(api.retrieveCollection).toBeCalledWith(
-        '65ada2f9'
-    ));
+    expect(api.retrieveCollection).toBeCalledWith('65ada2f9');
     expect(screen.getByRole('form')).toHaveFormValues({
       name: 'My Other App',
       state: 'disabled',
@@ -53,9 +53,11 @@ describe('collection', () => {
     const errors = {__ERROR__: 'The error text.'};
     api.retrieveCollection.mockRejectedValue(errors);
 
-    render(<Collection {...props} />);
+    await act(async () => {
+      render(<Collection {...props} />);
+    });
 
-    await waitFor(() => expect(api.retrieveCollection).toBeCalled());
+    expect(api.retrieveCollection).toBeCalled();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -64,8 +66,8 @@ describe('collection', () => {
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: {
-        value: 'My Other App'
-      }
+        value: 'My Other App',
+      },
     });
     fireEvent.click(screen.getByLabelText('Disabled'));
 
@@ -77,28 +79,37 @@ describe('collection', () => {
 
   it('saves item', async () => {
     api.saveCollection.mockResolvedValue();
-    render(<Collection {...props} />);
+    await act(async () => {
+      render(<Collection {...props} />);
+    });
 
-    fireEvent.click(screen.getByText('Save'));
+    await act(async () => {
+      fireEvent.submit(screen.getByText('Save'));
+    });
 
-    await waitFor(() => expect(api.saveCollection).toBeCalledWith({
+    expect(api.saveCollection).toBeCalledTimes(1);
+    expect(api.saveCollection).toBeCalledWith({
       name: '',
       state: 'enabled',
-    }));
+    });
     expect(props.history.goBack.mock.calls.length).toBe(1);
   });
 
   it('handles save errors', async () => {
     const errors = {
       __ERROR__: 'The error text.',
-      name: 'The field error message.'
+      name: 'The field error message.',
     };
     api.saveCollection.mockRejectedValue(errors);
-    render(<Collection {...props} />);
+    await act(async () => {
+      render(<Collection {...props} />);
+    });
 
-    fireEvent.click(screen.getByText('Save'));
+    await act(async () => {
+      fireEvent.submit(screen.getByText('Save'));
+    });
 
-    await waitFor(() => expect(api.saveCollection).toBeCalledTimes(1));
+    expect(api.saveCollection).toBeCalledTimes(1);
     expect(props.history.goBack.mock.calls.length).toBe(0);
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
     expect(screen.getByText(errors.name)).toBeVisible();
@@ -112,18 +123,20 @@ describe('collection', () => {
       etag: '"1n9er1hz749r"',
     });
     api.deleteCollection.mockResolvedValue();
-    const {container} = render(
-        <Router>
-          <Collection {...props} />
-        </Router>
+    const {container} = await act(async () =>
+      render(
+          <Router>
+            <Collection {...props} />
+          </Router>,
+      ),
     );
-    await waitFor(() => expect(api.retrieveCollection).toBeCalled());
+    expect(api.retrieveCollection).toBeCalled();
 
-    fireEvent.click(screen.getByText('Delete'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Delete'));
+    });
 
-    await waitFor(() => expect(api.deleteCollection).toBeCalledWith(
-        '65ada2f9', '"1n9er1hz749r"',
-    ));
+    expect(api.deleteCollection).toBeCalledWith('65ada2f9', '"1n9er1hz749r"');
     expect(props.history.goBack.mock.calls.length).toBe(1);
     expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
   });
@@ -137,18 +150,20 @@ describe('collection', () => {
     });
     const errors = {__ERROR__: 'The error text.'};
     api.deleteCollection.mockRejectedValue(errors);
-    const {container} = render(
-        <Router>
-          <Collection {...props} />
-        </Router>
+    const {container} = await act(async () =>
+      render(
+          <Router>
+            <Collection {...props} />
+          </Router>,
+      ),
     );
-    await waitFor(() => expect(api.retrieveCollection).toBeCalled());
+    expect(api.retrieveCollection).toBeCalled();
 
-    fireEvent.click(screen.getByText('Delete'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Delete'));
+    });
 
-    await waitFor(() => expect(api.deleteCollection).toBeCalledWith(
-        '65ada2f9', '"1n9er1hz749r"',
-    ));
+    expect(api.deleteCollection).toBeCalledWith('65ada2f9', '"1n9er1hz749r"');
     expect(props.history.goBack.mock.calls.length).toBe(0);
     expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
   });

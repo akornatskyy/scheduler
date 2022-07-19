@@ -280,7 +280,7 @@ describe('job', () => {
     const handler = jest.fn();
     render(<JobForm {...props} onSave={handler} />);
 
-    fireEvent.click(screen.getByText('Save'));
+    fireEvent.submit(screen.getByText('Save'));
 
     expect(handler).toBeCalledWith();
   });

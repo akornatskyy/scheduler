@@ -1,9 +1,9 @@
+import {act, fireEvent, render, screen} from '@testing-library/react';
 import React from 'react';
 import {MemoryRouter as Router} from 'react-router-dom';
-import {render, screen, fireEvent, waitFor} from '@testing-library/react';
 
-import * as api from './job-api';
 import Job from './job';
+import * as api from './job-api';
 
 jest.mock('./job-api');
 
@@ -55,9 +55,11 @@ describe('job', () => {
     jest.clearAllMocks();
   });
 
-  it('renders add item if no id specified', () => {
+  it('renders add item if no id specified', async () => {
     props.match.params.id = null;
-    render(<Job {...props} />);
+    await act(async () => {
+      render(<Job {...props} />);
+    });
 
     expect(api.listCollections).toBeCalledTimes(1);
     expect(api.listCollections).toBeCalledWith();
@@ -66,25 +68,32 @@ describe('job', () => {
   it('renders edit item', async () => {
     api.retrieveJob.mockResolvedValue(sampleJob);
 
-    render(<Router><Job {...props} /></Router>);
+    await act(async () => {
+      render(
+          <Router>
+            <Job {...props} />
+          </Router>,
+      );
+    });
 
     expect(api.listCollections).toBeCalledTimes(1);
     expect(api.listCollections).toBeCalledWith();
     expect(api.retrieveJob).toBeCalledWith('7ce1f17e');
 
-    await waitFor(() => expect(screen.getByText('Delete')).toBeVisible());
+    await act(async () => {
+      expect(screen.getByText('Delete')).toBeVisible();
+    });
   });
 
   it('shows field error when collections list is empty', async () => {
     props.match.params.id = null;
     api.listCollections.mockResolvedValue({items: []});
 
-    render(<Job {...props} />);
+    await act(async () => {
+      render(<Job {...props} />);
+    });
 
-    await waitFor(
-        () => expect(screen.getByText('There is no collection available.'))
-            .toBeVisible()
-    );
+    expect(screen.getByText('There is no collection available.')).toBeVisible();
   });
 
   it('selects a first item from collections list', async () => {
@@ -104,12 +113,11 @@ describe('job', () => {
       ],
     });
 
-    render(<Job {...props} />);
+    await act(async () => {
+      render(<Job {...props} />);
+    });
 
-    await waitFor(
-        () => expect(screen.getByLabelText('Collection'))
-            .toHaveValue('84432333')
-    );
+    expect(screen.getByLabelText('Collection')).toHaveValue('84432333');
   });
 
   it('list collections fails', async () => {
@@ -117,50 +125,52 @@ describe('job', () => {
     const errors = {__ERROR__: 'The error text.'};
     api.listCollections.mockRejectedValue(errors);
 
-    render(<Job {...props} />);
+    await act(async () => {
+      render(<Job {...props} />);
+    });
 
     expect(api.listCollections).toBeCalledTimes(1);
     expect(api.listCollections).toBeCalledWith();
-    await waitFor(
-        () => expect(screen.getByText(errors.__ERROR__)).toBeVisible()
-    );
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
   it('handles retrieve job error', async () => {
     const errors = {__ERROR__: 'The error text.'};
     api.retrieveJob.mockRejectedValue(errors);
 
-    render(<Job {...props} />);
+    await act(async () => {
+      render(<Job {...props} />);
+    });
 
     expect(api.retrieveJob).toBeCalledTimes(1);
     expect(api.retrieveJob).toBeCalledWith('7ce1f17e');
-    await waitFor(
-        () => expect(screen.getByText(errors.__ERROR__)).toBeVisible()
-    );
+    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
   it('handles item change', async () => {
-    render(<Job {...props} />);
-    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
+    await act(async () => {
+      render(<Job {...props} />);
+    });
+    expect(api.listCollections).toBeCalledTimes(1);
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: {
-        value: 'My Other Task'
-      }
+        value: 'My Other Task',
+      },
     });
     fireEvent.click(screen.getByLabelText('Disabled'));
     fireEvent.change(screen.getByLabelText('Collection'), {
       target: {
-        value: '123de331'
-      }
+        value: '123de331',
+      },
     });
     fireEvent.change(
         screen.getByLabelText((component) => component.startsWith('Schedule')),
         {
           target: {
-            value: '@every 15s'
-          }
-        }
+            value: '@every 15s',
+          },
+        },
     );
 
     expect(screen.getByRole('form')).toHaveFormValues({
@@ -171,13 +181,15 @@ describe('job', () => {
     });
   });
 
-  it('handles action change', () => {
-    render(<Job {...props} />);
+  it('handles action change', async () => {
+    await act(async () => {
+      render(<Job {...props} />);
+    });
 
     fireEvent.change(screen.getByLabelText('Action'), {
       target: {
-        value: 'HTTP'
-      }
+        value: 'HTTP',
+      },
     });
 
     expect(screen.getByRole('form')).toHaveFormValues({
@@ -185,23 +197,25 @@ describe('job', () => {
     });
   });
 
-  it('handles request change', () => {
-    render(<Job {...props} />);
+  it('handles request change', async () => {
+    await act(async () => {
+      render(<Job {...props} />);
+    });
 
     fireEvent.change(screen.getByLabelText('Method'), {
       target: {
-        value: 'POST'
-      }
+        value: 'POST',
+      },
     });
     fireEvent.change(screen.getByLabelText('URI'), {
       target: {
-        value: 'http://localhost'
-      }
+        value: 'http://localhost',
+      },
     });
     fireEvent.change(screen.getByLabelText('Body'), {
       target: {
-        value: '{}'
-      }
+        value: '{}',
+      },
     });
 
     expect(screen.getByRole('form')).toHaveFormValues({
@@ -211,23 +225,25 @@ describe('job', () => {
     });
   });
 
-  it('handles policy change', () => {
-    render(<Job {...props} />);
+  it('handles policy change', async () => {
+    await act(async () => {
+      render(<Job {...props} />);
+    });
 
     fireEvent.change(screen.getByLabelText('Retry Count'), {
       target: {
-        value: '7'
-      }
+        value: '7',
+      },
     });
     fireEvent.change(screen.getByLabelText('Interval'), {
       target: {
-        value: '45s'
-      }
+        value: '45s',
+      },
     });
     fireEvent.change(screen.getByLabelText('Deadline'), {
       target: {
-        value: '3m'
-      }
+        value: '3m',
+      },
     });
 
     expect(screen.getByRole('form')).toHaveFormValues({
@@ -238,8 +254,10 @@ describe('job', () => {
   });
 
   it('handles add header', async () => {
-    render(<Job {...props} />);
-    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
+    await act(async () => {
+      render(<Job {...props} />);
+    });
+    expect(api.listCollections).toBeCalledTimes(1);
 
     // Add header
     fireEvent.click(screen.getByRole('button', {name: ''}));
@@ -251,36 +269,41 @@ describe('job', () => {
   });
 
   it('handles delete header', async () => {
-    render(<Job {...props} />);
-    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
+    await act(async () => {
+      render(<Job {...props} />);
+    });
+    expect(api.listCollections).toBeCalledTimes(1);
     // Add header
     fireEvent.click(screen.getByRole('button', {name: ''}));
     expect(screen.getByPlaceholderText('Value')).toBeVisible();
 
     // Delete header
     fireEvent.click(
-        screen.getByRole((content, element) =>
-          content === 'button' && element.querySelector('i.fa-times') != null)
+        screen.getByRole(
+            (content, element) =>
+              content === 'button' && element.querySelector('i.fa-times'),
+        ),
     );
 
     expect(screen.queryByPlaceholderText('Value')).not.toBeInTheDocument();
   });
 
   it('handles header change', async () => {
-    render(<Job {...props} />);
-    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
+    await act(async () => {
+      render(<Job {...props} />);
+    });
+    expect(api.listCollections).toBeCalledTimes(1);
     // Add header
     fireEvent.click(screen.getByRole('button', {name: ''}));
-    fireEvent.change(
-        screen.getAllByPlaceholderText('Name')[1], {
-          target: {
-            value: 'X-Requested-With'
-          }
-        });
+    fireEvent.change(screen.getAllByPlaceholderText('Name')[1], {
+      target: {
+        value: 'X-Requested-With',
+      },
+    });
     fireEvent.change(screen.getByPlaceholderText('Value'), {
       target: {
-        value: 'XMLHttpRequest'
-      }
+        value: 'XMLHttpRequest',
+      },
     });
 
     expect(screen.getByRole('form')).toHaveFormValues({
@@ -292,12 +315,16 @@ describe('job', () => {
   it('saves item', async () => {
     props.match.params.id = null;
     api.saveJob.mockResolvedValue();
-    render(<Job {...props} />);
-    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
+    await act(async () => {
+      render(<Job {...props} />);
+    });
+    expect(api.listCollections).toBeCalledTimes(1);
 
-    fireEvent.click(screen.getByText('Save'));
+    await act(async () => {
+      fireEvent.submit(screen.getByText('Save'));
+    });
 
-    await waitFor(() => expect(api.saveJob).toBeCalledWith({
+    expect(api.saveJob).toBeCalledWith({
       name: '',
       state: 'enabled',
       collectionId: '65ada2f9',
@@ -316,7 +343,7 @@ describe('job', () => {
           deadline: '1m',
         },
       },
-    }));
+    });
     expect(props.history.goBack.mock.calls.length).toBe(1);
   });
 
@@ -326,12 +353,16 @@ describe('job', () => {
       name: 'The field error message.',
     };
     api.saveJob.mockRejectedValue(errors);
-    render(<Job {...props} />);
-    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
+    await act(async () => {
+      render(<Job {...props} />);
+    });
+    expect(api.listCollections).toBeCalledTimes(1);
 
-    fireEvent.click(screen.getByText('Save'));
+    await act(async () => {
+      fireEvent.submit(screen.getByText('Save'));
+    });
 
-    await waitFor(() => expect(api.saveJob).toBeCalled());
+    expect(api.saveJob).toBeCalled();
     expect(props.history.goBack.mock.calls.length).toBe(0);
     expect(screen.getByText(errors.name)).toBeVisible();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
@@ -343,14 +374,20 @@ describe('job', () => {
       ...sampleJob,
     });
     api.deleteJob.mockResolvedValue();
-    render(<Router><Job {...props} /></Router>);
-    await waitFor(() => expect(api.retrieveJob).toBeCalledWith('7ce1f17e'));
+    await act(async () => {
+      render(
+          <Router>
+            <Job {...props} />
+          </Router>,
+      );
+    });
+    expect(api.retrieveJob).toBeCalledWith('7ce1f17e');
 
-    fireEvent.click(screen.getByText('Delete'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Delete'));
+    });
 
-    await waitFor(() => expect(api.deleteJob).toBeCalledWith(
-        '7ce1f17e', '"2hhaswzbz72p8"'
-    ));
+    expect(api.deleteJob).toBeCalledWith('7ce1f17e', '"2hhaswzbz72p8"');
     expect(props.history.goBack.mock.calls.length).toBe(1);
   });
 
@@ -358,14 +395,20 @@ describe('job', () => {
     api.retrieveJob.mockResolvedValue(sampleJob);
     const errors = {__ERROR__: 'The error text.'};
     api.deleteJob.mockRejectedValue(errors);
-    render(<Router><Job {...props} /></Router>);
-    await waitFor(() => expect(api.retrieveJob).toBeCalledWith('7ce1f17e'));
+    await act(async () => {
+      render(
+          <Router>
+            <Job {...props} />
+          </Router>,
+      );
+    });
+    expect(api.retrieveJob).toBeCalledWith('7ce1f17e');
 
-    fireEvent.click(screen.getByText('Delete'));
+    await act(async () => {
+      fireEvent.click(screen.getByText('Delete'));
+    });
 
-    await waitFor(() => expect(api.deleteJob).toBeCalledWith(
-        '7ce1f17e', undefined,
-    ));
+    expect(api.deleteJob).toBeCalledWith('7ce1f17e', undefined);
     expect(props.history.goBack.mock.calls.length).toBe(0);
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
