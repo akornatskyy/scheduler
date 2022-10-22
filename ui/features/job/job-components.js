@@ -21,7 +21,7 @@ export class JobForm extends React.Component {
 
   handlePolicyChange = ({target: {name, value}}) => {
     this.props.onPolicyChange?.(
-        name,
+      name,
       name === 'retryCount' && value.length > 0 ? parseInt(value) : value,
     );
   };

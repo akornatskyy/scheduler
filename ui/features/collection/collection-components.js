@@ -5,14 +5,23 @@ import {Form, Button} from 'react-bootstrap';
 import {FieldError, Tip} from '../../shared/components';
 
 export const CollectionForm = ({
-  item, pending, errors, onChange, onSave, onDelete
+  item,
+  pending,
+  errors,
+  onChange,
+  onSave,
+  onDelete,
 }) => {
   const handleChange = ({target: {name, value}}) => onChange?.(name, value);
   return (
-    <Form autoComplete="off" role="form" onSubmit={(e) => {
-      e.preventDefault();
-      onSave?.();
-    }}>
+    <Form
+      autoComplete="off"
+      role="form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSave?.();
+      }}
+    >
       <Form.Group controlId="name" className="mb-3">
         <Form.Label>Name</Form.Label>
         <Form.Control
@@ -22,7 +31,8 @@ export const CollectionForm = ({
           type="text"
           value={item.name}
           isInvalid={!!errors.name}
-          onChange={handleChange} />
+          onChange={handleChange}
+        />
         <FieldError message={errors.name} />
       </Form.Group>
       <Form.Group controlId="state" className="mb-3">
@@ -35,7 +45,8 @@ export const CollectionForm = ({
           value="enabled"
           checked={item.state === 'enabled'}
           isInvalid={!!errors.state}
-          onChange={handleChange} />
+          onChange={handleChange}
+        />
         <Form.Check
           id="stateDisabled"
           name="state"
@@ -45,7 +56,8 @@ export const CollectionForm = ({
           value="disabled"
           checked={item.state === 'disabled'}
           isInvalid={!!errors.state}
-          onChange={handleChange} />
+          onChange={handleChange}
+        />
         <FieldError message={errors.state} />
       </Form.Group>
       <Tip>
@@ -62,21 +74,24 @@ export const CollectionForm = ({
             to={`/variables?collectionId=${item.id}`}
             variant="outline-secondary"
             disabled={pending}
-            className="mx-2">
+            className="mx-2"
+          >
             Variables
           </Button>
           <Button
             as={Link}
             to={`/jobs?collectionId=${item.id}`}
             variant="outline-secondary"
-            disabled={pending}>
+            disabled={pending}
+          >
             Jobs
           </Button>
           <Button
             onClick={onDelete}
             variant="danger"
             className="float-end"
-            disabled={pending}>
+            disabled={pending}
+          >
             Delete
           </Button>
         </>

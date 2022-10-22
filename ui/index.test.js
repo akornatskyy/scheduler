@@ -17,9 +17,9 @@ describe('index', () => {
   ])('routes %s to %s', async (path, component) => {
     await act(async () => {
       render(
-          <Router initialEntries={[path]}>
-            <App />
-          </Router>,
+        <Router initialEntries={[path]}>
+          <App />
+        </Router>,
       );
     });
 

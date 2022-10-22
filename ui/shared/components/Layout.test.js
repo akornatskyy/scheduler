@@ -6,9 +6,9 @@ import Layout from './Layout';
 describe('layout component', () => {
   it('renders title, errors summary and child', () => {
     render(
-        <Layout title="My Title" errors={{}}>
-          Child
-        </Layout>
+      <Layout title="My Title" errors={{}}>
+        Child
+      </Layout>,
     );
 
     expect(screen.getByRole('heading')).toHaveTextContent('My Title');

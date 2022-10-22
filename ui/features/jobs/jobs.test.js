@@ -9,7 +9,7 @@ jest.mock('./jobs-api');
 
 describe('jobs', () => {
   const props = {
-    location: {}
+    location: {},
   };
 
   beforeEach(() => jest.clearAllMocks());
@@ -20,7 +20,11 @@ describe('jobs', () => {
     api.listJobs.mockResolvedValue({items: []});
 
     await act(async () => {
-      render(<Router><Jobs {...props} /></Router>);
+      render(
+        <Router>
+          <Jobs {...props} />
+        </Router>,
+      );
     });
 
     expect(api.listCollections).toBeCalledWith();
@@ -36,7 +40,11 @@ describe('jobs', () => {
     api.listJobs.mockRejectedValue(errors);
 
     await act(async () => {
-      render(<Router><Jobs {...props} /></Router>);
+      render(
+        <Router>
+          <Jobs {...props} />
+        </Router>,
+      );
     });
 
     expect(api.listCollections).toBeCalledWith();
@@ -48,20 +56,22 @@ describe('jobs', () => {
 
   it('updates state with fetched items', async () => {
     api.listCollections.mockResolvedValue({
-      items: [{id: '65ada2f9'}]
+      items: [{id: '65ada2f9'}],
     });
     api.listJobs.mockResolvedValue({
-      items: [{
-        id: '845ab32f',
-        collectionId: '65ada2f9'
-      }]
+      items: [
+        {
+          id: '845ab32f',
+          collectionId: '65ada2f9',
+        },
+      ],
     });
 
     await act(async () => {
       render(
-          <Router>
-            <Jobs {...props} location={{search: '?collectionId=65ada2f9'}} />
-          </Router>
+        <Router>
+          <Jobs {...props} location={{search: '?collectionId=65ada2f9'}} />
+        </Router>,
       );
     });
 
@@ -77,7 +87,11 @@ describe('jobs', () => {
     api.listCollections.mockResolvedValue({items: []});
     api.listJobs.mockResolvedValue({items: []});
 
-    render(<Router><Jobs {...props} /></Router>);
+    render(
+      <Router>
+        <Jobs {...props} />
+      </Router>,
+    );
     jest.runOnlyPendingTimers();
 
     await waitFor(() => expect(api.listCollections).toBeCalledTimes(2));
@@ -91,7 +105,11 @@ describe('jobs', () => {
     jest.spyOn(global, 'clearInterval');
     api.listCollections.mockResolvedValue({items: []});
     api.listJobs.mockResolvedValue({items: []});
-    const {unmount} = render(<Router><Jobs {...props} /></Router>);
+    const {unmount} = render(
+      <Router>
+        <Jobs {...props} />
+      </Router>,
+    );
     await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
     expect(api.listJobs).toBeCalledTimes(1);
     expect(setInterval).toBeCalledTimes(1);

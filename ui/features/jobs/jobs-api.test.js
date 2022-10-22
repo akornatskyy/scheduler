@@ -10,20 +10,20 @@ describe('jobs api', () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => Promise.resolve({items: []})
+      json: () => Promise.resolve({items: []}),
     });
 
     const d = await api.listJobs();
 
     expect(d).toEqual({
       etag: '"2hhaswzbz72p8"',
-      items: []
+      items: [],
     });
     expect(global.fetch).toBeCalledWith('/jobs?fields=status,errorRate', {
       method: 'GET',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
-      }
+      },
     });
   });
 
@@ -31,23 +31,23 @@ describe('jobs api', () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => Promise.resolve({items: []})
+      json: () => Promise.resolve({items: []}),
     });
 
     const d = await api.listJobs('123');
 
     expect(d).toEqual({
       etag: '"2hhaswzbz72p8"',
-      items: []
+      items: [],
     });
     expect(global.fetch).toBeCalledWith(
-        '/jobs?fields=status,errorRate&collectionId=123',
-        {
-          method: 'GET',
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-          }
-        }
+      '/jobs?fields=status,errorRate&collectionId=123',
+      {
+        method: 'GET',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      },
     );
   });
 });

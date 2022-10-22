@@ -8,18 +8,19 @@ export default class Collection extends React.Component {
   state = {
     item: {
       name: '',
-      state: ''
+      state: '',
     },
     pending: true,
-    errors: {}
+    errors: {},
   };
 
   componentDidMount() {
     const {id} = this.props.match.params;
     if (id) {
-      api.retrieveCollection(id)
-          .then((data) => this.setState({item: data, pending: false}))
-          .catch((errors) => this.setState({errors, pending: false}));
+      api
+        .retrieveCollection(id)
+        .then((data) => this.setState({item: data, pending: false}))
+        .catch((errors) => this.setState({errors, pending: false}));
     } else {
       this.setState({item: {name: '', state: 'enabled'}, pending: false});
     }
@@ -27,25 +28,25 @@ export default class Collection extends React.Component {
 
   handleChange = (name, value) => {
     this.setState({
-      item: {...this.state.item,
-        [name]: value
-      }
+      item: {...this.state.item, [name]: value},
     });
   };
 
   handleSave = () => {
     this.setState({pending: true});
-    api.saveCollection(this.state.item)
-        .then(() => this.props.history.goBack())
-        .catch((errors) => this.setState({errors, pending: false}));
+    api
+      .saveCollection(this.state.item)
+      .then(() => this.props.history.goBack())
+      .catch((errors) => this.setState({errors, pending: false}));
   };
 
   handleDelete = () => {
     const {id, etag} = this.state.item;
     this.setState({pending: true});
-    api.deleteCollection(id, etag)
-        .then(() => this.props.history.goBack())
-        .catch((errors) => this.setState({errors, pending: false}));
+    api
+      .deleteCollection(id, etag)
+      .then(() => this.props.history.goBack())
+      .catch((errors) => this.setState({errors, pending: false}));
   };
 
   render() {
@@ -58,7 +59,8 @@ export default class Collection extends React.Component {
           errors={errors}
           onChange={this.handleChange}
           onSave={this.handleSave}
-          onDelete={this.handleDelete} />
+          onDelete={this.handleDelete}
+        />
       </Layout>
     );
   }

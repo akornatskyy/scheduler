@@ -3,7 +3,6 @@ import {render, screen, fireEvent} from '@testing-library/react';
 
 import {VariableForm} from './variable-components';
 
-
 describe('variable', () => {
   let props = null;
 
@@ -12,14 +11,14 @@ describe('variable', () => {
       item: {
         collectionId: '65ada2f9',
         name: 'My Var #1',
-        value: 'Some Value'
+        value: 'Some Value',
       },
       collections: [
         {id: '65ada2f9', name: 'My App #1'},
         {id: 'de1044cc', name: 'My App #2'},
       ],
       pending: false,
-      errors: {}
+      errors: {},
     };
   });
 
@@ -34,9 +33,7 @@ describe('variable', () => {
   });
 
   it('renders edit item', () => {
-    render(
-        <VariableForm {...props} item={{...props.item, id: '123de331'}} />
-    );
+    render(<VariableForm {...props} item={{...props.item, id: '123de331'}} />);
 
     expect(screen.getByLabelText('Name')).toHaveValue('My Var #1');
     expect(screen.getByLabelText('Collection')).toHaveTextContent('My App #1');
@@ -51,18 +48,18 @@ describe('variable', () => {
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: {
-        value: 'My Other Var'
-      }
+        value: 'My Other Var',
+      },
     });
     fireEvent.change(screen.getByLabelText('Collection'), {
       target: {
-        value: 'de1044cc'
-      }
+        value: 'de1044cc',
+      },
     });
     fireEvent.change(screen.getByLabelText('Value'), {
       target: {
-        value: 'Hello'
-      }
+        value: 'Hello',
+      },
     });
 
     expect(handler).toBeCalledTimes(3);
@@ -109,7 +106,7 @@ describe('variable', () => {
     const errors = {
       collectionId: 'An error related to collection id.',
       name: 'An error related to name.',
-      value: 'An error related to value.'
+      value: 'An error related to value.',
     };
 
     render(<VariableForm {...props} errors={errors} />);

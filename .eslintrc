@@ -27,7 +27,8 @@
   "extends": [
     "eslint:recommended",
     "google",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "prettier"
   ],
   "parser": "@babel/eslint-parser",
   "parserOptions": {
@@ -53,7 +54,7 @@
   ],
   "settings": {
     "react": {
-      "version": "16.9"
+      "version": "18.2"
     }
   }
 }

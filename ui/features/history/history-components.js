@@ -1,19 +1,28 @@
 import React from 'react';
 import {Table, Button, Row, Col} from 'react-bootstrap';
 
-
 export const JobHistoryList = ({status, items, onBack, onRun, onDelete}) => (
   <>
     <Row className="mb-3">
-      <Col><label>Status</label></Col>
+      <Col>
+        <label>Status</label>
+      </Col>
       <Col>{formatRunning(status.running)}</Col>
-      <Col><label>Run / Error Count</label></Col>
-      <Col>{status.runCount} / {status.errorCount}</Col>
+      <Col>
+        <label>Run / Error Count</label>
+      </Col>
+      <Col>
+        {status.runCount} / {status.errorCount}
+      </Col>
     </Row>
     <Row className="mb-3">
-      <Col><label>Last Run</label></Col>
+      <Col>
+        <label>Last Run</label>
+      </Col>
       <Col>{formatDate(status.lastRun)}</Col>
-      <Col><label>Next Run</label></Col>
+      <Col>
+        <label>Next Run</label>
+      </Col>
       <Col>{formatDate(status.nextRun)}</Col>
     </Row>
     <Table striped hover>
@@ -40,21 +49,17 @@ export const JobHistoryList = ({status, items, onBack, onRun, onDelete}) => (
         ))}
       </tbody>
     </Table>
-    <Button onClick={onBack}>
-      Back
-    </Button>
+    <Button onClick={onBack}>Back</Button>
     <Button
       onClick={onRun}
       variant="outline-secondary"
       disabled={status.running === true}
-      className="ms-2">
+      className="ms-2"
+    >
       Run
     </Button>
     {items.length > 0 && (
-      <Button
-        onClick={onDelete}
-        variant="danger"
-        className="float-end">
+      <Button onClick={onDelete} variant="danger" className="float-end">
         Delete
       </Button>
     )}

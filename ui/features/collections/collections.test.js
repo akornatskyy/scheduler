@@ -17,7 +17,11 @@ describe('collections', () => {
     api.listCollections.mockRejectedValue(errors);
 
     await act(async () => {
-      render(<Router><Collections /></Router>);
+      render(
+        <Router>
+          <Collections />
+        </Router>,
+      );
     });
     expect(api.listCollections).toBeCalledTimes(1);
     expect(api.listCollections).toBeCalledWith();
@@ -25,15 +29,21 @@ describe('collections', () => {
   });
 
   it('updates state with fetched items', async () => {
-    const items = [{
-      id: '65ada2f9',
-      name: 'My App #1',
-      state: 'enabled'
-    }];
+    const items = [
+      {
+        id: '65ada2f9',
+        name: 'My App #1',
+        state: 'enabled',
+      },
+    ];
     api.listCollections.mockResolvedValue({items});
 
     await act(async () => {
-      render(<Router><Collections /></Router>);
+      render(
+        <Router>
+          <Collections />
+        </Router>,
+      );
     });
 
     expect(api.listCollections).toBeCalled();

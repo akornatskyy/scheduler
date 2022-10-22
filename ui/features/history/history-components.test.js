@@ -24,7 +24,7 @@ describe('job history status', () => {
 
 it('formats UTC date as local locale', () => {
   expect(formatDate('2019-08-29T13:29:36.976Z')).toEqual(
-      new Date('2019-08-29T13:29:36Z').toLocaleString(),
+    new Date('2019-08-29T13:29:36Z').toLocaleString(),
   );
 });
 
@@ -66,11 +66,11 @@ describe('job history component', () => {
     expect(screen.getByText('Scheduled')).toBeVisible();
     expect(screen.getByText('17 / 5')).toBeVisible();
     expect(
-        screen.getByText(
-            new Date('2019-08-29T13:29:36.976Z')
-                .toLocaleString()
-                .replace(/\s+/g, ' '),
-        ),
+      screen.getByText(
+        new Date('2019-08-29T13:29:36.976Z')
+          .toLocaleString()
+          .replace(/\s+/g, ' '),
+      ),
     ).toBeVisible();
     expect(screen.getByText('N/A')).toBeVisible();
     expect(screen.getByText('failed')).toBeVisible();

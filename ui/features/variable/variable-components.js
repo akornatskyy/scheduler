@@ -4,16 +4,26 @@ import {Form, Button, Col, Row} from 'react-bootstrap';
 import {FieldError, Tip} from '../../shared/components';
 
 export const VariableForm = ({
-  item, collections, pending, errors, onChange, onSave, onDelete
+  item,
+  collections,
+  pending,
+  errors,
+  onChange,
+  onSave,
+  onDelete,
 }) => {
   const handleChange = ({target: {name, value}}) => onChange?.(name, value);
   return (
-    <Form autoComplete="off" role="form" onSubmit={(e) => {
-      e.preventDefault();
-      onSave?.();
-    }}>
+    <Form
+      autoComplete="off"
+      role="form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSave?.();
+      }}
+    >
       <Row className="mb-3">
-        <Form.Group as={Col} controlId="name" >
+        <Form.Group as={Col} controlId="name">
           <Form.Label>Name</Form.Label>
           <Form.Control
             name="name"
@@ -22,7 +32,8 @@ export const VariableForm = ({
             type="text"
             value={item.name}
             isInvalid={!!errors.name}
-            onChange={handleChange} />
+            onChange={handleChange}
+          />
           <FieldError message={errors.name} />
         </Form.Group>
         <Form.Group as={Col} controlId="collectionId">
@@ -33,7 +44,8 @@ export const VariableForm = ({
             as="select"
             value={item.collectionId}
             isInvalid={!!errors.collectionId}
-            onChange={handleChange}>
+            onChange={handleChange}
+          >
             {collections.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -52,14 +64,14 @@ export const VariableForm = ({
             name="value"
             value={item.value}
             isInvalid={!!errors.value}
-            onChange={handleChange} />
+            onChange={handleChange}
+          />
           <FieldError message={errors.value} />
         </Form.Group>
       </Row>
       <Tip>
-        You can override environment variable, e.g.
-        variable <i>HOST</i> overrides
-        environment variable <i>SCHEDULER_HOST</i>, etc.
+        You can override environment variable, e.g. variable <i>HOST</i>{' '}
+        overrides environment variable <i>SCHEDULER_HOST</i>, etc.
       </Tip>
       <Button type="submit" disabled={pending}>
         Save
@@ -69,7 +81,8 @@ export const VariableForm = ({
           onClick={onDelete}
           variant="danger"
           className="float-end"
-          disabled={pending}>
+          disabled={pending}
+        >
           Delete
         </Button>
       )}

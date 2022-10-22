@@ -125,9 +125,9 @@ describe('collection', () => {
     api.deleteCollection.mockResolvedValue();
     const {container} = await act(async () =>
       render(
-          <Router>
-            <Collection {...props} />
-          </Router>,
+        <Router>
+          <Collection {...props} />
+        </Router>,
       ),
     );
     expect(api.retrieveCollection).toBeCalled();
@@ -152,9 +152,9 @@ describe('collection', () => {
     api.deleteCollection.mockRejectedValue(errors);
     const {container} = await act(async () =>
       render(
-          <Router>
-            <Collection {...props} />
-          </Router>,
+        <Router>
+          <Collection {...props} />
+        </Router>,
       ),
     );
     expect(api.retrieveCollection).toBeCalled();

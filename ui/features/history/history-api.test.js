@@ -11,33 +11,33 @@ describe('history api', () => {
       global.fetch = jest.fn().mockResolvedValue({
         status: 200,
         headers: {get: () => '"2hhaswzbz72p8"'},
-        json: () => Promise.resolve({running: false})
+        json: () => Promise.resolve({running: false}),
       });
 
       const d = await api.retrieveJobStatus('123');
 
       expect(d).toEqual({
         etag: '"2hhaswzbz72p8"',
-        running: false
+        running: false,
       });
       expect(global.fetch).toBeCalledWith('/jobs/123/status', {
         method: 'GET',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
-        }
+        },
       });
     });
 
     it('patch', async () => {
       global.fetch = jest.fn().mockResolvedValue({
-        status: 204
+        status: 204,
       });
 
       await api.patchJobStatus('123', {
         id: '1234',
         etag: '"2hhaswzbz72p8"',
         updated: '2019-08-29T13:29:36.976Z',
-        running: true
+        running: true,
       });
 
       expect(global.fetch).toBeCalledWith('/jobs/123/status', {
@@ -45,9 +45,9 @@ describe('history api', () => {
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
           'Content-Type': 'application/json',
-          'If-Match': '"2hhaswzbz72p8"'
+          'If-Match': '"2hhaswzbz72p8"',
         },
-        body: '{"running":true}'
+        body: '{"running":true}',
       });
     });
   });
@@ -57,26 +57,26 @@ describe('history api', () => {
       global.fetch = jest.fn().mockResolvedValue({
         status: 200,
         headers: {get: () => '"2hhaswzbz72p8"'},
-        json: () => Promise.resolve({items: []})
+        json: () => Promise.resolve({items: []}),
       });
 
       const d = await api.listJobHistory('123');
 
       expect(d).toEqual({
         etag: '"2hhaswzbz72p8"',
-        items: []
+        items: [],
       });
       expect(global.fetch).toBeCalledWith('/jobs/123/history', {
         method: 'GET',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
-        }
+        },
       });
     });
 
     it('delete job history', async () => {
       global.fetch = jest.fn().mockResolvedValue({
-        status: 204
+        status: 204,
       });
 
       await api.deleteJobHistory('123', '"2hhaswzbz72p8"');
@@ -85,8 +85,8 @@ describe('history api', () => {
         method: 'DELETE',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
-          'If-Match': '"2hhaswzbz72p8"'
-        }
+          'If-Match': '"2hhaswzbz72p8"',
+        },
       });
     });
   });

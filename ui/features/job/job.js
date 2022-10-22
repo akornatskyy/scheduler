@@ -18,64 +18,67 @@ export default class Job extends React.Component {
           method: 'GET',
           uri: '',
           headers: [],
-          body: ''
+          body: '',
         },
         retryPolicy: {
           retryCount: 3,
           retryInterval: '10s',
-          deadline: '1m'
-        }
-      }
+          deadline: '1m',
+        },
+      },
     },
     collections: [],
     pending: true,
-    errors: {}
+    errors: {},
   };
 
   componentDidMount() {
     const {id} = this.props.match.params;
     if (id) {
       this.setState({pending: true});
-      api.retrieveJob(id)
-          .then((data) => this.setState({item: data, pending: false}))
-          .catch((errors) => this.setState({errors, pending: false}));
+      api
+        .retrieveJob(id)
+        .then((data) => this.setState({item: data, pending: false}))
+        .catch((errors) => this.setState({errors, pending: false}));
     } else {
       this.setState({
         item: {
           ...this.state.item,
-          state: 'enabled'
+          state: 'enabled',
         },
-        pending: false
+        pending: false,
       });
     }
-    api.listCollections()
-        .then(({items}) =>
-          this.setState(({item}) => {
-            const s = {collections: items};
-            if (!item.collectionId) {
-              if (items.length > 0) {
-                s.item = {
-                  ...item,
-                  collectionId: items[0].id
-                };
-              } else {
-                s.errors = {
-                  collectionId: 'There is no collection available.'
-                };
-              }
+    api
+      .listCollections()
+      .then(({items}) =>
+        this.setState(({item}) => {
+          const s = {collections: items};
+          if (!item.collectionId) {
+            if (items.length > 0) {
+              s.item = {
+                ...item,
+                collectionId: items[0].id,
+              };
+            } else {
+              s.errors = {
+                collectionId: 'There is no collection available.',
+              };
             }
+          }
 
-            return s;
-          }))
-        .catch((errors) => this.setState({errors}));
+          return s;
+        }),
+      )
+      .catch((errors) => this.setState({errors}));
   }
 
   handleItemChange = (name, value) => {
     this.setState({
       item: {
         ...this.state.item,
-        [name]: value
-      }
+        [name]: value,
+      },
     });
   };
 
@@ -83,9 +86,9 @@ export default class Job extends React.Component {
     this.setState({
       item: update(this.state.item, {
         action: {
-          [name]: {$set: value}
-        }
-      })
+          [name]: {$set: value},
+        },
+      }),
     });
   };
 
@@ -94,10 +97,10 @@ export default class Job extends React.Component {
       item: update(this.state.item, {
         action: {
           request: {
-            [name]: {$set: value}
-          }
-        }
-      })
+            [name]: {$set: value},
+          },
+        },
+      }),
     });
   };
 
@@ -106,10 +109,10 @@ export default class Job extends React.Component {
       item: update(this.state.item, {
         action: {
           retryPolicy: {
-            [name]: {$set: value}
-          }
-        }
-      })
+            [name]: {$set: value},
+          },
+        },
+      }),
     });
   };
 
@@ -119,11 +122,11 @@ export default class Job extends React.Component {
         action: {
           request: {
             headers: {
-              [i]: {[name]: {$set: value}}
-            }
-          }
-        }
-      })
+              [i]: {[name]: {$set: value}},
+            },
+          },
+        },
+      }),
     });
   };
 
@@ -133,11 +136,11 @@ export default class Job extends React.Component {
         action: {
           request: {
             headers: {
-              $push: [{name: '', value: ''}]
-            }
-          }
-        }
-      })
+              $push: [{name: '', value: ''}],
+            },
+          },
+        },
+      }),
     });
   };
 
@@ -147,27 +150,29 @@ export default class Job extends React.Component {
         action: {
           request: {
             headers: {
-              $splice: [[i, 1]]
-            }
-          }
-        }
-      })
+              $splice: [[i, 1]],
+            },
+          },
+        },
+      }),
     });
   };
 
   handleSave = () => {
     this.setState({pending: true});
-    api.saveJob(this.state.item)
-        .then(() => this.props.history.goBack())
-        .catch((errors) => this.setState({errors, pending: false}));
+    api
+      .saveJob(this.state.item)
+      .then(() => this.props.history.goBack())
+      .catch((errors) => this.setState({errors, pending: false}));
   };
 
   handleDelete = () => {
     const {id, etag} = this.state.item;
     this.setState({pending: true});
-    api.deleteJob(id, etag)
-        .then(() => this.props.history.goBack())
-        .catch((errors) => this.setState({errors, pending: false}));
+    api
+      .deleteJob(id, etag)
+      .then(() => this.props.history.goBack())
+      .catch((errors) => this.setState({errors, pending: false}));
   };
 
   render() {

@@ -10,9 +10,10 @@ export default class Collections extends React.Component {
   state = {items: [], errors: {}};
 
   componentDidMount() {
-    api.listCollections()
-        .then(({items}) => this.setState({items}))
-        .catch((errors) => this.setState({errors}));
+    api
+      .listCollections()
+      .then(({items}) => this.setState({items}))
+      .catch((errors) => this.setState({errors}));
   }
 
   render() {
@@ -20,7 +21,7 @@ export default class Collections extends React.Component {
     return (
       <Layout title="Collections" errors={errors}>
         <CollectionList items={items} />
-        <Button as={Link} to='collections/add'>
+        <Button as={Link} to="collections/add">
           Add
         </Button>
       </Layout>

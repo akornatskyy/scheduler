@@ -11,10 +11,10 @@ describe('collection form component', () => {
     props = {
       item: {
         name: 'My App',
-        state: 'disabled'
+        state: 'disabled',
       },
       pending: false,
-      errors: {}
+      errors: {},
     };
   });
 
@@ -30,9 +30,9 @@ describe('collection form component', () => {
 
   it('renders edit item', () => {
     render(
-        <Router>
-          <CollectionForm {...props} item={{...props.item, id: '65ada2f9'}} />
-        </Router>
+      <Router>
+        <CollectionForm {...props} item={{...props.item, id: '65ada2f9'}} />
+      </Router>,
     );
 
     expect(screen.getByRole('form')).toHaveFormValues(props.item);
@@ -48,8 +48,8 @@ describe('collection form component', () => {
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: {
-        value: 'My Other App'
-      }
+        value: 'My Other App',
+      },
     });
     expect(handler).toBeCalledTimes(1);
 
@@ -71,9 +71,9 @@ describe('collection form component', () => {
     props.item.id = '65ada2f9';
     const handler = jest.fn();
     render(
-        <Router>
-          <CollectionForm {...props} onDelete={handler} />
-        </Router>
+      <Router>
+        <CollectionForm {...props} onDelete={handler} />
+      </Router>,
     );
 
     fireEvent.click(screen.getByText('Delete'));
@@ -84,9 +84,9 @@ describe('collection form component', () => {
   it('handles undefined callbacks', () => {
     props.item.id = '65ada2f9';
     render(
-        <Router>
-          <CollectionForm {...props} />
-        </Router>
+      <Router>
+        <CollectionForm {...props} />
+      </Router>,
     );
 
     fireEvent.change(screen.getByLabelText('Name'));
@@ -103,7 +103,7 @@ describe('collection form component', () => {
   it('renders all errors', () => {
     const errors = {
       name: 'An error related to name.',
-      state: 'An error related to state.'
+      state: 'An error related to state.',
     };
 
     render(<CollectionForm {...props} errors={errors} />);

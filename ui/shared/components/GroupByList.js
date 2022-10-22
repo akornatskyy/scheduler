@@ -1,4 +1,3 @@
-
 function groupBy(items, key) {
   return items.reduce((result, value) => {
     (result[value[key]] = result[value[key]] || []).push(value);

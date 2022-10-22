@@ -9,7 +9,7 @@ jest.mock('./variables-api');
 
 describe('variables', () => {
   const props = {
-    location: {}
+    location: {},
   };
 
   beforeEach(() => {
@@ -22,7 +22,11 @@ describe('variables', () => {
     api.listVariables.mockResolvedValue({items: []});
 
     await act(async () => {
-      render(<Router><Variables {...props} /></Router>);
+      render(
+        <Router>
+          <Variables {...props} />
+        </Router>,
+      );
     });
 
     expect(api.listCollections).toBeCalledTimes(1);
@@ -38,7 +42,11 @@ describe('variables', () => {
     api.listVariables.mockRejectedValue(errors);
 
     await act(async () => {
-      render(<Router><Variables {...props} /></Router>);
+      render(
+        <Router>
+          <Variables {...props} />
+        </Router>,
+      );
     });
 
     expect(api.listCollections).toBeCalledTimes(1);
@@ -50,27 +58,28 @@ describe('variables', () => {
 
   it('updates state with fetched items', async () => {
     api.listCollections.mockResolvedValue({
-      items: [{
-        id: '65ada2f9',
-        name: 'My App',
-      }]
+      items: [
+        {
+          id: '65ada2f9',
+          name: 'My App',
+        },
+      ],
     });
     api.listVariables.mockResolvedValue({
-      items: [{
-        id: 'c23abe44',
-        collectionId: '65ada2f9',
-        name: 'My Var',
-      }]
+      items: [
+        {
+          id: 'c23abe44',
+          collectionId: '65ada2f9',
+          name: 'My Var',
+        },
+      ],
     });
 
     await act(async () => {
       render(
-          <Router>
-            <Variables
-              {...props}
-              location={{search: '?collectionId=65ada2f9'}}
-            />
-          </Router>
+        <Router>
+          <Variables {...props} location={{search: '?collectionId=65ada2f9'}} />
+        </Router>,
       );
     });
 

@@ -19,34 +19,34 @@ export default class Variable extends React.Component {
     const {id} = this.props.match.params;
     if (id) {
       api
-          .retrieveVariable(id)
-          .then((data) => this.setState({item: data, pending: false}))
-          .catch((errors) => this.setState({errors, pending: false}));
+        .retrieveVariable(id)
+        .then((data) => this.setState({item: data, pending: false}))
+        .catch((errors) => this.setState({errors, pending: false}));
     } else {
       this.setState({item: {name: '', value: ''}, pending: false});
     }
     api
-        .listCollections()
-        .then(({items}) =>
-          this.setState(({item}) => {
-            const s = {collections: items};
-            if (!item.collectionId) {
-              if (items.length > 0) {
-                s.item = {
-                  ...item,
-                  collectionId: items[0].id,
-                };
-              } else {
-                s.errors = {
-                  collectionId: 'There is no collection available.',
-                };
-              }
+      .listCollections()
+      .then(({items}) =>
+        this.setState(({item}) => {
+          const s = {collections: items};
+          if (!item.collectionId) {
+            if (items.length > 0) {
+              s.item = {
+                ...item,
+                collectionId: items[0].id,
+              };
+            } else {
+              s.errors = {
+                collectionId: 'There is no collection available.',
+              };
             }
+          }
 
-            return s;
-          }),
-        )
-        .catch((errors) => this.setState({errors}));
+          return s;
+        }),
+      )
+      .catch((errors) => this.setState({errors}));
   }
 
   handleChange = (name, value) => {
@@ -58,18 +58,18 @@ export default class Variable extends React.Component {
   handleSave = () => {
     this.setState({pending: true});
     api
-        .saveVariable(this.state.item)
-        .then(() => this.props.history.goBack())
-        .catch((errors) => this.setState({errors, pending: false}));
+      .saveVariable(this.state.item)
+      .then(() => this.props.history.goBack())
+      .catch((errors) => this.setState({errors, pending: false}));
   };
 
   handleDelete = () => {
     const {id, etag} = this.state.item;
     this.setState({pending: true});
     api
-        .deleteVariable(id, etag)
-        .then(() => this.props.history.goBack())
-        .catch((errors) => this.setState({errors, pending: false}));
+      .deleteVariable(id, etag)
+      .then(() => this.props.history.goBack())
+      .catch((errors) => this.setState({errors, pending: false}));
   };
 
   render() {

@@ -10,52 +10,52 @@ describe('variable api', () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => Promise.resolve({name: 'My Var'})
+      json: () => Promise.resolve({name: 'My Var'}),
     });
 
     const d = await api.retrieveVariable('123');
 
     expect(d).toEqual({
       etag: '"2hhaswzbz72p8"',
-      name: 'My Var'
+      name: 'My Var',
     });
     expect(global.fetch).toBeCalledWith('/variables/123', {
       method: 'GET',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
-      }
+      },
     });
   });
 
   it('save (create)', async () => {
     global.fetch = jest.fn().mockResolvedValue({
-      status: 201
+      status: 201,
     });
 
     await api.saveVariable({
-      name: 'My Var'
+      name: 'My Var',
     });
 
     expect(global.fetch).toBeCalledWith('/variables', {
       method: 'POST',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: '{"name":"My Var"}'
+      body: '{"name":"My Var"}',
     });
   });
 
   it('save (update)', async () => {
     global.fetch = jest.fn().mockResolvedValue({
-      status: 204
+      status: 204,
     });
 
     await api.saveVariable({
       id: '123',
       etag: '"2hhaswzbz72p8"',
       updated: '2019-08-29T13:29:36.976Z',
-      name: 'My Var'
+      name: 'My Var',
     });
 
     expect(global.fetch).toBeCalledWith('/variables/123', {
@@ -63,15 +63,15 @@ describe('variable api', () => {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
         'Content-Type': 'application/json',
-        'If-Match': '"2hhaswzbz72p8"'
+        'If-Match': '"2hhaswzbz72p8"',
       },
-      body: '{"name":"My Var"}'
+      body: '{"name":"My Var"}',
     });
   });
 
   it('delete', async () => {
     global.fetch = jest.fn().mockResolvedValue({
-      status: 204
+      status: 204,
     });
 
     await api.deleteVariable('123', '"2hhaswzbz72p8"');
@@ -80,8 +80,8 @@ describe('variable api', () => {
       method: 'DELETE',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
-        'If-Match': '"2hhaswzbz72p8"'
-      }
+        'If-Match': '"2hhaswzbz72p8"',
+      },
     });
   });
 });

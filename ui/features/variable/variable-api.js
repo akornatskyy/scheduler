@@ -2,7 +2,6 @@ import {go} from '../../shared/fetch';
 
 export {listCollections} from '../collections/collections-api';
 
-
 export function retrieveVariable(id) {
   return go('GET', `/variables/${id}`);
 }

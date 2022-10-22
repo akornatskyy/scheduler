@@ -70,9 +70,9 @@ describe('job', () => {
 
     await act(async () => {
       render(
-          <Router>
-            <Job {...props} />
-          </Router>,
+        <Router>
+          <Job {...props} />
+        </Router>,
       );
     });
 
@@ -165,12 +165,12 @@ describe('job', () => {
       },
     });
     fireEvent.change(
-        screen.getByLabelText((component) => component.startsWith('Schedule')),
-        {
-          target: {
-            value: '@every 15s',
-          },
+      screen.getByLabelText((component) => component.startsWith('Schedule')),
+      {
+        target: {
+          value: '@every 15s',
         },
+      },
     );
 
     expect(screen.getByRole('form')).toHaveFormValues({
@@ -279,10 +279,10 @@ describe('job', () => {
 
     // Delete header
     fireEvent.click(
-        screen.getByRole(
-            (content, element) =>
-              content === 'button' && element.querySelector('i.fa-times'),
-        ),
+      screen.getByRole(
+        (content, element) =>
+          content === 'button' && element.querySelector('i.fa-times'),
+      ),
     );
 
     expect(screen.queryByPlaceholderText('Value')).not.toBeInTheDocument();
@@ -376,9 +376,9 @@ describe('job', () => {
     api.deleteJob.mockResolvedValue();
     await act(async () => {
       render(
-          <Router>
-            <Job {...props} />
-          </Router>,
+        <Router>
+          <Job {...props} />
+        </Router>,
       );
     });
     expect(api.retrieveJob).toBeCalledWith('7ce1f17e');
@@ -397,9 +397,9 @@ describe('job', () => {
     api.deleteJob.mockRejectedValue(errors);
     await act(async () => {
       render(
-          <Router>
-            <Job {...props} />
-          </Router>,
+        <Router>
+          <Job {...props} />
+        </Router>,
       );
     });
     expect(api.retrieveJob).toBeCalledWith('7ce1f17e');

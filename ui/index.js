@@ -1,12 +1,7 @@
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {Container} from 'react-bootstrap';
-import {
-  HashRouter as Router,
-  Switch,
-  Redirect,
-  Route
-} from 'react-router-dom';
+import {HashRouter as Router, Switch, Redirect, Route} from 'react-router-dom';
 
 import Collection from './features/collection/collection';
 import Collections from './features/collections/collections';
@@ -37,12 +32,11 @@ export const App = () => (
   </Container>
 );
 
-
 const root = createRoot(
-    document.querySelector('#root') || document.createElement('div'),
+  document.querySelector('#root') || document.createElement('div'),
 );
 root.render(
-    <Router>
-      <App />
-    </Router>,
+  <Router>
+    <App />
+  </Router>,
 );

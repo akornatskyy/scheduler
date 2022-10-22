@@ -19,14 +19,17 @@ export default class Jobs extends React.Component {
   }
 
   refresh() {
-    const collectionId = new URLSearchParams(this.props.location.search)
-        .get('collectionId');
-    api.listCollections()
-        .then(({items}) => this.setState({collections: items}))
-        .catch((errors) => this.setState({errors}));
-    api.listJobs(collectionId)
-        .then(({items}) => this.setState({jobs: items}))
-        .catch((errors) => this.setState({errors}));
+    const collectionId = new URLSearchParams(this.props.location.search).get(
+      'collectionId',
+    );
+    api
+      .listCollections()
+      .then(({items}) => this.setState({collections: items}))
+      .catch((errors) => this.setState({errors}));
+    api
+      .listJobs(collectionId)
+      .then(({items}) => this.setState({jobs: items}))
+      .catch((errors) => this.setState({errors}));
   }
 
   render() {
@@ -34,7 +37,7 @@ export default class Jobs extends React.Component {
     return (
       <Layout title="Jobs" errors={errors}>
         <JobList collections={collections} jobs={jobs} />
-        <Button as={Link} to='jobs/add'>
+        <Button as={Link} to="jobs/add">
           Add
         </Button>
       </Layout>

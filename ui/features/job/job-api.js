@@ -3,19 +3,17 @@ import update from 'immutability-helper';
 import {go} from '../../shared/fetch';
 export {listCollections} from '../collections/collections-api';
 
-
 const defaultRequest = {
   method: 'GET',
   headers: [],
-  body: ''
+  body: '',
 };
 
 const defaultRetryPolicy = {
   retryCount: 3,
   retryInterval: '10s',
-  deadline: '1m'
+  deadline: '1m',
 };
-
 
 export function retrieveJob(id) {
   return go('GET', `/jobs/${id}`).then((data) => {

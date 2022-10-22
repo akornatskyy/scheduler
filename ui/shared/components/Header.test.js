@@ -6,7 +6,11 @@ import Header from './Header';
 
 describe('header component', () => {
   it('renders links', () => {
-    render(<Router><Header /></Router>);
+    render(
+      <Router>
+        <Header />
+      </Router>,
+    );
 
     expect(screen.getByText('Collections')).toBeVisible();
     expect(screen.getByText('Variables')).toBeVisible();

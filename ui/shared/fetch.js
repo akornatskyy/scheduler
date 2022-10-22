@@ -1,6 +1,5 @@
 const host = '';
 
-
 const thenHandle = (r, resolve, reject) => {
   if (r.status === 201 || r.status === 204) {
     return resolve();
@@ -13,10 +12,10 @@ const thenHandle = (r, resolve, reject) => {
     return r.json().then((data) => {
       const errors = {};
       data.errors
-          .filter((err) => err.type === 'field')
-          .forEach((err) => {
-            errors[err.location] = err.message;
-          });
+        .filter((err) => err.type === 'field')
+        .forEach((err) => {
+          errors[err.location] = err.message;
+        });
       reject(errors);
     });
   }
@@ -28,8 +27,8 @@ export const go = (method, path, data) => {
   const options = {
     method: method,
     headers: {
-      'X-Requested-With': 'XMLHttpRequest'
-    }
+      'X-Requested-With': 'XMLHttpRequest',
+    },
   };
   switch (method) {
     case 'DELETE':
@@ -49,7 +48,7 @@ export const go = (method, path, data) => {
   }
   return new Promise((resolve, reject) =>
     fetch(host + path, options)
-        .then((r) => thenHandle(r, resolve, reject))
-        .catch((error) => reject({__ERROR__: error.message}))
+      .then((r) => thenHandle(r, resolve, reject))
+      .catch((error) => reject({__ERROR__: error.message})),
   );
 };

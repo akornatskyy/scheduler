@@ -2,7 +2,6 @@ import {go} from '../../shared/fetch';
 
 export {retrieveJob} from '../job/job-api';
 
-
 export function retrieveJobStatus(id) {
   return go('GET', `/jobs/${id}/status`);
 }

@@ -4,11 +4,10 @@ import {render, screen, fireEvent} from '@testing-library/react';
 
 import {JobForm} from './job-components';
 
-
 describe('job', () => {
   const collections = [
     {id: '65ada2f9', name: 'My App #1'},
-    {id: '7d76cb30', name: 'My Other App'}
+    {id: '7d76cb30', name: 'My Other App'},
   ];
   let props = null;
 
@@ -17,13 +16,13 @@ describe('job', () => {
       item: {
         action: {
           request: {
-            headers: []
+            headers: [],
           },
-          retryPolicy: {}
-        }
+          retryPolicy: {},
+        },
       },
       collections,
-      errors: {}
+      errors: {},
     };
   });
 
@@ -37,9 +36,9 @@ describe('job', () => {
 
   it('renders edit item', () => {
     render(
-        <Router>
-          <JobForm {...props} item={{...props.item, id: '123de331'}} />
-        </Router>
+      <Router>
+        <JobForm {...props} item={{...props.item, id: '123de331'}} />
+      </Router>,
     );
 
     expect(screen.getByText('Save')).toBeEnabled();
@@ -49,14 +48,12 @@ describe('job', () => {
 
   it('calls on item change callback', () => {
     const handler = jest.fn();
-    render(
-        <JobForm {...props} onItemChange={handler} />
-    );
+    render(<JobForm {...props} onItemChange={handler} />);
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: {
-        value: 'My Job'
-      }
+        value: 'My Job',
+      },
     });
     expect(handler).toBeCalledTimes(1);
     expect(handler).nthCalledWith(1, 'name', 'My Job');
@@ -64,8 +61,8 @@ describe('job', () => {
     handler.mockClear();
     fireEvent.change(screen.getByLabelText('Collection'), {
       target: {
-        value: '7d76cb30'
-      }
+        value: '7d76cb30',
+      },
     });
     expect(handler).toBeCalledTimes(1);
     expect(handler).nthCalledWith(1, 'collectionId', '7d76cb30');
@@ -77,12 +74,12 @@ describe('job', () => {
 
     handler.mockClear();
     fireEvent.change(
-        screen.getByLabelText((content) => content.startsWith('Schedule')),
-        {
-          target: {
-            value: '@every 5m'
-          }
-        }
+      screen.getByLabelText((content) => content.startsWith('Schedule')),
+      {
+        target: {
+          value: '@every 5m',
+        },
+      },
     );
     expect(handler).toBeCalledTimes(1);
     expect(handler).nthCalledWith(1, 'schedule', '@every 5m');
@@ -90,14 +87,12 @@ describe('job', () => {
 
   it('handle action change', () => {
     const handler = jest.fn();
-    render(
-        <JobForm {...props} onActionChange={handler} />
-    );
+    render(<JobForm {...props} onActionChange={handler} />);
 
     fireEvent.change(screen.getByLabelText('Action'), {
       target: {
-        value: 'HTTP'
-      }
+        value: 'HTTP',
+      },
     });
 
     expect(handler).toBeCalledTimes(1);
@@ -107,14 +102,12 @@ describe('job', () => {
   it('handle request change', () => {
     props.item.action.request.method = 'POST';
     const handler = jest.fn();
-    render(
-        <JobForm {...props} onRequestChange={handler} />
-    );
+    render(<JobForm {...props} onRequestChange={handler} />);
 
     fireEvent.change(screen.getByLabelText('Method'), {
       target: {
-        value: 'PUT'
-      }
+        value: 'PUT',
+      },
     });
     expect(handler).toBeCalledTimes(1);
     expect(handler).nthCalledWith(1, 'method', 'PUT');
@@ -122,8 +115,8 @@ describe('job', () => {
     handler.mockClear();
     fireEvent.change(screen.getByLabelText('URI'), {
       target: {
-        value: 'https://localhost'
-      }
+        value: 'https://localhost',
+      },
     });
     expect(handler).toBeCalledTimes(1);
     expect(handler).nthCalledWith(1, 'uri', 'https://localhost');
@@ -131,8 +124,8 @@ describe('job', () => {
     handler.mockClear();
     fireEvent.change(screen.getByLabelText('Body'), {
       target: {
-        value: '{}'
-      }
+        value: '{}',
+      },
     });
     expect(handler).toBeCalledTimes(1);
     expect(handler).nthCalledWith(1, 'body', '{}');
@@ -140,14 +133,12 @@ describe('job', () => {
 
   it('handle policy change', () => {
     const handler = jest.fn();
-    render(
-        <JobForm {...props} onPolicyChange={handler} />
-    );
+    render(<JobForm {...props} onPolicyChange={handler} />);
 
     fireEvent.change(screen.getByLabelText('Retry Count'), {
       target: {
-        value: '7'
-      }
+        value: '7',
+      },
     });
     expect(handler).toBeCalledTimes(1);
     expect(handler).nthCalledWith(1, 'retryCount', 7);
@@ -155,8 +146,8 @@ describe('job', () => {
     handler.mockClear();
     fireEvent.change(screen.getByLabelText('Interval'), {
       target: {
-        value: '45s'
-      }
+        value: '45s',
+      },
     });
     expect(handler).toBeCalledTimes(1);
     expect(handler).nthCalledWith(1, 'retryInterval', '45s');
@@ -164,8 +155,8 @@ describe('job', () => {
     handler.mockClear();
     fireEvent.change(screen.getByLabelText('Deadline'), {
       target: {
-        value: '3m'
-      }
+        value: '3m',
+      },
     });
     expect(handler).toBeCalledTimes(1);
     expect(handler).nthCalledWith(1, 'deadline', '3m');
@@ -185,15 +176,17 @@ describe('job', () => {
     props.item.action.request.headers = [
       {
         name: 'X-Requested-With',
-        value: 'XMLHttpRequest'
-      }
+        value: 'XMLHttpRequest',
+      },
     ];
     const handler = jest.fn();
     render(<JobForm {...props} onDeleteHeader={handler} />);
 
     fireEvent.click(
-        screen.getByRole((content, element) =>
-          content === 'button' && element.querySelector('i.fa-times') != null)
+      screen.getByRole(
+        (content, element) =>
+          content === 'button' && element.querySelector('i.fa-times') != null,
+      ),
     );
 
     expect(handler).toBeCalledTimes(1);
@@ -204,26 +197,25 @@ describe('job', () => {
     props.item.action.request.headers = [
       {
         name: '',
-        value: ''
-      }
+        value: '',
+      },
     ];
     const handler = jest.fn();
     render(<JobForm {...props} onHeaderChange={handler} />);
 
-    fireEvent.change(
-        screen.getAllByPlaceholderText('Name')[1], {
-          target: {
-            value: 'X-Requested-With'
-          }
-        });
+    fireEvent.change(screen.getAllByPlaceholderText('Name')[1], {
+      target: {
+        value: 'X-Requested-With',
+      },
+    });
     expect(handler).toBeCalledTimes(1);
     expect(handler).nthCalledWith(1, 'name', 'X-Requested-With', 0);
 
     handler.mockClear();
     fireEvent.change(screen.getByPlaceholderText('Value'), {
       target: {
-        value: 'XMLHttpRequest'
-      }
+        value: 'XMLHttpRequest',
+      },
     });
     expect(handler).toBeCalledTimes(1);
     expect(handler).nthCalledWith(1, 'value', 'XMLHttpRequest', 0);
@@ -244,32 +236,38 @@ describe('job', () => {
           headers: [
             {
               name: 'X-Requested-With',
-              value: 'XMLHttpRequest'
-            }
-          ]
+              value: 'XMLHttpRequest',
+            },
+          ],
         },
         retryPolicy: {
           retryCount: 3,
           retryInterval: '10s',
-          deadline: '1m'
-        }
-      }
+          deadline: '1m',
+        },
+      },
     };
 
-    render(<Router><JobForm {...props} /></Router>);
+    render(
+      <Router>
+        <JobForm {...props} />
+      </Router>,
+    );
 
     expect(screen.getByLabelText('Name')).toHaveValue('My Task #1');
     expect(screen.getByLabelText('Disabled')).toBeChecked();
-    expect(screen.getByLabelText('Collection'))
-        .toHaveDisplayValue('My Other App');
-    expect(screen.getByLabelText(
-        (component) => component.startsWith('Schedule'))
+    expect(screen.getByLabelText('Collection')).toHaveDisplayValue(
+      'My Other App',
+    );
+    expect(
+      screen.getByLabelText((component) => component.startsWith('Schedule')),
     ).toHaveValue('@every 1h');
     expect(screen.getByLabelText('Action')).toHaveValue('HTTP');
     expect(screen.getByLabelText('Method')).toHaveValue('GET');
     expect(screen.getByLabelText('URI')).toHaveValue('http://example.com');
-    expect(screen.getAllByPlaceholderText('Name')[1])
-        .toHaveValue('X-Requested-With');
+    expect(screen.getAllByPlaceholderText('Name')[1]).toHaveValue(
+      'X-Requested-With',
+    );
     expect(screen.getByPlaceholderText('Value')).toHaveValue('XMLHttpRequest');
     expect(screen.getByLabelText('Retry Count')).toHaveValue(3);
     expect(screen.getByLabelText('Interval')).toHaveValue('10s');
@@ -288,7 +286,11 @@ describe('job', () => {
   it('calls on delete callback', () => {
     props.item.id = '65ada2f9';
     const handler = jest.fn();
-    render(<Router><JobForm {...props} onDelete={handler} /></Router>);
+    render(
+      <Router>
+        <JobForm {...props} onDelete={handler} />
+      </Router>,
+    );
 
     fireEvent.click(screen.getByText('Delete'));
 
@@ -297,7 +299,11 @@ describe('job', () => {
 
   it('handles undefined callbacks', () => {
     props.item.id = '65ada2f9';
-    render(<Router><JobForm {...props} /></Router>);
+    render(
+      <Router>
+        <JobForm {...props} />
+      </Router>,
+    );
 
     fireEvent.change(screen.getByLabelText('Name'));
     fireEvent.click(screen.getByText('Save'));

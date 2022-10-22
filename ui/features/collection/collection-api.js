@@ -1,6 +1,5 @@
 import {go} from '../../shared/fetch';
 
-
 export function retrieveCollection(id) {
   return go('GET', `/collections/${id}`);
 }
