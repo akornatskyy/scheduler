@@ -18,7 +18,7 @@ WORKDIR /src
 
 RUN set -ex \
     \
-    && npm --no-update-notifier --no-fund --no-audit --no-optional ci \
+    && npm --no-update-notifier --no-fund --no-audit --omit=optional ci \
     && npm --no-update-notifier run build -- --mode=production
 
 FROM scratch
