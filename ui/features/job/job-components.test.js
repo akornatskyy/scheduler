@@ -1,6 +1,6 @@
+import {fireEvent, render, screen} from '@testing-library/react';
 import React from 'react';
 import {MemoryRouter as Router} from 'react-router-dom';
-import {render, screen, fireEvent} from '@testing-library/react';
 
 import {JobForm} from './job-components';
 
@@ -183,9 +183,9 @@ describe('job', () => {
     render(<JobForm {...props} onDeleteHeader={handler} />);
 
     fireEvent.click(
-      screen.getByRole(
-        (content, element) =>
-          content === 'button' && element.querySelector('i.fa-times') != null,
+      screen.getByText(
+        (_, element) =>
+          element.type === 'button' && element.querySelector('i.fa-times'),
       ),
     );
 

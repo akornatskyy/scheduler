@@ -279,9 +279,9 @@ describe('job', () => {
 
     // Delete header
     fireEvent.click(
-      screen.getByRole(
-        (content, element) =>
-          content === 'button' && element.querySelector('i.fa-times'),
+      screen.getByText(
+        (_, element) =>
+          element.type === 'button' && element.querySelector('i.fa-times'),
       ),
     );
 
