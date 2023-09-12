@@ -22,7 +22,7 @@ jobs:
           username: akorn
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: install buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - id: vars
         if: ${{ github.ref_type == 'tag' }}
         run: |
