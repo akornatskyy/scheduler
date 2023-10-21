@@ -18,9 +18,14 @@ func (j *JobDefinition) ETag() string {
 }
 
 func (j *JobStatus) ETag() string {
-	return etag(j.Updated)
+	if j.NextRun == nil {
+		return etag(j.Updated)
+	}
+
+	return "\"" + strconv.FormatInt(
+		j.Updated.UnixMicro()+j.NextRun.UnixMicro(), 36) + "\""
 }
 
 func etag(t time.Time) string {
-	return "\"" + strconv.FormatInt(t.UnixNano()/int64(time.Microsecond), 36) + "\""
+	return "\"" + strconv.FormatInt(t.UnixMicro(), 36) + "\""
 }
