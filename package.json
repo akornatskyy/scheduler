@@ -43,7 +43,7 @@
     "@babel/eslint-parser": "^7.22.15",
     "@babel/plugin-transform-class-properties": "^7.22.5",
     "@babel/plugin-transform-optional-chaining": "^7.23.0",
-    "@babel/preset-env": "^7.23.2",
+    "@babel/preset-env": "^7.23.3",
     "@babel/preset-react": "^7.22.15",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.0.0",
