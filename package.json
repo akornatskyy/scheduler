@@ -39,7 +39,7 @@
     "react-router-dom": "^5.3.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.3",
+    "@babel/core": "^7.23.6",
     "@babel/eslint-parser": "^7.23.3",
     "@babel/plugin-transform-class-properties": "^7.23.3",
     "@babel/plugin-transform-optional-chaining": "^7.23.3",
