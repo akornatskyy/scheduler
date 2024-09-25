@@ -1,6 +1,6 @@
 {
   "name": "scheduler-ui",
-  "version": "1.4.6",
+  "version": "1.4.7",
   "description": "A fully managed cron job scheduler",
   "main": "ui/index.js",
   "scripts": {
