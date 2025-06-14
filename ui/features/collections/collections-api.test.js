@@ -19,7 +19,7 @@ describe('collections api', () => {
       etag: '"2hhaswzbz72p8"',
       items: [],
     });
-    expect(global.fetch).toBeCalledWith('/collections', {
+    expect(global.fetch).toHaveBeenCalledWith('/collections', {
       method: 'GET',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',

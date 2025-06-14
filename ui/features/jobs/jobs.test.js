@@ -27,10 +27,10 @@ describe('jobs', () => {
       );
     });
 
-    expect(api.listCollections).toBeCalledWith();
-    expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listJobs).toBeCalledTimes(1);
-    expect(api.listJobs).toBeCalledWith(null);
+    expect(api.listCollections).toHaveBeenCalledWith();
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listJobs).toHaveBeenCalledTimes(1);
+    expect(api.listJobs).toHaveBeenCalledWith(null);
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -47,10 +47,10 @@ describe('jobs', () => {
       );
     });
 
-    expect(api.listCollections).toBeCalledWith();
-    expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listJobs).toBeCalledTimes(1);
-    expect(api.listJobs).toBeCalledWith(null);
+    expect(api.listCollections).toHaveBeenCalledWith();
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listJobs).toHaveBeenCalledTimes(1);
+    expect(api.listJobs).toHaveBeenCalledWith(null);
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -75,10 +75,10 @@ describe('jobs', () => {
       );
     });
 
-    expect(api.listCollections).toBeCalledWith();
-    expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listJobs).toBeCalledTimes(1);
-    expect(api.listJobs).toBeCalledWith('65ada2f9');
+    expect(api.listCollections).toHaveBeenCalledWith();
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listJobs).toHaveBeenCalledTimes(1);
+    expect(api.listJobs).toHaveBeenCalledWith('65ada2f9');
   });
 
   it('refreshes on timer', async () => {
@@ -94,9 +94,9 @@ describe('jobs', () => {
     );
     jest.runOnlyPendingTimers();
 
-    await waitFor(() => expect(api.listCollections).toBeCalledTimes(2));
-    expect(api.listJobs).toBeCalledTimes(2);
-    expect(setInterval).toBeCalledTimes(1);
+    await waitFor(() => expect(api.listCollections).toHaveBeenCalledTimes(2));
+    expect(api.listJobs).toHaveBeenCalledTimes(2);
+    expect(setInterval).toHaveBeenCalledTimes(1);
   });
 
   it('clears timer on unmount', async () => {
@@ -110,13 +110,13 @@ describe('jobs', () => {
         <Jobs {...props} />
       </Router>,
     );
-    await waitFor(() => expect(api.listCollections).toBeCalledTimes(1));
-    expect(api.listJobs).toBeCalledTimes(1);
-    expect(setInterval).toBeCalledTimes(1);
-    expect(setInterval).toBeCalledWith(expect.anything(), 10000);
+    await waitFor(() => expect(api.listCollections).toHaveBeenCalledTimes(1));
+    expect(api.listJobs).toHaveBeenCalledTimes(1);
+    expect(setInterval).toHaveBeenCalledTimes(1);
+    expect(setInterval).toHaveBeenCalledWith(expect.anything(), 10000);
 
     unmount();
 
-    expect(clearInterval).toBeCalledTimes(1);
+    expect(clearInterval).toHaveBeenCalledTimes(1);
   });
 });

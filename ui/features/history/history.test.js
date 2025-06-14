@@ -29,12 +29,12 @@ describe('job history', () => {
       render(<JobHistory {...props} />);
     });
 
-    expect(api.retrieveJob).toBeCalledTimes(1);
-    expect(api.retrieveJob).toBeCalledWith('65ada2f9');
-    expect(api.retrieveJobStatus).toBeCalledTimes(1);
-    expect(api.retrieveJobStatus).toBeCalledWith('65ada2f9');
-    expect(api.listJobHistory).toBeCalledTimes(1);
-    expect(api.listJobHistory).toBeCalledWith('65ada2f9');
+    expect(api.retrieveJob).toHaveBeenCalledTimes(1);
+    expect(api.retrieveJob).toHaveBeenCalledWith('65ada2f9');
+    expect(api.retrieveJobStatus).toHaveBeenCalledTimes(1);
+    expect(api.retrieveJobStatus).toHaveBeenCalledWith('65ada2f9');
+    expect(api.listJobHistory).toHaveBeenCalledTimes(1);
+    expect(api.listJobHistory).toHaveBeenCalledWith('65ada2f9');
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -48,12 +48,12 @@ describe('job history', () => {
       render(<JobHistory {...props} />);
     });
 
-    expect(api.retrieveJob).toBeCalledTimes(1);
-    expect(api.retrieveJob).toBeCalledWith('65ada2f9');
-    expect(api.retrieveJobStatus).toBeCalledTimes(1);
-    expect(api.retrieveJobStatus).toBeCalledWith('65ada2f9');
-    expect(api.listJobHistory).toBeCalledTimes(1);
-    expect(api.listJobHistory).toBeCalledWith('65ada2f9');
+    expect(api.retrieveJob).toHaveBeenCalledTimes(1);
+    expect(api.retrieveJob).toHaveBeenCalledWith('65ada2f9');
+    expect(api.retrieveJobStatus).toHaveBeenCalledTimes(1);
+    expect(api.retrieveJobStatus).toHaveBeenCalledWith('65ada2f9');
+    expect(api.listJobHistory).toHaveBeenCalledTimes(1);
+    expect(api.listJobHistory).toHaveBeenCalledWith('65ada2f9');
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -67,11 +67,11 @@ describe('job history', () => {
       render(<JobHistory {...props} />);
     });
 
-    expect(api.retrieveJob).toBeCalledWith('65ada2f9');
-    expect(api.retrieveJobStatus).toBeCalledTimes(1);
-    expect(api.retrieveJobStatus).toBeCalledWith('65ada2f9');
-    expect(api.listJobHistory).toBeCalledTimes(1);
-    expect(api.listJobHistory).toBeCalledWith('65ada2f9');
+    expect(api.retrieveJob).toHaveBeenCalledWith('65ada2f9');
+    expect(api.retrieveJobStatus).toHaveBeenCalledTimes(1);
+    expect(api.retrieveJobStatus).toHaveBeenCalledWith('65ada2f9');
+    expect(api.listJobHistory).toHaveBeenCalledTimes(1);
+    expect(api.listJobHistory).toHaveBeenCalledWith('65ada2f9');
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -87,12 +87,12 @@ describe('job history', () => {
       render(<JobHistory {...props} />);
     });
 
-    expect(api.retrieveJob).toBeCalledTimes(1);
-    expect(api.retrieveJob).toBeCalledWith('65ada2f9');
-    expect(api.retrieveJobStatus).toBeCalledTimes(1);
-    expect(api.retrieveJobStatus).toBeCalledWith('65ada2f9');
-    expect(api.listJobHistory).toBeCalledTimes(1);
-    expect(api.listJobHistory).toBeCalledWith('65ada2f9');
+    expect(api.retrieveJob).toHaveBeenCalledTimes(1);
+    expect(api.retrieveJob).toHaveBeenCalledWith('65ada2f9');
+    expect(api.retrieveJobStatus).toHaveBeenCalledTimes(1);
+    expect(api.retrieveJobStatus).toHaveBeenCalledWith('65ada2f9');
+    expect(api.listJobHistory).toHaveBeenCalledTimes(1);
+    expect(api.listJobHistory).toHaveBeenCalledWith('65ada2f9');
   });
 
   it('handles on back', async () => {
@@ -105,7 +105,7 @@ describe('job history', () => {
 
     fireEvent.click(screen.getByText('Back'));
 
-    expect(props.history.goBack).toBeCalledTimes(1);
+    expect(props.history.goBack).toHaveBeenCalledTimes(1);
   });
 
   it('handles on run', async () => {
@@ -117,19 +117,19 @@ describe('job history', () => {
     await act(async () => {
       render(<JobHistory {...props} />);
     });
-    expect(api.retrieveJob).toBeCalled();
+    expect(api.retrieveJob).toHaveBeenCalled();
 
     await act(async () => {
       fireEvent.click(screen.getByText('Run'));
     });
 
-    expect(api.patchJobStatus).toBeCalledTimes(1);
-    expect(api.patchJobStatus).toBeCalledWith('65ada2f9', {
+    expect(api.patchJobStatus).toHaveBeenCalledTimes(1);
+    expect(api.patchJobStatus).toHaveBeenCalledWith('65ada2f9', {
       running: true,
       etag: '"1n9er1hz749r"',
     });
-    expect(api.retrieveJobStatus).toBeCalledTimes(2);
-    expect(api.retrieveJobStatus).toBeCalledWith('65ada2f9');
+    expect(api.retrieveJobStatus).toHaveBeenCalledTimes(2);
+    expect(api.retrieveJobStatus).toHaveBeenCalledWith('65ada2f9');
   });
 
   it('handles on run patch job status error', async () => {
@@ -142,18 +142,18 @@ describe('job history', () => {
     await act(async () => {
       render(<JobHistory {...props} />);
     });
-    expect(api.retrieveJob).toBeCalled();
+    expect(api.retrieveJob).toHaveBeenCalled();
 
     await act(async () => {
       fireEvent.click(screen.getByText('Run'));
     });
 
-    expect(api.patchJobStatus).toBeCalledTimes(1);
-    expect(api.patchJobStatus).toBeCalledWith('65ada2f9', {
+    expect(api.patchJobStatus).toHaveBeenCalledTimes(1);
+    expect(api.patchJobStatus).toHaveBeenCalledWith('65ada2f9', {
       running: true,
       etag: '"1n9er1hz749r"',
     });
-    expect(api.retrieveJobStatus).toBeCalledTimes(1);
+    expect(api.retrieveJobStatus).toHaveBeenCalledTimes(1);
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -168,18 +168,18 @@ describe('job history', () => {
     await act(async () => {
       render(<JobHistory {...props} />);
     });
-    expect(api.retrieveJob).toBeCalled();
+    expect(api.retrieveJob).toHaveBeenCalled();
 
     await act(async () => {
       fireEvent.click(screen.getByText('Run'));
     });
 
-    expect(api.patchJobStatus).toBeCalledTimes(1);
-    expect(api.patchJobStatus).toBeCalledWith('65ada2f9', {
+    expect(api.patchJobStatus).toHaveBeenCalledTimes(1);
+    expect(api.patchJobStatus).toHaveBeenCalledWith('65ada2f9', {
       running: true,
       etag: '"1n9er1hz749r"',
     });
-    expect(api.retrieveJobStatus).toBeCalledTimes(2);
+    expect(api.retrieveJobStatus).toHaveBeenCalledTimes(2);
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -192,12 +192,12 @@ describe('job history', () => {
     await act(async () => {
       render(<JobHistory {...props} />);
     });
-    expect(api.retrieveJob).toBeCalled();
+    expect(api.retrieveJob).toHaveBeenCalled();
 
     fireEvent.click(screen.getByText('Delete'));
 
-    await waitFor(() => expect(api.deleteJobHistory).toBeCalledTimes(1));
-    expect(api.deleteJobHistory).toBeCalledWith('65ada2f9', '"1n9er1hz749r"');
+    await waitFor(() => expect(api.deleteJobHistory).toHaveBeenCalledTimes(1));
+    expect(api.deleteJobHistory).toHaveBeenCalledWith('65ada2f9', '"1n9er1hz749r"');
   });
 
   it('handles on delete error', async () => {
@@ -210,14 +210,14 @@ describe('job history', () => {
     await act(async () => {
       render(<JobHistory {...props} />);
     });
-    expect(api.retrieveJob).toBeCalled();
+    expect(api.retrieveJob).toHaveBeenCalled();
 
     await act(async () => {
       fireEvent.click(screen.getByText('Delete'));
     });
 
-    expect(api.deleteJobHistory).toBeCalledTimes(1);
-    expect(api.deleteJobHistory).toBeCalledWith('65ada2f9', '"1n9er1hz749r"');
+    expect(api.deleteJobHistory).toHaveBeenCalledTimes(1);
+    expect(api.deleteJobHistory).toHaveBeenCalledWith('65ada2f9', '"1n9er1hz749r"');
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 });

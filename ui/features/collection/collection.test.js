@@ -23,7 +23,7 @@ describe('collection', () => {
   it('renders add item if no id specified', () => {
     render(<Collection {...props} />);
 
-    expect(api.retrieveCollection).toBeCalledTimes(0);
+    expect(api.retrieveCollection).toHaveBeenCalledTimes(0);
     expect(screen.getByRole('form')).toHaveFormValues({
       name: '',
       state: 'enabled',
@@ -41,7 +41,7 @@ describe('collection', () => {
       render(<Collection {...props} />);
     });
 
-    expect(api.retrieveCollection).toBeCalledWith('65ada2f9');
+    expect(api.retrieveCollection).toHaveBeenCalledWith('65ada2f9');
     expect(screen.getByRole('form')).toHaveFormValues({
       name: 'My Other App',
       state: 'disabled',
@@ -57,7 +57,7 @@ describe('collection', () => {
       render(<Collection {...props} />);
     });
 
-    expect(api.retrieveCollection).toBeCalled();
+    expect(api.retrieveCollection).toHaveBeenCalled();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -87,8 +87,8 @@ describe('collection', () => {
       fireEvent.submit(screen.getByText('Save'));
     });
 
-    expect(api.saveCollection).toBeCalledTimes(1);
-    expect(api.saveCollection).toBeCalledWith({
+    expect(api.saveCollection).toHaveBeenCalledTimes(1);
+    expect(api.saveCollection).toHaveBeenCalledWith({
       name: '',
       state: 'enabled',
     });
@@ -109,7 +109,7 @@ describe('collection', () => {
       fireEvent.submit(screen.getByText('Save'));
     });
 
-    expect(api.saveCollection).toBeCalledTimes(1);
+    expect(api.saveCollection).toHaveBeenCalledTimes(1);
     expect(props.history.goBack.mock.calls.length).toBe(0);
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
     expect(screen.getByText(errors.name)).toBeVisible();
@@ -130,13 +130,13 @@ describe('collection', () => {
         </Router>,
       ),
     );
-    expect(api.retrieveCollection).toBeCalled();
+    expect(api.retrieveCollection).toHaveBeenCalled();
 
     await act(async () => {
       fireEvent.click(screen.getByText('Delete'));
     });
 
-    expect(api.deleteCollection).toBeCalledWith('65ada2f9', '"1n9er1hz749r"');
+    expect(api.deleteCollection).toHaveBeenCalledWith('65ada2f9', '"1n9er1hz749r"');
     expect(props.history.goBack.mock.calls.length).toBe(1);
     expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
   });
@@ -157,13 +157,13 @@ describe('collection', () => {
         </Router>,
       ),
     );
-    expect(api.retrieveCollection).toBeCalled();
+    expect(api.retrieveCollection).toHaveBeenCalled();
 
     await act(async () => {
       fireEvent.click(screen.getByText('Delete'));
     });
 
-    expect(api.deleteCollection).toBeCalledWith('65ada2f9', '"1n9er1hz749r"');
+    expect(api.deleteCollection).toHaveBeenCalledWith('65ada2f9', '"1n9er1hz749r"');
     expect(props.history.goBack.mock.calls.length).toBe(0);
     expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
   });

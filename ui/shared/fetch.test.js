@@ -18,7 +18,7 @@ describe('fetch go', () => {
         }),
       );
 
-      expect(global.fetch).toBeCalledWith('/', {
+      expect(global.fetch).toHaveBeenCalledWith('/', {
         method: 'GET',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
@@ -38,7 +38,7 @@ describe('fetch go', () => {
         }),
       );
 
-      expect(global.fetch).toBeCalledWith('/', {
+      expect(global.fetch).toHaveBeenCalledWith('/', {
         method: 'GET',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',

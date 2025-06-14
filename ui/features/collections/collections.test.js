@@ -23,8 +23,8 @@ describe('collections', () => {
         </Router>,
       );
     });
-    expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledWith();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -46,8 +46,8 @@ describe('collections', () => {
       );
     });
 
-    expect(api.listCollections).toBeCalled();
-    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalled();
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
     expect(screen.getByText('My App #1')).toBeVisible();
   });
 });

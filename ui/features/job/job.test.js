@@ -61,8 +61,8 @@ describe('job', () => {
       render(<Job {...props} />);
     });
 
-    expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledWith();
   });
 
   it('renders edit item', async () => {
@@ -76,9 +76,9 @@ describe('job', () => {
       );
     });
 
-    expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
-    expect(api.retrieveJob).toBeCalledWith('7ce1f17e');
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledWith();
+    expect(api.retrieveJob).toHaveBeenCalledWith('7ce1f17e');
 
     await act(async () => {
       expect(screen.getByText('Delete')).toBeVisible();
@@ -129,8 +129,8 @@ describe('job', () => {
       render(<Job {...props} />);
     });
 
-    expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledWith();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -142,8 +142,8 @@ describe('job', () => {
       render(<Job {...props} />);
     });
 
-    expect(api.retrieveJob).toBeCalledTimes(1);
-    expect(api.retrieveJob).toBeCalledWith('7ce1f17e');
+    expect(api.retrieveJob).toHaveBeenCalledTimes(1);
+    expect(api.retrieveJob).toHaveBeenCalledWith('7ce1f17e');
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -151,7 +151,7 @@ describe('job', () => {
     await act(async () => {
       render(<Job {...props} />);
     });
-    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: {
@@ -257,7 +257,7 @@ describe('job', () => {
     await act(async () => {
       render(<Job {...props} />);
     });
-    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
 
     // Add header
     fireEvent.click(screen.getByRole('button', {name: ''}));
@@ -272,7 +272,7 @@ describe('job', () => {
     await act(async () => {
       render(<Job {...props} />);
     });
-    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
     // Add header
     fireEvent.click(screen.getByRole('button', {name: ''}));
     expect(screen.getByPlaceholderText('Value')).toBeVisible();
@@ -292,7 +292,7 @@ describe('job', () => {
     await act(async () => {
       render(<Job {...props} />);
     });
-    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
     // Add header
     fireEvent.click(screen.getByRole('button', {name: ''}));
     fireEvent.change(screen.getAllByPlaceholderText('Name')[1], {
@@ -318,13 +318,13 @@ describe('job', () => {
     await act(async () => {
       render(<Job {...props} />);
     });
-    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
 
     await act(async () => {
       fireEvent.submit(screen.getByText('Save'));
     });
 
-    expect(api.saveJob).toBeCalledWith({
+    expect(api.saveJob).toHaveBeenCalledWith({
       name: '',
       state: 'enabled',
       collectionId: '65ada2f9',
@@ -356,13 +356,13 @@ describe('job', () => {
     await act(async () => {
       render(<Job {...props} />);
     });
-    expect(api.listCollections).toBeCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
 
     await act(async () => {
       fireEvent.submit(screen.getByText('Save'));
     });
 
-    expect(api.saveJob).toBeCalled();
+    expect(api.saveJob).toHaveBeenCalled();
     expect(props.history.goBack.mock.calls.length).toBe(0);
     expect(screen.getByText(errors.name)).toBeVisible();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
@@ -381,13 +381,13 @@ describe('job', () => {
         </Router>,
       );
     });
-    expect(api.retrieveJob).toBeCalledWith('7ce1f17e');
+    expect(api.retrieveJob).toHaveBeenCalledWith('7ce1f17e');
 
     await act(async () => {
       fireEvent.click(screen.getByText('Delete'));
     });
 
-    expect(api.deleteJob).toBeCalledWith('7ce1f17e', '"2hhaswzbz72p8"');
+    expect(api.deleteJob).toHaveBeenCalledWith('7ce1f17e', '"2hhaswzbz72p8"');
     expect(props.history.goBack.mock.calls.length).toBe(1);
   });
 
@@ -402,13 +402,13 @@ describe('job', () => {
         </Router>,
       );
     });
-    expect(api.retrieveJob).toBeCalledWith('7ce1f17e');
+    expect(api.retrieveJob).toHaveBeenCalledWith('7ce1f17e');
 
     await act(async () => {
       fireEvent.click(screen.getByText('Delete'));
     });
 
-    expect(api.deleteJob).toBeCalledWith('7ce1f17e', undefined);
+    expect(api.deleteJob).toHaveBeenCalledWith('7ce1f17e', undefined);
     expect(props.history.goBack.mock.calls.length).toBe(0);
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });

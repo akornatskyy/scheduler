@@ -39,9 +39,9 @@ describe('variable', () => {
       render(<Variable {...props} />);
     });
 
-    expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
-    expect(api.retrieveVariable).toBeCalledTimes(0);
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledWith();
+    expect(api.retrieveVariable).toHaveBeenCalledTimes(0);
     expect(screen.getByRole('form')).toHaveFormValues({
       name: '',
       collectionId: '65ada2f9',
@@ -61,10 +61,10 @@ describe('variable', () => {
       render(<Variable {...props} />);
     });
 
-    expect(api.retrieveVariable).toBeCalledTimes(1);
-    expect(api.retrieveVariable).toBeCalledWith('123de331');
-    expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
+    expect(api.retrieveVariable).toHaveBeenCalledTimes(1);
+    expect(api.retrieveVariable).toHaveBeenCalledWith('123de331');
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledWith();
     expect(screen.getByRole('form')).toHaveFormValues({
       name: 'My Var #1',
       collectionId: '65ada2f9',
@@ -80,7 +80,7 @@ describe('variable', () => {
       render(<Variable {...props} />);
     });
 
-    expect(api.listCollections).toBeCalled();
+    expect(api.listCollections).toHaveBeenCalled();
     expect(screen.getByText('There is no collection available.')).toBeVisible();
   });
 
@@ -105,7 +105,7 @@ describe('variable', () => {
       render(<Variable {...props} />);
     });
 
-    expect(api.listCollections).toBeCalled();
+    expect(api.listCollections).toHaveBeenCalled();
     expect(screen.getByRole('form')).toHaveFormValues({
       name: '',
       collectionId: '84432333',
@@ -139,7 +139,7 @@ describe('variable', () => {
       render(<Variable {...props} />);
     });
 
-    expect(api.listCollections).toBeCalled();
+    expect(api.listCollections).toHaveBeenCalled();
     expect(screen.getByRole('form')).toHaveFormValues({
       name: 'My Var #1',
       collectionId: '65ada2f9',
@@ -155,7 +155,7 @@ describe('variable', () => {
       render(<Variable {...props} />);
     });
 
-    expect(api.listCollections).toBeCalled();
+    expect(api.listCollections).toHaveBeenCalled();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -167,7 +167,7 @@ describe('variable', () => {
       render(<Variable {...props} />);
     });
 
-    expect(api.retrieveVariable).toBeCalled();
+    expect(api.retrieveVariable).toHaveBeenCalled();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -175,7 +175,7 @@ describe('variable', () => {
     await act(async () => {
       render(<Variable {...props} />);
     });
-    expect(api.listCollections).toBeCalled();
+    expect(api.listCollections).toHaveBeenCalled();
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: {
@@ -206,13 +206,13 @@ describe('variable', () => {
     await act(async () => {
       render(<Variable {...props} />);
     });
-    expect(api.listCollections).toBeCalled();
+    expect(api.listCollections).toHaveBeenCalled();
 
     await act(async () => {
       fireEvent.submit(screen.getByText('Save'));
     });
 
-    expect(api.saveVariable).toBeCalledWith({
+    expect(api.saveVariable).toHaveBeenCalledWith({
       collectionId: '65ada2f9',
       name: '',
       value: '',
@@ -230,13 +230,13 @@ describe('variable', () => {
     await act(async () => {
       render(<Variable {...props} />);
     });
-    expect(api.listCollections).toBeCalled();
+    expect(api.listCollections).toHaveBeenCalled();
 
     await act(async () => {
       fireEvent.submit(screen.getByText('Save'));
     });
 
-    expect(api.saveVariable).toBeCalledWith({
+    expect(api.saveVariable).toHaveBeenCalledWith({
       collectionId: '65ada2f9',
       name: '',
       value: '',
@@ -258,13 +258,13 @@ describe('variable', () => {
     await act(async () => {
       render(<Variable {...props} />);
     });
-    expect(api.listCollections).toBeCalled();
+    expect(api.listCollections).toHaveBeenCalled();
 
     await act(async () => {
       fireEvent.click(screen.getByText('Delete'));
     });
 
-    expect(api.deleteVariable).toBeCalledWith('65ada2f9', '"1n9er1hz749r"');
+    expect(api.deleteVariable).toHaveBeenCalledWith('65ada2f9', '"1n9er1hz749r"');
     expect(props.history.goBack.mock.calls.length).toBe(1);
   });
 
@@ -279,13 +279,13 @@ describe('variable', () => {
     await act(async () => {
       render(<Variable {...props} />);
     });
-    expect(api.listCollections).toBeCalled();
+    expect(api.listCollections).toHaveBeenCalled();
 
     await act(async () => {
       fireEvent.click(screen.getByText('Delete'));
     });
 
-    expect(api.deleteVariable).toBeCalled();
+    expect(api.deleteVariable).toHaveBeenCalled();
     expect(props.history.goBack.mock.calls.length).toBe(0);
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });

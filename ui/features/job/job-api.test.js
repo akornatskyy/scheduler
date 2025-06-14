@@ -45,7 +45,7 @@ describe('job api', () => {
         },
       },
     });
-    expect(global.fetch).toBeCalledWith('/jobs/123', {
+    expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
       method: 'GET',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -90,7 +90,7 @@ describe('job api', () => {
         },
       },
     });
-    expect(global.fetch).toBeCalledWith('/jobs/123', {
+    expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
       method: 'GET',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -107,7 +107,7 @@ describe('job api', () => {
       name: 'My Task',
     });
 
-    expect(global.fetch).toBeCalledWith('/jobs', {
+    expect(global.fetch).toHaveBeenCalledWith('/jobs', {
       method: 'POST',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -129,7 +129,7 @@ describe('job api', () => {
       name: 'My Task',
     });
 
-    expect(global.fetch).toBeCalledWith('/jobs/123', {
+    expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
       method: 'PATCH',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -147,7 +147,7 @@ describe('job api', () => {
 
     await api.deleteJob('123', '"2hhaswzbz72p8"');
 
-    expect(global.fetch).toBeCalledWith('/jobs/123', {
+    expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
       method: 'DELETE',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',

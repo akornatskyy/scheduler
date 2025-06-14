@@ -51,11 +51,11 @@ describe('collection form component', () => {
         value: 'My Other App',
       },
     });
-    expect(handler).toBeCalledTimes(1);
+    expect(handler).toHaveBeenCalledTimes(1);
 
     handler.mockClear();
     fireEvent.click(screen.getByLabelText('Enabled'));
-    expect(handler).toBeCalledTimes(1);
+    expect(handler).toHaveBeenCalledTimes(1);
   });
 
   it('calls on save callback', () => {
@@ -64,7 +64,7 @@ describe('collection form component', () => {
 
     fireEvent.submit(screen.getByText('Save'));
 
-    expect(handler).toBeCalledWith();
+    expect(handler).toHaveBeenCalledWith();
   });
 
   it('calls on delete callback', () => {
@@ -78,7 +78,7 @@ describe('collection form component', () => {
 
     fireEvent.click(screen.getByText('Delete'));
 
-    expect(handler).toBeCalled();
+    expect(handler).toHaveBeenCalled();
   });
 
   it('handles undefined callbacks', () => {

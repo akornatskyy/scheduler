@@ -20,7 +20,7 @@ describe('history api', () => {
         etag: '"2hhaswzbz72p8"',
         running: false,
       });
-      expect(global.fetch).toBeCalledWith('/jobs/123/status', {
+      expect(global.fetch).toHaveBeenCalledWith('/jobs/123/status', {
         method: 'GET',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
@@ -40,7 +40,7 @@ describe('history api', () => {
         running: true,
       });
 
-      expect(global.fetch).toBeCalledWith('/jobs/123/status', {
+      expect(global.fetch).toHaveBeenCalledWith('/jobs/123/status', {
         method: 'PATCH',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
@@ -66,7 +66,7 @@ describe('history api', () => {
         etag: '"2hhaswzbz72p8"',
         items: [],
       });
-      expect(global.fetch).toBeCalledWith('/jobs/123/history', {
+      expect(global.fetch).toHaveBeenCalledWith('/jobs/123/history', {
         method: 'GET',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
@@ -81,7 +81,7 @@ describe('history api', () => {
 
       await api.deleteJobHistory('123', '"2hhaswzbz72p8"');
 
-      expect(global.fetch).toBeCalledWith('/jobs/123/history', {
+      expect(global.fetch).toHaveBeenCalledWith('/jobs/123/history', {
         method: 'DELETE',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',

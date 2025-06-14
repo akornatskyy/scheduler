@@ -87,7 +87,7 @@ describe('job history component', () => {
 
     fireEvent.click(screen.getByText('Back'));
 
-    expect(handler).toBeCalled();
+    expect(handler).toHaveBeenCalled();
   });
 
   it('calls on run callback', () => {
@@ -96,7 +96,7 @@ describe('job history component', () => {
 
     fireEvent.click(screen.getByText('Run'));
 
-    expect(handler).toBeCalled();
+    expect(handler).toHaveBeenCalled();
   });
 
   it('calls on delete callback', () => {
@@ -105,7 +105,7 @@ describe('job history component', () => {
 
     fireEvent.click(screen.getByText('Delete'));
 
-    expect(handler).toBeCalled();
+    expect(handler).toHaveBeenCalled();
   });
 
   it('handles undefined callbacks', () => {

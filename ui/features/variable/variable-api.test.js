@@ -19,7 +19,7 @@ describe('variable api', () => {
       etag: '"2hhaswzbz72p8"',
       name: 'My Var',
     });
-    expect(global.fetch).toBeCalledWith('/variables/123', {
+    expect(global.fetch).toHaveBeenCalledWith('/variables/123', {
       method: 'GET',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -36,7 +36,7 @@ describe('variable api', () => {
       name: 'My Var',
     });
 
-    expect(global.fetch).toBeCalledWith('/variables', {
+    expect(global.fetch).toHaveBeenCalledWith('/variables', {
       method: 'POST',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -58,7 +58,7 @@ describe('variable api', () => {
       name: 'My Var',
     });
 
-    expect(global.fetch).toBeCalledWith('/variables/123', {
+    expect(global.fetch).toHaveBeenCalledWith('/variables/123', {
       method: 'PATCH',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -76,7 +76,7 @@ describe('variable api', () => {
 
     await api.deleteVariable('123', '"2hhaswzbz72p8"');
 
-    expect(global.fetch).toBeCalledWith('/variables/123', {
+    expect(global.fetch).toHaveBeenCalledWith('/variables/123', {
       method: 'DELETE',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',

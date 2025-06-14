@@ -19,7 +19,7 @@ describe('collection api', () => {
       etag: '"2hhaswzbz72p8"',
       name: 'My App #1',
     });
-    expect(global.fetch).toBeCalledWith('/collections/123', {
+    expect(global.fetch).toHaveBeenCalledWith('/collections/123', {
       method: 'GET',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -36,7 +36,7 @@ describe('collection api', () => {
       name: 'My App',
     });
 
-    expect(global.fetch).toBeCalledWith('/collections', {
+    expect(global.fetch).toHaveBeenCalledWith('/collections', {
       method: 'POST',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -58,7 +58,7 @@ describe('collection api', () => {
       name: 'My App',
     });
 
-    expect(global.fetch).toBeCalledWith('/collections/123', {
+    expect(global.fetch).toHaveBeenCalledWith('/collections/123', {
       method: 'PATCH',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -76,7 +76,7 @@ describe('collection api', () => {
 
     await api.deleteCollection('123', '"2hhaswzbz72p8"');
 
-    expect(global.fetch).toBeCalledWith('/collections/123', {
+    expect(global.fetch).toHaveBeenCalledWith('/collections/123', {
       method: 'DELETE',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',

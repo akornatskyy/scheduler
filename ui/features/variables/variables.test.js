@@ -29,10 +29,10 @@ describe('variables', () => {
       );
     });
 
-    expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
-    expect(api.listVariables).toBeCalledTimes(1);
-    expect(api.listVariables).toBeCalledWith(null);
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledWith();
+    expect(api.listVariables).toHaveBeenCalledTimes(1);
+    expect(api.listVariables).toHaveBeenCalledWith(null);
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -49,10 +49,10 @@ describe('variables', () => {
       );
     });
 
-    expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
-    expect(api.listVariables).toBeCalledTimes(1);
-    expect(api.listVariables).toBeCalledWith(null);
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledWith();
+    expect(api.listVariables).toHaveBeenCalledTimes(1);
+    expect(api.listVariables).toHaveBeenCalledWith(null);
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
@@ -83,10 +83,10 @@ describe('variables', () => {
       );
     });
 
-    expect(api.listCollections).toBeCalledTimes(1);
-    expect(api.listCollections).toBeCalledWith();
-    expect(api.listVariables).toBeCalledTimes(1);
-    expect(api.listVariables).toBeCalledWith('65ada2f9');
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledWith();
+    expect(api.listVariables).toHaveBeenCalledTimes(1);
+    expect(api.listVariables).toHaveBeenCalledWith('65ada2f9');
     expect(screen.getByText('My App')).toBeVisible();
     expect(screen.getByText('My Var')).toBeVisible();
   });

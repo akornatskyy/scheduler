@@ -19,7 +19,7 @@ describe('variables api', () => {
       etag: '"2hhaswzbz72p8"',
       items: [],
     });
-    expect(global.fetch).toBeCalledWith('/variables', {
+    expect(global.fetch).toHaveBeenCalledWith('/variables', {
       method: 'GET',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -40,7 +40,7 @@ describe('variables api', () => {
       etag: '"2hhaswzbz72p8"',
       items: [],
     });
-    expect(global.fetch).toBeCalledWith('/variables?collectionId=123', {
+    expect(global.fetch).toHaveBeenCalledWith('/variables?collectionId=123', {
       method: 'GET',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',

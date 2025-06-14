@@ -62,10 +62,10 @@ describe('variable', () => {
       },
     });
 
-    expect(handler).toBeCalledTimes(3);
-    expect(handler).nthCalledWith(1, 'name', 'My Other Var');
-    expect(handler).nthCalledWith(2, 'collectionId', 'de1044cc');
-    expect(handler).nthCalledWith(3, 'value', 'Hello');
+    expect(handler).toHaveBeenCalledTimes(3);
+    expect(handler).toHaveBeenNthCalledWith(1, 'name', 'My Other Var');
+    expect(handler).toHaveBeenNthCalledWith(2, 'collectionId', 'de1044cc');
+    expect(handler).toHaveBeenNthCalledWith(3, 'value', 'Hello');
   });
 
   it('calls on save callback', () => {
@@ -74,7 +74,7 @@ describe('variable', () => {
 
     fireEvent.submit(screen.getByText('Save'));
 
-    expect(handler).toBeCalled();
+    expect(handler).toHaveBeenCalled();
   });
 
   it('calls on delete callback', () => {
@@ -84,7 +84,7 @@ describe('variable', () => {
 
     fireEvent.click(screen.getByText('Delete'));
 
-    expect(handler).toBeCalled();
+    expect(handler).toHaveBeenCalled();
   });
 
   it('handles undefined callbacks', () => {

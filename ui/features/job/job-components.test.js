@@ -55,8 +55,8 @@ describe('job', () => {
         value: 'My Job',
       },
     });
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).nthCalledWith(1, 'name', 'My Job');
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenNthCalledWith(1, 'name', 'My Job');
 
     handler.mockClear();
     fireEvent.change(screen.getByLabelText('Collection'), {
@@ -64,13 +64,13 @@ describe('job', () => {
         value: '7d76cb30',
       },
     });
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).nthCalledWith(1, 'collectionId', '7d76cb30');
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenNthCalledWith(1, 'collectionId', '7d76cb30');
 
     handler.mockClear();
     fireEvent.click(screen.getByLabelText('Disabled'));
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).nthCalledWith(1, 'state', 'disabled');
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenNthCalledWith(1, 'state', 'disabled');
 
     handler.mockClear();
     fireEvent.change(
@@ -81,8 +81,8 @@ describe('job', () => {
         },
       },
     );
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).nthCalledWith(1, 'schedule', '@every 5m');
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenNthCalledWith(1, 'schedule', '@every 5m');
   });
 
   it('handle action change', () => {
@@ -95,8 +95,8 @@ describe('job', () => {
       },
     });
 
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).nthCalledWith(1, 'type', 'HTTP');
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenNthCalledWith(1, 'type', 'HTTP');
   });
 
   it('handle request change', () => {
@@ -109,8 +109,8 @@ describe('job', () => {
         value: 'PUT',
       },
     });
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).nthCalledWith(1, 'method', 'PUT');
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenNthCalledWith(1, 'method', 'PUT');
 
     handler.mockClear();
     fireEvent.change(screen.getByLabelText('URI'), {
@@ -118,8 +118,8 @@ describe('job', () => {
         value: 'https://localhost',
       },
     });
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).nthCalledWith(1, 'uri', 'https://localhost');
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenNthCalledWith(1, 'uri', 'https://localhost');
 
     handler.mockClear();
     fireEvent.change(screen.getByLabelText('Body'), {
@@ -127,8 +127,8 @@ describe('job', () => {
         value: '{}',
       },
     });
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).nthCalledWith(1, 'body', '{}');
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenNthCalledWith(1, 'body', '{}');
   });
 
   it('handle policy change', () => {
@@ -140,8 +140,8 @@ describe('job', () => {
         value: '7',
       },
     });
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).nthCalledWith(1, 'retryCount', 7);
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenNthCalledWith(1, 'retryCount', 7);
 
     handler.mockClear();
     fireEvent.change(screen.getByLabelText('Interval'), {
@@ -149,8 +149,8 @@ describe('job', () => {
         value: '45s',
       },
     });
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).nthCalledWith(1, 'retryInterval', '45s');
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenNthCalledWith(1, 'retryInterval', '45s');
 
     handler.mockClear();
     fireEvent.change(screen.getByLabelText('Deadline'), {
@@ -158,8 +158,8 @@ describe('job', () => {
         value: '3m',
       },
     });
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).nthCalledWith(1, 'deadline', '3m');
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenNthCalledWith(1, 'deadline', '3m');
   });
 
   it('add header', () => {
@@ -168,8 +168,8 @@ describe('job', () => {
 
     fireEvent.click(screen.getByRole('button', {name: ''}));
 
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).toBeCalledWith();
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenCalledWith();
   });
 
   it('delete header', () => {
@@ -189,8 +189,8 @@ describe('job', () => {
       ),
     );
 
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).toBeCalledWith(0);
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenCalledWith(0);
   });
 
   it('handle header change', () => {
@@ -208,8 +208,8 @@ describe('job', () => {
         value: 'X-Requested-With',
       },
     });
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).nthCalledWith(1, 'name', 'X-Requested-With', 0);
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenNthCalledWith(1, 'name', 'X-Requested-With', 0);
 
     handler.mockClear();
     fireEvent.change(screen.getByPlaceholderText('Value'), {
@@ -217,8 +217,8 @@ describe('job', () => {
         value: 'XMLHttpRequest',
       },
     });
-    expect(handler).toBeCalledTimes(1);
-    expect(handler).nthCalledWith(1, 'value', 'XMLHttpRequest', 0);
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenNthCalledWith(1, 'value', 'XMLHttpRequest', 0);
   });
 
   it('renders edit item', () => {
@@ -280,7 +280,7 @@ describe('job', () => {
 
     fireEvent.submit(screen.getByText('Save'));
 
-    expect(handler).toBeCalledWith();
+    expect(handler).toHaveBeenCalledWith();
   });
 
   it('calls on delete callback', () => {
@@ -294,7 +294,7 @@ describe('job', () => {
 
     fireEvent.click(screen.getByText('Delete'));
 
-    expect(handler).toBeCalledWith();
+    expect(handler).toHaveBeenCalledWith();
   });
 
   it('handles undefined callbacks', () => {

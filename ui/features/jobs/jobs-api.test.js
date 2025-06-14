@@ -19,7 +19,7 @@ describe('jobs api', () => {
       etag: '"2hhaswzbz72p8"',
       items: [],
     });
-    expect(global.fetch).toBeCalledWith('/jobs?fields=status,errorRate', {
+    expect(global.fetch).toHaveBeenCalledWith('/jobs?fields=status,errorRate', {
       method: 'GET',
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -40,7 +40,7 @@ describe('jobs api', () => {
       etag: '"2hhaswzbz72p8"',
       items: [],
     });
-    expect(global.fetch).toBeCalledWith(
+    expect(global.fetch).toHaveBeenCalledWith(
       '/jobs?fields=status,errorRate&collectionId=123',
       {
         method: 'GET',
