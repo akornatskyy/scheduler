@@ -13,7 +13,10 @@ module.exports = {
   mode: 'development',
   context: path.resolve(__dirname, 'ui'),
   entry: {
-    app: ['./index.js']
+    app: ['./index.tsx']
+  },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js']
   },
   output: {
     path: path.resolve(__dirname, 'static'),
@@ -43,7 +46,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.tsx?$/,
         loader: 'babel-loader',
         exclude: /node_modules/
       }

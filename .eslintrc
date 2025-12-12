@@ -18,7 +18,15 @@
     ],
     "no-invalid-this": 0,
     "prefer-promise-reject-errors": 0,
-    "react/prop-types": 0
+    "react/prop-types": 0,
+    "react/react-in-jsx-scope": 0,
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ]
   },
   "env": {
     "browser": true,
@@ -26,18 +34,28 @@
   },
   "extends": [
     "eslint:recommended",
+    "plugin:react/jsx-runtime",
     "google",
     "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
     "prettier"
   ],
-  "parser": "@babel/eslint-parser",
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 6,
+    "ecmaVersion": "latest",
     "sourceType": "module",
     "ecmaFeatures": {
       "jsx": true
     }
   },
+  "overrides": [
+    {
+      "files": ["webpack.config.js"],
+      "rules": {
+        "@typescript-eslint/no-require-imports": 0
+      }
+    }
+  ],
   "globals": {
     "Promise": true,
     "describe": true,
@@ -50,7 +68,8 @@
     "rejectPromise": true
   },
   "plugins": [
-    "react"
+    "react",
+    "@typescript-eslint"
   ],
   "settings": {
     "react": {

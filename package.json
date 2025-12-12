@@ -5,14 +5,14 @@
   "main": "ui/index.js",
   "scripts": {
     "start": "webpack serve",
-    "lint": "eslint webpack.config.js ui/ --ext .js",
+    "lint": "eslint webpack.config.js ui/ --ext .ts,.tsx",
     "build": "rm -rf static && webpack",
     "test": "jest"
   },
   "jest": {
     "testEnvironment": "jsdom",
     "setupFilesAfterEnv": [
-      "<rootDir>/ui/shared/setup-tests.js"
+      "<rootDir>/ui/shared/setup-tests.ts"
     ]
   },
   "repository": {
@@ -45,20 +45,26 @@
     "@babel/plugin-transform-optional-chaining": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
     "@babel/preset-react": "^7.28.5",
+    "@babel/preset-typescript": "^7.28.5",
     "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.0",
+    "@testing-library/react": "^16.3.1",
     "@types/jest": "^30.0.0",
-    "@types/react": "^19.2.5",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@types/react-router-dom": "^5.3.3",
+    "@typescript-eslint/eslint-plugin": "^8.50.1",
+    "@typescript-eslint/parser": "^8.50.1",
     "babel-loader": "^10.0.0",
     "eslint": "^8.57.1",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
-    "html-webpack-plugin": "^5.6.4",
+    "html-webpack-plugin": "^5.6.5",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
-    "terser-webpack-plugin": "^5.3.14",
-    "webpack": "^5.102.1",
+    "terser-webpack-plugin": "^5.3.16",
+    "typescript": "^5.9.3",
+    "webpack": "^5.104.1",
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.2"
   },
