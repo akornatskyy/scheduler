@@ -1,63 +1,49 @@
-import React from 'react';
-import {Link} from 'react-router-dom';
+import {useCallback, useEffect, useMemo, useState} from 'react';
+import {Link, useLocation} from 'react-router-dom';
 import {Layout} from '../../shared/components';
+import {Errors} from '../../shared/types';
 import * as api from './jobs-api';
 import {JobList} from './jobs-components';
 import {Collection, Job} from './types';
 
-type Errors = Record<string, string>;
+export default function JobsContainer() {
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [errors, setErrors] = useState<Errors>({});
 
-type Props = {
-  location: {
-    search?: string;
-  };
-};
+  const location = useLocation();
+  const collectionId = useMemo(
+    () => new URLSearchParams(location.search).get('collectionId'),
+    [location.search],
+  );
 
-type State = {
-  collections: Collection[];
-  jobs: Job[];
-  errors: Errors;
-};
-
-export default class JobsContainer extends React.Component<Props, State> {
-  timer: ReturnType<typeof setInterval> | undefined;
-
-  state: State = {collections: [], jobs: [], errors: {}};
-
-  componentDidMount() {
-    this.refresh();
-    this.timer = setInterval(() => this.refresh(), 10000);
-  }
-
-  componentWillUnmount() {
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
-  }
-
-  refresh() {
-    const collectionId = new URLSearchParams(this.props.location.search).get(
-      'collectionId',
-    );
+  const refresh = useCallback(() => {
     api
       .listCollections()
-      .then(({items}) => this.setState({collections: items}))
-      .catch((errors) => this.setState({errors}));
+      .then(({items}) => setCollections(items))
+      .catch((errors) => setErrors(errors));
+
     api
       .listJobs(collectionId)
-      .then(({items}) => this.setState({jobs: items}))
-      .catch((errors) => this.setState({errors}));
-  }
+      .then(({items}) => setJobs(items))
+      .catch((errors) => setErrors(errors));
+  }, [collectionId]);
 
-  render() {
-    const {collections, jobs, errors} = this.state;
-    return (
-      <Layout title="Jobs" errors={errors}>
-        <JobList collections={collections} jobs={jobs} />
-        <Link to="jobs/add" className="btn btn-primary">
-          Add
-        </Link>
-      </Layout>
-    );
-  }
+  useEffect(() => {
+    refresh();
+    const timer = setInterval(() => refresh(), 10000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [refresh]);
+
+  return (
+    <Layout title="Jobs" errors={errors}>
+      <JobList collections={collections} jobs={jobs} />
+      <Link to="/jobs/add" className="btn btn-primary">
+        Add
+      </Link>
+    </Layout>
+  );
 }

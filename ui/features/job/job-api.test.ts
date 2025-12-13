@@ -1,9 +1,9 @@
-import * as api from './job-api.ts';
+import * as api from './job-api';
+import {JobInput} from './types';
 
 describe('job api', () => {
   afterEach(() => {
-    global.fetch.mockClear();
-    delete global.fetch;
+    (global.fetch as jest.Mock).mockClear();
   });
 
   it('retrieve', async () => {
@@ -98,14 +98,12 @@ describe('job api', () => {
     });
   });
 
-  it('save (post)', async () => {
+  it('save (create)', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 201,
     });
 
-    await api.saveJob({
-      name: 'My Task',
-    });
+    await api.saveJob({name: 'My Task'} as JobInput);
 
     expect(global.fetch).toHaveBeenCalledWith('/jobs', {
       method: 'POST',
@@ -117,7 +115,7 @@ describe('job api', () => {
     });
   });
 
-  it('save (patch)', async () => {
+  it('save (update)', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 204,
     });
@@ -125,9 +123,8 @@ describe('job api', () => {
     await api.saveJob({
       id: '123',
       etag: '"2hhaswzbz72p8"',
-      updated: '2019-08-29T13:29:36.976Z',
       name: 'My Task',
-    });
+    } as JobInput);
 
     expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
       method: 'PATCH',

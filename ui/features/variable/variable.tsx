@@ -1,110 +1,99 @@
-import React from 'react';
-import type {RouteComponentProps} from 'react-router-dom';
+import {useCallback, useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 import {Layout} from '../../shared/components';
+import {Errors} from '../../shared/types';
 import {Collection, Variable} from './types';
 import * as api from './variable-api';
 import {VariableForm} from './variable-components';
 
-type Errors = Record<string, string>;
-
-type Props = RouteComponentProps<{id?: string}>;
-
-type State = {
-  item: Variable;
-  collections: Collection[];
-  pending: boolean;
-  errors: Errors;
+const INITIAL: Variable = {
+  collectionId: '',
+  name: '',
+  value: '',
 };
 
-export default class VariableContainer extends React.Component<Props, State> {
-  state: State = {
-    item: {
-      collectionId: '',
-      name: '',
-      value: '',
-    },
-    collections: [],
-    pending: true,
-    errors: {},
-  };
+export default function VariableContainer() {
+  const navigate = useNavigate();
+  const {id} = useParams<{id?: string}>();
+  const [item, setItem] = useState<Variable>(INITIAL);
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [pending, setPending] = useState<boolean>(true);
+  const [errors, setErrors] = useState<Errors>({});
 
-  componentDidMount() {
-    const {id} = this.props.match.params;
+  useEffect(() => {
     if (id) {
       api
         .retrieveVariable(id)
-        .then((item) => this.setState({item, pending: false}))
-        .catch((errors) => this.setState({errors, pending: false}));
-    } else {
-      this.setState({pending: false});
+        .then((item) => {
+          setItem(item);
+          setPending(false);
+        })
+        .catch((errors) => {
+          setErrors(errors);
+          setPending(false);
+        });
+      return;
     }
 
+    setItem(INITIAL);
+    setPending(false);
+  }, [id]);
+
+  useEffect(() => {
     api
       .listCollections()
-      .then(({items}) =>
-        this.setState(({item}) => {
-          const s: Pick<State, 'collections' | 'item' | 'errors'> = {
-            collections: items,
-            item,
-            errors: this.state.errors,
-          };
-          if (!item.collectionId) {
-            if (items.length > 0) {
-              s.item = {
-                ...item,
-                collectionId: items[0].id,
-              };
-            } else {
-              s.errors = {
-                collectionId: 'There is no collection available.',
-              };
-            }
-          }
+      .then(({items}) => {
+        setCollections(items);
+        setItem((prev) => {
+          if (prev.collectionId) return prev;
+          if (items.length > 0) return {...prev, collectionId: items[0].id};
+          setErrors({collectionId: 'There is no collection available.'});
+          return prev;
+        });
+      })
+      .catch((errors) => setErrors(errors));
+  }, []);
 
-          return s;
-        }),
-      )
-      .catch((errors) => this.setState({errors}));
-  }
+  const handleChange = useCallback((name: string, value: string) => {
+    setItem((prev) => ({...prev, [name]: value}));
+  }, []);
 
-  handleChange = (name: string, value: string) => {
-    this.setState({
-      item: {...this.state.item, [name]: value},
-    });
-  };
-
-  handleSave = () => {
-    this.setState({pending: true});
+  const handleSave = useCallback(() => {
+    setPending(true);
     api
-      .saveVariable(this.state.item)
-      .then(() => this.props.history.goBack())
-      .catch((errors) => this.setState({errors, pending: false}));
-  };
+      .saveVariable(item)
+      .then(() => navigate(-1))
+      .catch((errors) => {
+        setErrors(errors);
+        setPending(false);
+      });
+  }, [item, navigate]);
 
-  handleDelete = () => {
-    const {id, etag} = this.state.item;
+  const handleDelete = useCallback(() => {
+    const {id, etag} = item;
     if (!id) return;
-    this.setState({pending: true});
+
+    setPending(true);
     api
       .deleteVariable(id, etag)
-      .then(() => this.props.history.goBack())
-      .catch((errors) => this.setState({errors, pending: false}));
-  };
+      .then(() => navigate(-1))
+      .catch((errors) => {
+        setErrors(errors);
+        setPending(false);
+      });
+  }, [item, navigate]);
 
-  render() {
-    const {item, collections, pending, errors} = this.state;
-    return (
-      <Layout title={`Variable ${item.name}`} errors={errors}>
-        <VariableForm
-          item={item}
-          collections={collections}
-          pending={pending}
-          errors={errors}
-          onChange={this.handleChange}
-          onSave={this.handleSave}
-          onDelete={this.handleDelete}
-        />
-      </Layout>
-    );
-  }
+  return (
+    <Layout title={`Variable ${item.name}`} errors={errors}>
+      <VariableForm
+        item={item}
+        collections={collections}
+        pending={pending}
+        errors={errors}
+        onChange={handleChange}
+        onSave={handleSave}
+        onDelete={handleDelete}
+      />
+    </Layout>
+  );
 }

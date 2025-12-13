@@ -1,19 +1,32 @@
 import {act, fireEvent, render, screen} from '@testing-library/react';
-import React from 'react';
-import {MemoryRouter as Router} from 'react-router-dom';
-
+import {Route, MemoryRouter as Router, Routes} from 'react-router-dom';
 import JobContainer from './job';
-import * as api from './job-api.ts';
+import * as api from './job-api';
+import {JobDefinition} from './types';
 
-jest.mock('./job-api.ts');
+jest.mock('./job-api');
+
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 describe('job', () => {
-  const sampleJob = {
+  const goBack = jest.fn();
+  const sampleJob: JobDefinition = {
     id: '7ce1f17e',
     name: 'My Job #1',
     state: 'disabled',
     schedule: 'every 5m',
     collectionId: '65ada2f9',
+    status: 'ready',
+    errorRate: 0,
+    updated: '2025-01-01T00:00:00Z',
     action: {
       type: 'HTTP',
       request: {
@@ -29,16 +42,9 @@ describe('job', () => {
       },
     },
   };
-  let props = null;
-
   beforeEach(() => {
-    props = {
-      match: {params: {id: '7ce1f17e'}},
-      history: {
-        goBack: jest.fn(),
-      },
-    };
-    api.listCollections.mockResolvedValue({
+    jest.clearAllMocks();
+    jest.mocked(api.listCollections).mockResolvedValue({
       items: [
         {
           id: '65ada2f9',
@@ -48,33 +54,24 @@ describe('job', () => {
         {
           id: '123de331',
           name: 'My App #2',
-          state: 'disabled',
+          state: 'disabled' as const,
         },
       ],
     });
-    jest.clearAllMocks();
+    mockNavigate.mockImplementationOnce(goBack);
   });
 
   it('renders add item if no id specified', async () => {
-    props.match.params.id = null;
-    await act(async () => {
-      render(<JobContainer {...props} />);
-    });
+    await actRenderAdd();
 
     expect(api.listCollections).toHaveBeenCalledTimes(1);
     expect(api.listCollections).toHaveBeenCalledWith();
   });
 
   it('renders edit item', async () => {
-    api.retrieveJob.mockResolvedValue(sampleJob);
+    jest.mocked(api.retrieveJob).mockResolvedValue(sampleJob);
 
-    await act(async () => {
-      render(
-        <Router>
-          <JobContainer {...props} />
-        </Router>,
-      );
-    });
+    await actRenderEdit();
 
     expect(api.listCollections).toHaveBeenCalledTimes(1);
     expect(api.listCollections).toHaveBeenCalledWith();
@@ -86,48 +83,24 @@ describe('job', () => {
   });
 
   it('shows field error when collections list is empty', async () => {
-    props.match.params.id = null;
-    api.listCollections.mockResolvedValue({items: []});
+    jest.mocked(api.listCollections).mockResolvedValue({items: []});
 
-    await act(async () => {
-      render(<JobContainer {...props} />);
-    });
+    await actRenderAdd();
 
     expect(screen.getByText('There is no collection available.')).toBeVisible();
   });
 
   it('selects a first item from collections list', async () => {
-    props.match.params.id = null;
-    api.listCollections.mockResolvedValue({
-      items: [
-        {
-          id: '84432333',
-          name: 'My App',
-          state: 'enabled',
-        },
-        {
-          id: '65ada2f9',
-          name: 'My Other App',
-          state: 'enabled',
-        },
-      ],
-    });
+    await actRenderAdd();
 
-    await act(async () => {
-      render(<JobContainer {...props} />);
-    });
-
-    expect(screen.getByLabelText('Collection')).toHaveValue('84432333');
+    expect(screen.getByLabelText('Collection')).toHaveValue('65ada2f9');
   });
 
   it('list collections fails', async () => {
-    props.match.params.id = null;
     const errors = {__ERROR__: 'The error text.'};
-    api.listCollections.mockRejectedValue(errors);
+    jest.mocked(api.listCollections).mockRejectedValue(errors);
 
-    await act(async () => {
-      render(<JobContainer {...props} />);
-    });
+    await actRenderAdd();
 
     expect(api.listCollections).toHaveBeenCalledTimes(1);
     expect(api.listCollections).toHaveBeenCalledWith();
@@ -136,11 +109,9 @@ describe('job', () => {
 
   it('handles retrieve job error', async () => {
     const errors = {__ERROR__: 'The error text.'};
-    api.retrieveJob.mockRejectedValue(errors);
+    jest.mocked(api.retrieveJob).mockRejectedValue(errors);
 
-    await act(async () => {
-      render(<JobContainer {...props} />);
-    });
+    await actRenderEdit();
 
     expect(api.retrieveJob).toHaveBeenCalledTimes(1);
     expect(api.retrieveJob).toHaveBeenCalledWith('7ce1f17e');
@@ -148,9 +119,8 @@ describe('job', () => {
   });
 
   it('handles item change', async () => {
-    await act(async () => {
-      render(<JobContainer {...props} />);
-    });
+    await actRenderAdd();
+
     expect(api.listCollections).toHaveBeenCalledTimes(1);
 
     fireEvent.change(screen.getByLabelText('Name'), {
@@ -175,16 +145,14 @@ describe('job', () => {
 
     expect(screen.getByRole('form')).toHaveFormValues({
       name: 'My Other Task',
-      state: 'disabled',
+      state: 'disabled' as const,
       collectionId: '123de331',
       schedule: '@every 15s',
     });
   });
 
   it('handles action change', async () => {
-    await act(async () => {
-      render(<JobContainer {...props} />);
-    });
+    await actRenderEdit();
 
     fireEvent.change(screen.getByLabelText('Action'), {
       target: {
@@ -193,14 +161,12 @@ describe('job', () => {
     });
 
     expect(screen.getByRole('form')).toHaveFormValues({
-      type: 'HTTP',
+      type: 'HTTP' as const,
     });
   });
 
   it('handles request change', async () => {
-    await act(async () => {
-      render(<JobContainer {...props} />);
-    });
+    await actRenderEdit();
 
     fireEvent.change(screen.getByLabelText('Method'), {
       target: {
@@ -226,24 +192,16 @@ describe('job', () => {
   });
 
   it('handles policy change', async () => {
-    await act(async () => {
-      render(<JobContainer {...props} />);
-    });
+    await actRenderEdit();
 
     fireEvent.change(screen.getByLabelText('Retry Count'), {
-      target: {
-        value: '7',
-      },
+      target: {value: '7'},
     });
     fireEvent.change(screen.getByLabelText('Interval'), {
-      target: {
-        value: '45s',
-      },
+      target: {value: '45s'},
     });
     fireEvent.change(screen.getByLabelText('Deadline'), {
-      target: {
-        value: '3m',
-      },
+      target: {value: '3m'},
     });
 
     expect(screen.getByRole('form')).toHaveFormValues({
@@ -254,11 +212,9 @@ describe('job', () => {
   });
 
   it('handles add header', async () => {
-    await act(async () => {
-      render(<JobContainer {...props} />);
-    });
-    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    await actRenderAdd();
 
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
     // Add header
     fireEvent.click(screen.getByRole('button', {name: ''}));
 
@@ -269,9 +225,8 @@ describe('job', () => {
   });
 
   it('handles delete header', async () => {
-    await act(async () => {
-      render(<JobContainer {...props} />);
-    });
+    await actRenderAdd();
+
     expect(api.listCollections).toHaveBeenCalledTimes(1);
     // Add header
     fireEvent.click(screen.getByRole('button', {name: ''}));
@@ -281,7 +236,11 @@ describe('job', () => {
     fireEvent.click(
       screen.getByText(
         (_, element) =>
-          element.type === 'button' && element.querySelector('i.fa-times'),
+          !!(
+            element &&
+            (element as HTMLButtonElement).type === 'button' &&
+            element.querySelector('i.fa-times')
+          ),
       ),
     );
 
@@ -289,9 +248,8 @@ describe('job', () => {
   });
 
   it('handles header change', async () => {
-    await act(async () => {
-      render(<JobContainer {...props} />);
-    });
+    await actRenderAdd();
+
     expect(api.listCollections).toHaveBeenCalledTimes(1);
     // Add header
     fireEvent.click(screen.getByRole('button', {name: ''}));
@@ -313,11 +271,9 @@ describe('job', () => {
   });
 
   it('saves item', async () => {
-    props.match.params.id = null;
-    api.saveJob.mockResolvedValue();
-    await act(async () => {
-      render(<JobContainer {...props} />);
-    });
+    jest.mocked(api.saveJob).mockResolvedValue();
+    await actRenderAdd();
+
     expect(api.listCollections).toHaveBeenCalledTimes(1);
 
     await act(async () => {
@@ -330,7 +286,7 @@ describe('job', () => {
       collectionId: '65ada2f9',
       schedule: '',
       action: {
-        type: 'HTTP',
+        type: 'HTTP' as const,
         request: {
           method: 'GET',
           uri: '',
@@ -344,7 +300,8 @@ describe('job', () => {
         },
       },
     });
-    expect(props.history.goBack.mock.calls.length).toBe(1);
+    expect(api.saveJob).toHaveBeenCalled();
+    expect(goBack).toHaveBeenCalledTimes(1);
   });
 
   it('handles save errors', async () => {
@@ -352,10 +309,9 @@ describe('job', () => {
       __ERROR__: 'The error text.',
       name: 'The field error message.',
     };
-    api.saveJob.mockRejectedValue(errors);
-    await act(async () => {
-      render(<JobContainer {...props} />);
-    });
+    jest.mocked(api.saveJob).mockRejectedValue(errors);
+
+    await actRenderAdd();
     expect(api.listCollections).toHaveBeenCalledTimes(1);
 
     await act(async () => {
@@ -363,24 +319,20 @@ describe('job', () => {
     });
 
     expect(api.saveJob).toHaveBeenCalled();
-    expect(props.history.goBack.mock.calls.length).toBe(0);
+    expect(goBack).not.toHaveBeenCalled();
     expect(screen.getByText(errors.name)).toBeVisible();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
   it('deletes item', async () => {
-    api.retrieveJob.mockResolvedValue({
+    jest.mocked(api.retrieveJob).mockResolvedValue({
       etag: '"2hhaswzbz72p8"',
       ...sampleJob,
     });
-    api.deleteJob.mockResolvedValue();
-    await act(async () => {
-      render(
-        <Router>
-          <JobContainer {...props} />
-        </Router>,
-      );
-    });
+    jest.mocked(api.deleteJob).mockResolvedValue();
+
+    await actRenderEdit();
+
     expect(api.retrieveJob).toHaveBeenCalledWith('7ce1f17e');
 
     await act(async () => {
@@ -388,20 +340,17 @@ describe('job', () => {
     });
 
     expect(api.deleteJob).toHaveBeenCalledWith('7ce1f17e', '"2hhaswzbz72p8"');
-    expect(props.history.goBack.mock.calls.length).toBe(1);
+    expect(api.deleteJob).toHaveBeenCalled();
+    expect(goBack).toHaveBeenCalledTimes(1);
   });
 
   it('handles delete errors', async () => {
-    api.retrieveJob.mockResolvedValue(sampleJob);
+    jest.mocked(api.retrieveJob).mockResolvedValue(sampleJob);
     const errors = {__ERROR__: 'The error text.'};
-    api.deleteJob.mockRejectedValue(errors);
-    await act(async () => {
-      render(
-        <Router>
-          <JobContainer {...props} />
-        </Router>,
-      );
-    });
+    jest.mocked(api.deleteJob).mockRejectedValue(errors);
+
+    await actRenderEdit();
+
     expect(api.retrieveJob).toHaveBeenCalledWith('7ce1f17e');
 
     await act(async () => {
@@ -409,7 +358,29 @@ describe('job', () => {
     });
 
     expect(api.deleteJob).toHaveBeenCalledWith('7ce1f17e', undefined);
-    expect(props.history.goBack.mock.calls.length).toBe(0);
+    expect(goBack).not.toHaveBeenCalled();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 });
+
+const actRenderAdd = () =>
+  act(async () =>
+    render(
+      <Router initialEntries={['/jobs/add']}>
+        <Routes>
+          <Route path="/jobs/add" element={<JobContainer />} />
+        </Routes>
+      </Router>,
+    ),
+  );
+
+const actRenderEdit = () =>
+  act(async () =>
+    render(
+      <Router initialEntries={['/jobs/7ce1f17e']}>
+        <Routes>
+          <Route path="/jobs/:id" element={<JobContainer />} />
+        </Routes>
+      </Router>,
+    ),
+  );

@@ -1,9 +1,9 @@
-import * as api from './variable-api.ts';
+import {Variable} from './types';
+import * as api from './variable-api';
 
 describe('variable api', () => {
   afterEach(() => {
-    global.fetch.mockClear();
-    delete global.fetch;
+    (global.fetch as jest.Mock).mockClear();
   });
 
   it('retrieve', async () => {
@@ -32,9 +32,7 @@ describe('variable api', () => {
       status: 201,
     });
 
-    await api.saveVariable({
-      name: 'My Var',
-    });
+    await api.saveVariable({name: 'My Var'} as Variable);
 
     expect(global.fetch).toHaveBeenCalledWith('/variables', {
       method: 'POST',
@@ -54,9 +52,8 @@ describe('variable api', () => {
     await api.saveVariable({
       id: '123',
       etag: '"2hhaswzbz72p8"',
-      updated: '2019-08-29T13:29:36.976Z',
       name: 'My Var',
-    });
+    } as Variable);
 
     expect(global.fetch).toHaveBeenCalledWith('/variables/123', {
       method: 'PATCH',

@@ -39,8 +39,8 @@ type GroupRowProps = {
 export const GroupRow = ({collection}: GroupRowProps): React.ReactElement => (
   <tr>
     <td colSpan={2}>
-      <Link to={`collections/${collection.id}`}>{collection.name}</Link>
-      <Link to={`jobs?collectionId=${collection.id}`}>
+      <Link to={`/collections/${collection.id}`}>{collection.name}</Link>
+      <Link to={`/jobs?collectionId=${collection.id}`}>
         <span className="badge bg-light">jobs</span>
       </Link>
     </td>
@@ -54,7 +54,7 @@ type ItemRowProps = {
 export const ItemRow = ({variable}: ItemRowProps): React.ReactElement => (
   <tr>
     <td>
-      <Link to={`variables/${variable.id}`}>{variable.name}</Link>
+      <Link to={`/variables/${variable.id}`}>{variable.name}</Link>
     </td>
     <td>{new Date(variable.updated).toLocaleString()}</td>
   </tr>

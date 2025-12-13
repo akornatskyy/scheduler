@@ -30,43 +30,51 @@ type Props = {
 
 const httpMethodsWithBody = ['POST', 'PUT', 'PATCH'];
 
-export class JobForm extends React.Component<Props> {
-  handleItemChange = ({
+export const JobForm = ({
+  item,
+  collections,
+  pending,
+  errors,
+  onItemChange,
+  onActionChange,
+  onRequestChange,
+  onPolicyChange,
+  onHeaderChange,
+  onAddHeader,
+  onDeleteHeader,
+  onSave,
+  onDelete,
+}: Props) => {
+  const handleItemChange = ({
     target: {name, value},
-  }: React.ChangeEvent<
-    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-  >) => {
-    this.props.onItemChange?.(name, value);
+  }: React.ChangeEvent<HTMLInputElement>) => {
+    onItemChange?.(name, value);
   };
 
-  handleActionChange = ({
+  const handleActionChange = ({
     target: {name, value},
-  }: React.ChangeEvent<
-    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-  >) => {
-    this.props.onActionChange?.(name, value);
+  }: React.ChangeEvent<HTMLSelectElement>) => {
+    onActionChange?.(name, value);
   };
 
-  handleRequestChange = ({
+  const handleRequestChange = ({
     target: {name, value},
   }: React.ChangeEvent<
     HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
   >) => {
-    this.props.onRequestChange?.(name, value);
+    onRequestChange?.(name, value);
   };
 
-  handlePolicyChange = ({
+  const handlePolicyChange = ({
     target: {name, value},
-  }: React.ChangeEvent<
-    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-  >) => {
-    this.props.onPolicyChange?.(
+  }: React.ChangeEvent<HTMLInputElement>) => {
+    onPolicyChange?.(
       name,
       name === 'retryCount' && value.length > 0 ? parseInt(value) : value,
     );
   };
 
-  handleHeaderChange = (
+  const handleHeaderChange = (
     {
       target: {name, value},
     }: React.ChangeEvent<
@@ -74,230 +82,227 @@ export class JobForm extends React.Component<Props> {
     >,
     i: number,
   ) => {
-    this.props.onHeaderChange?.(name, value, i);
+    onHeaderChange?.(name, value, i);
   };
 
-  handleAddHeader = () => {
-    this.props.onAddHeader?.();
+  const handleAddHeader = () => {
+    onAddHeader?.();
   };
 
-  handleDeleteHeader = (i: number) => {
-    this.props.onDeleteHeader?.(i);
+  const handleDeleteHeader = (i: number) => {
+    onDeleteHeader?.(i);
   };
 
-  handleSave = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    this.props.onSave?.();
+    onSave?.();
   };
 
-  handleDelete = () => {
-    this.props.onDelete?.();
+  const handleDelete = () => {
+    onDelete?.();
   };
 
-  render() {
-    const {item, collections, pending, errors} = this.props;
-    const action = item.action;
-    const request = action.request;
-    let body;
-    if (httpMethodsWithBody.includes(request.method)) {
-      body = (
-        <Row className="mb-3">
-          <Form.Group as={Col} controlId="body">
-            <Form.Label>Body</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={5}
-              name="body"
-              value={request.body}
-              isInvalid={!!errors.body}
-              onChange={this.handleRequestChange}
-            />
-            <FieldError message={errors.body} />
-          </Form.Group>
-        </Row>
-      );
-    }
-    return (
-      <Form autoComplete="off" role="form" onSubmit={this.handleSave}>
-        <Row className="mb-3">
-          <Form.Group as={Col} controlId="name">
-            <Form.Label>Name</Form.Label>
-            <Form.Control
-              name="name"
-              required
-              placeholder="Name"
-              type="text"
-              value={item.name}
-              isInvalid={!!errors.name}
-              onChange={this.handleItemChange}
-            />
-            <FieldError message={errors.name} />
-          </Form.Group>
-          <Form.Group as={Col} controlId="collectionId">
-            <Form.Label>Collection</Form.Label>
-            <Form.Control
-              name="collectionId"
-              required
-              as="select"
-              value={item.collectionId}
-              isInvalid={!!errors.collectionId}
-              onChange={this.handleItemChange}
-            >
-              {collections.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </Form.Control>
-            <FieldError message={errors.collectionId} />
-          </Form.Group>
-        </Row>
-        <Form.Group controlId="state" className="mb-3">
-          <Form.Check
-            id="stateEnabled"
-            name="state"
-            inline
-            required
-            label="Enabled"
-            type="radio"
-            value="enabled"
-            checked={item.state === 'enabled'}
-            isInvalid={!!errors.state}
-            onChange={this.handleItemChange}
+  const action = item.action;
+  const request = action.request;
+  let body;
+  if (httpMethodsWithBody.includes(request.method)) {
+    body = (
+      <Row className="mb-3">
+        <Form.Group as={Col} controlId="body">
+          <Form.Label>Body</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={5}
+            name="body"
+            value={request.body}
+            isInvalid={!!errors.body}
+            onChange={handleRequestChange}
           />
-          <Form.Check
-            id="stateDisabled"
-            name="state"
-            inline
-            required
-            label="Disabled"
-            type="radio"
-            value="disabled"
-            checked={item.state === 'disabled'}
-            isInvalid={!!errors.state}
-            onChange={this.handleItemChange}
-          />
-          <FieldError message={errors.state} />
+          <FieldError message={errors.body} />
         </Form.Group>
-        <Row className="mb-3">
-          <Form.Group as={Col} controlId="type" className="col-4">
-            <Form.Label>Action</Form.Label>
-            <Form.Select
-              name="type"
-              required
-              value={action.type}
-              isInvalid={!!errors.type}
-              onChange={this.handleActionChange}
-            >
-              <option>HTTP</option>
-            </Form.Select>
-            <FieldError message={errors.type} />
-          </Form.Group>
-          <Form.Group as={Col} controlId="schedule">
-            <Form.Label>
-              Schedule
-              <small className="text-muted ps-2 d-none d-md-inline">
-                use either{' '}
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://godoc.org/github.com/robfig/cron#hdr-Predefined_schedules"
-                >
-                  pre-defined
-                </a>
-                ,{' '}
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://godoc.org/github.com/robfig/cron#hdr-Intervals"
-                >
-                  interval
-                </a>{' '}
-                or{' '}
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://en.wikipedia.org/wiki/Cron"
-                >
-                  cron
-                </a>{' '}
-                expression
-              </small>
-            </Form.Label>
-            <Form.Control
-              name="schedule"
-              required
-              placeholder="Schedule"
-              type="text"
-              value={item.schedule}
-              isInvalid={!!errors.schedule}
-              onChange={this.handleItemChange}
-            />
-            <FieldError message={errors.schedule} />
-          </Form.Group>
-        </Row>
-        <RequestRow
-          value={action.request}
-          errors={errors}
-          onChange={this.handleRequestChange}
-        />
-        <Row className="mb-3">
-          <Form.Group className="col mb-0">
-            <Form.Label>Headers</Form.Label>
-            <button
-              className="btn"
-              type="button"
-              disabled={pending}
-              onClick={this.handleAddHeader}
-            >
-              <i className="fa fa-plus" />
-            </button>
-          </Form.Group>
-        </Row>
-        {action.request.headers.map((h, i) => (
-          <HeaderRow
-            key={i}
-            value={h}
-            pending={pending}
-            onChange={(e) => this.handleHeaderChange(e, i)}
-            onClick={() => this.handleDeleteHeader(i)}
-          />
-        ))}
-        {body}
-        <RetryPolicyRow
-          value={action.retryPolicy}
-          errors={errors}
-          onChange={this.handlePolicyChange}
-        />
-        <Tip>
-          You can use variables for URI, header value and body, e.g.{' '}
-          {'{{.Host}}, {{.Token}}'}, etc.
-        </Tip>
-        <Button type="submit" disabled={pending}>
-          Save
-        </Button>
-        {item.id && (
-          <>
-            <Link
-              to={`/jobs/${item.id}/history`}
-              className="btn btn-outline-secondary ms-2"
-            >
-              History
-            </Link>
-            <Button
-              onClick={this.handleDelete}
-              variant="danger"
-              className="float-end"
-              disabled={pending}
-            >
-              Delete
-            </Button>
-          </>
-        )}
-      </Form>
+      </Row>
     );
   }
-}
+  return (
+    <Form autoComplete="off" role="form" onSubmit={handleSave}>
+      <Row className="mb-3">
+        <Form.Group as={Col} controlId="name">
+          <Form.Label>Name</Form.Label>
+          <Form.Control
+            name="name"
+            required
+            placeholder="Name"
+            type="text"
+            value={item.name}
+            isInvalid={!!errors.name}
+            onChange={handleItemChange}
+          />
+          <FieldError message={errors.name} />
+        </Form.Group>
+        <Form.Group as={Col} controlId="collectionId">
+          <Form.Label>Collection</Form.Label>
+          <Form.Control
+            name="collectionId"
+            required
+            as="select"
+            value={item.collectionId}
+            isInvalid={!!errors.collectionId}
+            onChange={handleItemChange}
+          >
+            {collections.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </Form.Control>
+          <FieldError message={errors.collectionId} />
+        </Form.Group>
+      </Row>
+      <Form.Group controlId="state" className="mb-3">
+        <Form.Check
+          id="stateEnabled"
+          name="state"
+          inline
+          required
+          label="Enabled"
+          type="radio"
+          value="enabled"
+          checked={item.state === 'enabled'}
+          isInvalid={!!errors.state}
+          onChange={handleItemChange}
+        />
+        <Form.Check
+          id="stateDisabled"
+          name="state"
+          inline
+          required
+          label="Disabled"
+          type="radio"
+          value="disabled"
+          checked={item.state === 'disabled'}
+          isInvalid={!!errors.state}
+          onChange={handleItemChange}
+        />
+        <FieldError message={errors.state} />
+      </Form.Group>
+      <Row className="mb-3">
+        <Form.Group as={Col} controlId="type" className="col-4">
+          <Form.Label>Action</Form.Label>
+          <Form.Select
+            name="type"
+            required
+            value={action.type}
+            isInvalid={!!errors.type}
+            onChange={handleActionChange}
+          >
+            <option>HTTP</option>
+          </Form.Select>
+          <FieldError message={errors.type} />
+        </Form.Group>
+        <Form.Group as={Col} controlId="schedule">
+          <Form.Label>
+            Schedule
+            <small className="text-muted ps-2 d-none d-md-inline">
+              use either{' '}
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://godoc.org/github.com/robfig/cron#hdr-Predefined_schedules"
+              >
+                pre-defined
+              </a>
+              ,{' '}
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://godoc.org/github.com/robfig/cron#hdr-Intervals"
+              >
+                interval
+              </a>{' '}
+              or{' '}
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="https://en.wikipedia.org/wiki/Cron"
+              >
+                cron
+              </a>{' '}
+              expression
+            </small>
+          </Form.Label>
+          <Form.Control
+            name="schedule"
+            required
+            placeholder="Schedule"
+            type="text"
+            value={item.schedule}
+            isInvalid={!!errors.schedule}
+            onChange={handleItemChange}
+          />
+          <FieldError message={errors.schedule} />
+        </Form.Group>
+      </Row>
+      <RequestRow
+        value={action.request}
+        errors={errors}
+        onChange={handleRequestChange}
+      />
+      <Row className="mb-3">
+        <Form.Group className="col mb-0">
+          <Form.Label>Headers</Form.Label>
+          <button
+            className="btn"
+            type="button"
+            disabled={pending}
+            onClick={handleAddHeader}
+          >
+            <i className="fa fa-plus" />
+          </button>
+        </Form.Group>
+      </Row>
+      {action.request.headers.map((h, i) => (
+        <HeaderRow
+          key={i}
+          value={h}
+          pending={pending}
+          onChange={(e) => handleHeaderChange(e, i)}
+          onClick={() => handleDeleteHeader(i)}
+        />
+      ))}
+      {body}
+      <RetryPolicyRow
+        value={action.retryPolicy}
+        errors={errors}
+        onChange={handlePolicyChange}
+      />
+      <Tip>
+        You can use variables for URI, header value and body, e.g.{' '}
+        {'{{.Host}}, {{.Token}}'}, etc.
+      </Tip>
+      <Button type="submit" disabled={pending}>
+        Save
+      </Button>
+      {item.id && (
+        <>
+          <Link
+            to={`/jobs/${item.id}/history`}
+            className="btn btn-outline-secondary ms-2"
+          >
+            History
+          </Link>
+          <Button
+            onClick={handleDelete}
+            variant="danger"
+            className="float-end"
+            disabled={pending}
+          >
+            Delete
+          </Button>
+        </>
+      )}
+    </Form>
+  );
+};
 
 interface RequestRowProps {
   value: HttpRequest;
@@ -400,11 +405,7 @@ export const HeaderRow = ({
 interface RetryPolicyRowProps {
   value: RetryPolicy;
   errors: Errors;
-  onChange?: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const RetryPolicyRow = ({

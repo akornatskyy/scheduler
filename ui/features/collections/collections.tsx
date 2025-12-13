@@ -1,39 +1,28 @@
-import React from 'react';
+import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import {Layout} from '../../shared/components';
+import {Errors} from '../../shared/types';
 import * as api from './collections-api';
 import {CollectionList} from './collections-components';
 import {Collection} from './types';
 
-type Errors = Record<string, string>;
+export default function CollectionsContainer() {
+  const [items, setItems] = useState<Collection[]>([]);
+  const [errors, setErrors] = useState<Errors>({});
 
-type State = {
-  items: Collection[];
-  errors: Errors;
-};
-
-export default class CollectionsContainer extends React.Component<
-  Record<string, never>,
-  State
-> {
-  state: State = {items: [], errors: {}};
-
-  componentDidMount() {
+  useEffect(() => {
     api
       .listCollections()
-      .then(({items}) => this.setState({items}))
-      .catch((errors) => this.setState({errors}));
-  }
+      .then(({items}) => setItems(items))
+      .catch((errors) => setErrors(errors));
+  }, []);
 
-  render() {
-    const {items, errors} = this.state;
-    return (
-      <Layout title="Collections" errors={errors}>
-        <CollectionList items={items} />
-        <Link to="collections/add" className="btn btn-primary">
-          Add
-        </Link>
-      </Layout>
-    );
-  }
+  return (
+    <Layout title="Collections" errors={errors}>
+      <CollectionList items={items} />
+      <Link to="/collections/add" className="btn btn-primary">
+        Add
+      </Link>
+    </Layout>
+  );
 }

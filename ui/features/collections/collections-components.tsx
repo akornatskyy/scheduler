@@ -19,11 +19,11 @@ export const CollectionList = ({items}: Props): React.ReactElement => (
       {items.map((i) => (
         <tr key={i.id}>
           <td>
-            <Link to={`collections/${i.id}`}>{i.name}</Link>
-            <Link to={`variables?collectionId=${i.id}`}>
+            <Link to={`/collections/${i.id}`}>{i.name}</Link>
+            <Link to={`/variables?collectionId=${i.id}`}>
               <span className="badge bg-light mx-1">variables</span>
             </Link>
-            <Link to={`jobs?collectionId=${i.id}`}>
+            <Link to={`/jobs?collectionId=${i.id}`}>
               <span className="badge bg-light">jobs</span>
             </Link>
           </td>

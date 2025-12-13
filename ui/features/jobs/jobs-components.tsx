@@ -46,7 +46,7 @@ export const GroupRow = ({collection}: GroupRowProps): React.ReactElement => (
       >
         {collection.name}
       </Link>
-      <Link to={`variables?collectionId=${collection.id}`}>
+      <Link to={`/variables?collectionId=${collection.id}`}>
         <span className="badge bg-light mx-1">variables</span>
       </Link>
     </td>
@@ -61,7 +61,7 @@ export const ItemRow = ({job}: ItemRowProps): React.ReactElement => (
   <tr>
     <td>
       <Link
-        to={`jobs/${job.id}`}
+        to={`/jobs/${job.id}`}
         className={job.state === 'disabled' ? 'text-muted' : ''}
       >
         {job.name}

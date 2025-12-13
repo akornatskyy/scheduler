@@ -5,25 +5,15 @@ import * as api from './variables-api';
 
 jest.mock('./variables-api');
 
-describe('variables', () => {
-  const props = {location: {}};
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+describe('variables container', () => {
+  beforeEach(() => jest.clearAllMocks());
 
   it('handles list collections error', async () => {
     const errors = {__ERROR__: 'The error text.'};
     jest.mocked(api.listCollections).mockRejectedValue(errors);
     jest.mocked(api.listVariables).mockResolvedValue({items: []});
 
-    await act(async () => {
-      render(
-        <Router>
-          <VariablesContainer {...props} />
-        </Router>,
-      );
-    });
+    await actRender();
 
     expect(api.listCollections).toHaveBeenCalledTimes(1);
     expect(api.listCollections).toHaveBeenCalledWith();
@@ -37,13 +27,7 @@ describe('variables', () => {
     jest.mocked(api.listCollections).mockResolvedValue({items: []});
     jest.mocked(api.listVariables).mockRejectedValue(errors);
 
-    await act(async () => {
-      render(
-        <Router>
-          <VariablesContainer {...props} />
-        </Router>,
-      );
-    });
+    await actRender();
 
     expect(api.listCollections).toHaveBeenCalledTimes(1);
     expect(api.listCollections).toHaveBeenCalledWith();
@@ -75,8 +59,8 @@ describe('variables', () => {
 
     await act(async () => {
       render(
-        <Router>
-          <VariablesContainer {...props} location={{search: '?collectionId=65ada2f9'}} />
+        <Router initialEntries={['/variables?collectionId=65ada2f9']}>
+          <VariablesContainer />
         </Router>,
       );
     });
@@ -89,3 +73,12 @@ describe('variables', () => {
     expect(screen.getByText('My Var')).toBeVisible();
   });
 });
+
+const actRender = () =>
+  act(async () =>
+    render(
+      <Router>
+        <VariablesContainer />
+      </Router>,
+    ),
+  );

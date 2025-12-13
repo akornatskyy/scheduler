@@ -1,7 +1,7 @@
 import React from 'react';
 import {Container} from 'react-bootstrap';
 import {createRoot} from 'react-dom/client';
-import {Redirect, Route, HashRouter as Router, Switch} from 'react-router-dom';
+import {Navigate, Route, HashRouter as Router, Routes} from 'react-router-dom';
 import CollectionContainer from './features/collection/collection';
 import CollectionsContainer from './features/collections/collections';
 import JobHistory from './features/history/history';
@@ -14,19 +14,19 @@ import {Footer, Header} from './shared/components';
 export const App = (): React.ReactElement => (
   <Container>
     <Header />
-    <Switch>
-      <Redirect exact path="/" to="/collections" />
-      <Route exact path="/collections" component={CollectionsContainer} />
-      <Route exact path="/collections/add" component={CollectionContainer} />
-      <Route exact path="/collections/:id" component={CollectionContainer} />
-      <Route exact path="/variables" component={VariablesContainer} />
-      <Route exact path="/variables/add" component={VariableContainer} />
-      <Route exact path="/variables/:id" component={VariableContainer} />
-      <Route exact path="/jobs" component={JobsContainer} />
-      <Route exact path="/jobs/add" component={JobContainer} />
-      <Route exact path="/jobs/:id" component={JobContainer} />
-      <Route exact path="/jobs/:id/history" component={JobHistory} />
-    </Switch>
+    <Routes>
+      <Route path="/" element={<Navigate to="/collections" replace />} />
+      <Route path="/collections" element={<CollectionsContainer />} />
+      <Route path="/collections/add" element={<CollectionContainer />} />
+      <Route path="/collections/:id" element={<CollectionContainer />} />
+      <Route path="/variables" element={<VariablesContainer />} />
+      <Route path="/variables/add" element={<VariableContainer />} />
+      <Route path="/variables/:id" element={<VariableContainer />} />
+      <Route path="/jobs" element={<JobsContainer />} />
+      <Route path="/jobs/add" element={<JobContainer />} />
+      <Route path="/jobs/:id/history" element={<JobHistory />} />
+      <Route path="/jobs/:id" element={<JobContainer />} />
+    </Routes>
     <Footer />
   </Container>
 );

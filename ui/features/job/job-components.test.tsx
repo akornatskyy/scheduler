@@ -1,15 +1,14 @@
 import {fireEvent, render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router-dom';
-
 import {JobForm} from './job-components';
 import {Collection} from './types';
 
-describe('job', () => {
+describe('job components', () => {
   const collections: Collection[] = [
     {id: '65ada2f9', name: 'My App #1'},
     {id: '7d76cb30', name: 'My Other App'},
   ];
-  let props: ConstructorParameters<typeof JobForm>[0];
+  let props: Parameters<typeof JobForm>[0];
 
   beforeEach(() => {
     props = {

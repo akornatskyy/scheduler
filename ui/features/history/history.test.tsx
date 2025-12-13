@@ -1,24 +1,30 @@
 import {act, fireEvent, render, screen, waitFor} from '@testing-library/react';
+import {Route, MemoryRouter as Router, Routes} from 'react-router-dom';
 import {default as JobHistoryContainer} from './history';
 import * as api from './history-api';
 import {JobHistory, JobStatus} from './types';
 
-jest.mock('./history-api.ts');
+jest.mock('./history-api');
 
-describe('job history', () => {
-  type Props = ConstructorParameters<typeof JobHistoryContainer>[0];
-  let props: Props;
-  const jobStatus = {etag: '"1n9er1hz749r"'} as JobStatus;
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+describe('job history container', () => {
   const job = {name: 'My Task'} as Awaited<ReturnType<typeof api.retrieveJob>>;
+  const jobStatus = {etag: '"1n9er1hz749r"'} as JobStatus;
+
+  const goBack = jest.fn();
 
   beforeEach(() => {
-    props = {
-      match: {params: {id: '65ada2f9'}},
-      history: {
-        goBack: jest.fn(),
-      },
-    } as unknown as Props;
     jest.clearAllMocks();
+    mockNavigate.mockImplementationOnce(goBack);
   });
 
   it('handles retrieve job error', async () => {
@@ -27,9 +33,7 @@ describe('job history', () => {
     jest.mocked(api.retrieveJobStatus).mockResolvedValue(jobStatus);
     jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
 
-    await act(async () => {
-      render(<JobHistoryContainer {...props} />);
-    });
+    await actRender();
 
     expect(api.retrieveJob).toHaveBeenCalledTimes(1);
     expect(api.retrieveJob).toHaveBeenCalledWith('65ada2f9');
@@ -46,9 +50,7 @@ describe('job history', () => {
     jest.mocked(api.retrieveJobStatus).mockRejectedValue(errors);
     jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
 
-    await act(async () => {
-      render(<JobHistoryContainer {...props} />);
-    });
+    await actRender();
 
     expect(api.retrieveJob).toHaveBeenCalledTimes(1);
     expect(api.retrieveJob).toHaveBeenCalledWith('65ada2f9');
@@ -65,9 +67,7 @@ describe('job history', () => {
     jest.mocked(api.retrieveJobStatus).mockResolvedValue(jobStatus);
     jest.mocked(api.listJobHistory).mockRejectedValue(errors);
 
-    await act(async () => {
-      render(<JobHistoryContainer {...props} />);
-    });
+    await actRender();
 
     expect(api.retrieveJob).toHaveBeenCalledWith('65ada2f9');
     expect(api.retrieveJobStatus).toHaveBeenCalledTimes(1);
@@ -83,9 +83,7 @@ describe('job history', () => {
     jest.mocked(api.retrieveJobStatus).mockResolvedValue(status);
     jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
 
-    await act(async () => {
-      render(<JobHistoryContainer {...props} />);
-    });
+    await actRender();
 
     expect(api.retrieveJob).toHaveBeenCalledTimes(1);
     expect(api.retrieveJob).toHaveBeenCalledWith('65ada2f9');
@@ -99,13 +97,11 @@ describe('job history', () => {
     jest.mocked(api.retrieveJob).mockResolvedValue(job);
     jest.mocked(api.retrieveJobStatus).mockResolvedValue(jobStatus);
     jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
-    await act(async () => {
-      render(<JobHistoryContainer {...props} />);
-    });
+
+    await actRender();
 
     fireEvent.click(screen.getByText('Back'));
-
-    expect(props.history.goBack).toHaveBeenCalledTimes(1);
+    expect(goBack).toHaveBeenCalledTimes(1);
   });
 
   it('handles on run', async () => {
@@ -113,9 +109,8 @@ describe('job history', () => {
     jest.mocked(api.retrieveJobStatus).mockResolvedValue(jobStatus);
     jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
     jest.mocked(api.patchJobStatus).mockResolvedValue();
-    await act(async () => {
-      render(<JobHistoryContainer {...props} />);
-    });
+
+    await actRender();
     expect(api.retrieveJob).toHaveBeenCalled();
 
     await act(async () => {
@@ -129,6 +124,7 @@ describe('job history', () => {
     });
     expect(api.retrieveJobStatus).toHaveBeenCalledTimes(2);
     expect(api.retrieveJobStatus).toHaveBeenCalledWith('65ada2f9');
+    expect(goBack).not.toHaveBeenCalled();
   });
 
   it('handles on run patch job status error', async () => {
@@ -137,9 +133,8 @@ describe('job history', () => {
     jest.mocked(api.retrieveJobStatus).mockResolvedValue(jobStatus);
     jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
     jest.mocked(api.patchJobStatus).mockRejectedValue(errors);
-    await act(async () => {
-      render(<JobHistoryContainer {...props} />);
-    });
+
+    await actRender();
     expect(api.retrieveJob).toHaveBeenCalled();
 
     await act(async () => {
@@ -162,9 +157,8 @@ describe('job history', () => {
     jest.mocked(api.retrieveJobStatus).mockRejectedValue(errors);
     jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
     jest.mocked(api.patchJobStatus).mockResolvedValue();
-    await act(async () => {
-      render(<JobHistoryContainer {...props} />);
-    });
+
+    await actRender();
     expect(api.retrieveJob).toHaveBeenCalled();
 
     await act(async () => {
@@ -187,9 +181,8 @@ describe('job history', () => {
       .mocked(api.listJobHistory)
       .mockResolvedValue({items: [{} as JobHistory]});
     jest.mocked(api.deleteJobHistory).mockResolvedValue();
-    await act(async () => {
-      render(<JobHistoryContainer {...props} />);
-    });
+
+    await actRender();
     expect(api.retrieveJob).toHaveBeenCalled();
 
     fireEvent.click(screen.getByText('Delete'));
@@ -199,6 +192,7 @@ describe('job history', () => {
       '65ada2f9',
       '"1n9er1hz749r"',
     );
+    expect(goBack).toHaveBeenCalledTimes(1);
   });
 
   it('handles on delete error', async () => {
@@ -209,9 +203,8 @@ describe('job history', () => {
       .mocked(api.listJobHistory)
       .mockResolvedValue({items: [{} as JobHistory]});
     jest.mocked(api.deleteJobHistory).mockRejectedValue(errors);
-    await act(async () => {
-      render(<JobHistoryContainer {...props} />);
-    });
+
+    await actRender();
     expect(api.retrieveJob).toHaveBeenCalled();
 
     await act(async () => {
@@ -226,3 +219,14 @@ describe('job history', () => {
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 });
+
+const actRender = () =>
+  act(async () => {
+    render(
+      <Router initialEntries={['/jobs/65ada2f9/history']}>
+        <Routes>
+          <Route path="/jobs/:id/history" element={<JobHistoryContainer />} />
+        </Routes>
+      </Router>,
+    );
+  });

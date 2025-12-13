@@ -1,10 +1,7 @@
 import {go} from './fetch';
 
 describe('fetch go', () => {
-  afterEach(() => {
-    global.fetch.mockClear();
-    delete global.fetch;
-  });
+  afterEach(() => (global.fetch as jest.Mock).mockClear());
 
   describe('handles error: ', () => {
     it('unexpected', async () => {
@@ -51,7 +48,7 @@ describe('fetch go', () => {
         status: 400,
         json: () => {
           return {
-            then: (f) =>
+            then: (f: (value: unknown) => void) =>
               f({
                 errors: [
                   {
@@ -74,7 +71,7 @@ describe('fetch go', () => {
         }),
       );
 
-      expect(global.fetch.mock.calls.length).toBe(1);
+      expect((global.fetch as jest.Mock).mock.calls.length).toBe(1);
     });
   });
 });

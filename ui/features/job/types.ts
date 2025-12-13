@@ -30,6 +30,7 @@ export type JobItem = {
 export type JobDefinition = JobItem & {
   updated: string;
   action: Action;
+  etag?: string;
 };
 
 export type Action = {

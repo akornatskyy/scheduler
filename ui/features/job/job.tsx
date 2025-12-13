@@ -1,218 +1,163 @@
 import update from 'immutability-helper';
-import React from 'react';
-import type {RouteComponentProps} from 'react-router-dom';
+import {useCallback, useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 import {Layout} from '../../shared/components';
+import {Errors} from '../../shared/types';
 import * as api from './job-api';
 import {JobForm} from './job-components';
 import {Collection, JobInput} from './types';
 
-type Errors = Record<string, string>;
-
-type Props = RouteComponentProps<{id: string}>;
-
-type State = {
-  item: JobInput;
-  collections: Collection[];
-  pending: boolean;
-  errors: Errors;
+const INITIAL: JobInput = {
+  name: '',
+  state: 'enabled',
+  schedule: '',
+  collectionId: '',
+  action: {
+    type: 'HTTP',
+    request: {
+      method: 'GET',
+      uri: '',
+      headers: [],
+      body: '',
+    },
+    retryPolicy: {
+      retryCount: 3,
+      retryInterval: '10s',
+      deadline: '1m',
+    },
+  },
 };
 
-export default class JobContainer extends React.Component<Props, State> {
-  state: State = {
-    item: {
-      name: '',
-      state: 'enabled',
-      schedule: '',
-      collectionId: '',
-      action: {
-        type: 'HTTP',
-        request: {
-          method: 'GET',
-          uri: '',
-          headers: [],
-          body: '',
-        },
-        retryPolicy: {
-          retryCount: 3,
-          retryInterval: '10s',
-          deadline: '1m',
-        },
-      },
-    },
-    collections: [],
-    pending: true,
-    errors: {},
-  };
+export default function JobContainer() {
+  const navigate = useNavigate();
+  const {id} = useParams<{id: string}>();
+  const [item, setItem] = useState<JobInput>(INITIAL);
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [pending, setPending] = useState(true);
+  const [errors, setErrors] = useState<Errors>({});
 
-  componentDidMount() {
-    const {id} = this.props.match.params;
+  useEffect(() => {
     if (id) {
-      this.setState({pending: true});
+      setPending(true);
       api
         .retrieveJob(id)
-        .then((item) => this.setState({item, pending: false}))
-        .catch((errors) => this.setState({errors, pending: false}));
+        .then((item) => {
+          setItem(item);
+          setPending(false);
+        })
+        .catch((errors) => {
+          setErrors(errors);
+          setPending(false);
+        });
     } else {
-      this.setState({
-        item: {...this.state.item, state: 'enabled'},
-        pending: false,
-      });
+      setPending(false);
     }
+
     api
       .listCollections()
-      .then(({items}) =>
-        this.setState(({item}) => {
-          const s: Pick<State, 'collections' | 'item' | 'errors'> = {
-            collections: items,
-            item,
-            errors: this.state.errors,
-          };
-          if (!item.collectionId) {
-            if (items.length > 0) {
-              s.item = {
-                ...item,
-                collectionId: items[0].id,
-              };
-            } else {
-              s.errors = {
-                collectionId: 'There is no collection available.',
-              };
-            }
-          }
+      .then(({items}) => {
+        setCollections(items);
+        setItem((prev) => {
+          if (prev.collectionId) return prev;
+          if (items.length > 0) return {...prev, collectionId: items[0].id};
+          setErrors({collectionId: 'There is no collection available.'});
+          return prev;
+        });
+      })
+      .catch((errors) => setErrors(errors));
+  }, [id]);
 
-          return s;
-        }),
-      )
-      .catch((errors) => this.setState({errors}));
-  }
+  const handleItemChange = useCallback((name: string, value: string) => {
+    setItem((prev) => ({...prev, [name]: value}));
+  }, []);
 
-  handleItemChange = (name: string, value: string) => {
-    this.setState({
-      item: {
-        ...this.state.item,
-        [name]: value,
-      },
-    });
-  };
+  const handleActionChange = useCallback((name: string, value: string) => {
+    setItem((prev) => update(prev, {action: {[name]: {$set: value}}}));
+  }, []);
 
-  handleActionChange = (name: string, value: string) => {
-    this.setState({
-      item: update(this.state.item, {
-        action: {
-          [name]: {$set: value},
-        },
-      }),
-    });
-  };
+  const handleRequestChange = useCallback((name: string, value: string) => {
+    setItem((prev) =>
+      update(prev, {action: {request: {[name]: {$set: value}}}}),
+    );
+  }, []);
 
-  handleRequestChange = (name: string, value: string) => {
-    this.setState({
-      item: update(this.state.item, {
-        action: {
-          request: {
-            [name]: {$set: value},
-          },
-        },
-      }),
-    });
-  };
-
-  handlePolicyChange = (name: string, value: string | number) => {
-    this.setState({
-      item: update(this.state.item, {
-        action: {
-          retryPolicy: {
-            [name]: {$set: value},
-          },
-        },
-      }),
-    });
-  };
-
-  handleHeaderChange = (name: string, value: string, i: number) => {
-    this.setState({
-      item: update(this.state.item, {
-        action: {
-          request: {
-            headers: {
-              [i]: {[name]: {$set: value}},
-            },
-          },
-        },
-      }),
-    });
-  };
-
-  handleAddHeader = () => {
-    this.setState({
-      item: update(this.state.item, {
-        action: {
-          request: {
-            headers: {
-              $push: [{name: '', value: ''}],
-            },
-          },
-        },
-      }),
-    });
-  };
-
-  handleDeleteHeader = (i: number) => {
-    this.setState({
-      item: update(this.state.item, {
-        action: {
-          request: {
-            headers: {
-              $splice: [[i, 1]],
-            },
-          },
-        },
-      }),
-    });
-  };
-
-  handleSave = () => {
-    this.setState({pending: true});
-    api
-      .saveJob(this.state.item)
-      .then(() => this.props.history.goBack())
-      .catch((errors: unknown) =>
-        this.setState({errors: errors as Errors, pending: false}),
+  const handlePolicyChange = useCallback(
+    (name: string, value: string | number) => {
+      setItem((prev) =>
+        update(prev, {action: {retryPolicy: {[name]: {$set: value}}}}),
       );
-  };
+    },
+    [],
+  );
 
-  handleDelete = () => {
-    const {id, etag} = this.state.item;
+  const handleHeaderChange = useCallback(
+    (name: string, value: string, i: number) => {
+      setItem((prev) =>
+        update(prev, {
+          action: {request: {headers: {[i]: {[name]: {$set: value}}}}},
+        }),
+      );
+    },
+    [],
+  );
+
+  const handleAddHeader = useCallback(() => {
+    setItem((prev) =>
+      update(prev, {
+        action: {request: {headers: {$push: [{name: '', value: ''}]}}},
+      }),
+    );
+  }, []);
+
+  const handleDeleteHeader = useCallback((i: number) => {
+    setItem((prev) =>
+      update(prev, {
+        action: {request: {headers: {$splice: [[i, 1]]}}},
+      }),
+    );
+  }, []);
+
+  const handleSave = useCallback(() => {
+    setPending(true);
+    api
+      .saveJob(item)
+      .then(() => navigate(-1))
+      .catch((errors) => {
+        setErrors(errors);
+        setPending(false);
+      });
+  }, [item, navigate]);
+
+  const handleDelete = useCallback(() => {
+    const {id, etag} = item;
     if (!id) return;
-    this.setState({pending: true});
+    setPending(true);
     api
       .deleteJob(id, etag)
-      .then(() => this.props.history.goBack())
-      .catch((errors: unknown) =>
-        this.setState({errors: errors as Errors, pending: false}),
-      );
-  };
+      .then(() => navigate(-1))
+      .catch((errors) => {
+        setErrors(errors);
+        setPending(false);
+      });
+  }, [item, navigate]);
 
-  render() {
-    const {item, collections, pending, errors} = this.state;
-    return (
-      <Layout title={`Job ${item.name}`} errors={errors}>
-        <JobForm
-          item={item}
-          collections={collections}
-          pending={pending}
-          errors={errors}
-          onItemChange={this.handleItemChange}
-          onActionChange={this.handleActionChange}
-          onRequestChange={this.handleRequestChange}
-          onPolicyChange={this.handlePolicyChange}
-          onHeaderChange={this.handleHeaderChange}
-          onAddHeader={this.handleAddHeader}
-          onDeleteHeader={this.handleDeleteHeader}
-          onSave={this.handleSave}
-          onDelete={this.handleDelete}
-        />
-      </Layout>
-    );
-  }
+  return (
+    <Layout title={`Job ${item.name}`} errors={errors}>
+      <JobForm
+        item={item}
+        collections={collections}
+        pending={pending}
+        errors={errors}
+        onItemChange={handleItemChange}
+        onActionChange={handleActionChange}
+        onRequestChange={handleRequestChange}
+        onPolicyChange={handlePolicyChange}
+        onHeaderChange={handleHeaderChange}
+        onAddHeader={handleAddHeader}
+        onDeleteHeader={handleDeleteHeader}
+        onSave={handleSave}
+        onDelete={handleDelete}
+      />
+    </Layout>
+  );
 }

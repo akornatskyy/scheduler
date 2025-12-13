@@ -1,20 +1,27 @@
 import {act, fireEvent, render, screen} from '@testing-library/react';
+import {Route, MemoryRouter as Router, Routes} from 'react-router-dom';
+
 import VariableContainer from './variable';
 import * as api from './variable-api';
 
-jest.mock('./variable-api.ts');
+jest.mock('./variable-api');
+
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 describe('variable', () => {
-  type Props = ConstructorParameters<typeof VariableContainer>[0];
-  let props: Props;
+  const goBack = jest.fn();
 
   beforeEach(() => {
-    props = {
-      match: {params: {id: '123de331'}},
-      history: {
-        goBack: jest.fn(),
-      },
-    } as unknown as Props;
+    jest.clearAllMocks();
+    mockNavigate.mockImplementationOnce(goBack);
     jest.mocked(api.listCollections).mockResolvedValue({
       items: [
         {
@@ -29,14 +36,10 @@ describe('variable', () => {
         },
       ],
     });
-    jest.clearAllMocks();
   });
 
   it('renders add item if no id specified', async () => {
-    props.match.params.id = undefined;
-    await act(async () => {
-      render(<VariableContainer {...props} />);
-    });
+    await actRenderAdd();
 
     expect(api.listCollections).toHaveBeenCalledTimes(1);
     expect(api.listCollections).toHaveBeenCalledWith();
@@ -56,9 +59,7 @@ describe('variable', () => {
       value: 'Some Value',
     });
 
-    await act(async () => {
-      render(<VariableContainer {...props} />);
-    });
+    await actRenderEdit();
 
     expect(api.retrieveVariable).toHaveBeenCalledTimes(1);
     expect(api.retrieveVariable).toHaveBeenCalledWith('123de331');
@@ -72,42 +73,21 @@ describe('variable', () => {
   });
 
   it('shows field error when collections list is empty', async () => {
-    props.match.params.id = undefined;
     jest.mocked(api.listCollections).mockResolvedValue({items: []});
 
-    await act(async () => {
-      render(<VariableContainer {...props} />);
-    });
+    await actRenderAdd();
 
     expect(api.listCollections).toHaveBeenCalled();
     expect(screen.getByText('There is no collection available.')).toBeVisible();
   });
 
   it('selects a first item from collections list', async () => {
-    props.match.params.id = undefined;
-    jest.mocked(api.listCollections).mockResolvedValue({
-      items: [
-        {
-          id: '84432333',
-          name: 'My App',
-          state: 'enabled',
-        },
-        {
-          id: '65ada2f9',
-          name: 'My Other App',
-          state: 'enabled',
-        },
-      ],
-    });
-
-    await act(async () => {
-      render(<VariableContainer {...props} />);
-    });
+    await actRenderAdd();
 
     expect(api.listCollections).toHaveBeenCalled();
     expect(screen.getByRole('form')).toHaveFormValues({
       name: '',
-      collectionId: '84432333',
+      collectionId: '65ada2f9',
       value: '',
     });
   });
@@ -119,24 +99,8 @@ describe('variable', () => {
       name: 'My Var #1',
       value: 'Some Value',
     });
-    jest.mocked(api.listCollections).mockResolvedValue({
-      items: [
-        {
-          id: '84432333',
-          name: 'My App',
-          state: 'enabled',
-        },
-        {
-          id: '65ada2f9',
-          name: 'My Other App',
-          state: 'enabled',
-        },
-      ],
-    });
 
-    await act(async () => {
-      render(<VariableContainer {...props} />);
-    });
+    await actRenderEdit();
 
     expect(api.listCollections).toHaveBeenCalled();
     expect(screen.getByRole('form')).toHaveFormValues({
@@ -150,9 +114,7 @@ describe('variable', () => {
     const errors = {__ERROR__: 'The error text.'};
     jest.mocked(api.listCollections).mockRejectedValue(errors);
 
-    await act(async () => {
-      render(<VariableContainer {...props} />);
-    });
+    await actRenderEdit();
 
     expect(api.listCollections).toHaveBeenCalled();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
@@ -162,18 +124,15 @@ describe('variable', () => {
     const errors = {__ERROR__: 'The error text.'};
     jest.mocked(api.retrieveVariable).mockRejectedValue(errors);
 
-    await act(async () => {
-      render(<VariableContainer {...props} />);
-    });
+    await actRenderEdit();
 
     expect(api.retrieveVariable).toHaveBeenCalled();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
   it('handles change', async () => {
-    await act(async () => {
-      render(<VariableContainer {...props} />);
-    });
+    await actRenderEdit();
+
     expect(api.listCollections).toHaveBeenCalled();
 
     fireEvent.change(screen.getByLabelText('Name'), {
@@ -200,11 +159,10 @@ describe('variable', () => {
   });
 
   it('saves item', async () => {
-    props.match.params.id = undefined;
     jest.mocked(api.saveVariable).mockResolvedValue();
-    await act(async () => {
-      render(<VariableContainer {...props} />);
-    });
+
+    await actRenderAdd();
+
     expect(api.listCollections).toHaveBeenCalled();
 
     await act(async () => {
@@ -216,19 +174,18 @@ describe('variable', () => {
       name: '',
       value: '',
     });
-    expect(props.history.goBack).toHaveBeenCalledTimes(1);
+    expect(goBack).toHaveBeenCalledTimes(1);
   });
 
   it('handles save errors', async () => {
-    props.match.params.id = undefined;
     const errors = {
       __ERROR__: 'The error text.',
       name: 'The field error message.',
     };
     jest.mocked(api.saveVariable).mockRejectedValue(errors);
-    await act(async () => {
-      render(<VariableContainer {...props} />);
-    });
+
+    await actRenderAdd();
+
     expect(api.listCollections).toHaveBeenCalled();
 
     await act(async () => {
@@ -240,13 +197,12 @@ describe('variable', () => {
       name: '',
       value: '',
     });
-    expect(props.history.goBack).not.toHaveBeenCalled();
+    expect(goBack).not.toHaveBeenCalled();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
     expect(screen.getByText(errors.name)).toBeVisible();
   });
 
   it('deletes item', async () => {
-    props.match.params.id = '65ada2f9';
     jest.mocked(api.retrieveVariable).mockResolvedValue({
       id: '65ada2f9',
       name: 'My Var #1',
@@ -255,9 +211,9 @@ describe('variable', () => {
       etag: '"1n9er1hz749r"',
     });
     jest.mocked(api.deleteVariable).mockResolvedValue();
-    await act(async () => {
-      render(<VariableContainer {...props} />);
-    });
+
+    await actRenderEdit();
+
     expect(api.listCollections).toHaveBeenCalled();
 
     await act(async () => {
@@ -268,7 +224,7 @@ describe('variable', () => {
       '65ada2f9',
       '"1n9er1hz749r"',
     );
-    expect(props.history.goBack).toHaveBeenCalledTimes(1);
+    expect(goBack).toHaveBeenCalledTimes(1);
   });
 
   it('handles delete error', async () => {
@@ -280,9 +236,9 @@ describe('variable', () => {
     });
     const errors = {__ERROR__: 'The error text.'};
     jest.mocked(api.deleteVariable).mockRejectedValue(errors);
-    await act(async () => {
-      render(<VariableContainer {...props} />);
-    });
+
+    await actRenderEdit();
+
     expect(api.listCollections).toHaveBeenCalled();
 
     await act(async () => {
@@ -290,7 +246,29 @@ describe('variable', () => {
     });
 
     expect(api.deleteVariable).toHaveBeenCalled();
-    expect(props.history.goBack).not.toHaveBeenCalled();
+    expect(goBack).not.toHaveBeenCalled();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 });
+
+const actRenderAdd = () =>
+  act(async () =>
+    render(
+      <Router initialEntries={['/variables/add']}>
+        <Routes>
+          <Route path="/variables/add" element={<VariableContainer />} />
+        </Routes>
+      </Router>,
+    ),
+  );
+
+const actRenderEdit = () =>
+  act(async () =>
+    render(
+      <Router initialEntries={['/variables/123de331']}>
+        <Routes>
+          <Route path="/variables/:id" element={<VariableContainer />} />
+        </Routes>
+      </Router>,
+    ),
+  );

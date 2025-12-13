@@ -1,79 +1,80 @@
-import React from 'react';
-import {RouteComponentProps} from 'react-router-dom';
+import {useCallback, useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
 import {Layout} from '../../shared/components';
+import {Errors} from '../../shared/types';
 import * as api from './collection-api';
 import {CollectionForm} from './collection-components';
 import {Collection} from './types';
 
-type Errors = Record<string, string>;
-
-type Props = RouteComponentProps<{id?: string}>;
-
-type State = {
-  item: Collection;
-  pending: boolean;
-  errors: Errors;
+const INITIAL: Collection = {
+  name: '',
+  state: 'enabled',
 };
 
-export default class CollectionContainer extends React.Component<Props, State> {
-  state: State = {
-    item: {
-      name: '',
-      state: 'enabled',
-    },
-    pending: true,
-    errors: {},
-  };
+export default function CollectionContainer() {
+  const navigate = useNavigate();
+  const {id} = useParams<{id: string}>();
+  const [item, setItem] = useState<Collection>(INITIAL);
+  const [pending, setPending] = useState<boolean>(true);
+  const [errors, setErrors] = useState<Errors>({});
 
-  componentDidMount() {
-    const {id} = this.props.match.params;
+  useEffect(() => {
     if (id) {
       api
         .retrieveCollection(id)
-        .then((data) => this.setState({item: data, pending: false}))
-        .catch((errors) => this.setState({errors, pending: false}));
-    } else {
-      this.setState({item: {name: '', state: 'enabled'}, pending: false});
+        .then((data) => {
+          setItem(data);
+          setPending(false);
+        })
+        .catch((errors) => {
+          setErrors(errors);
+          setPending(false);
+        });
+      return;
     }
-  }
 
-  handleChange = (name: string, value: string) => {
-    this.setState({
-      item: {...this.state.item, [name]: value},
-    });
-  };
+    setPending(false);
+  }, [id]);
 
-  handleSave = () => {
-    this.setState({pending: true});
+  const handleChange = useCallback((name: string, value: string) => {
+    setItem((prev) => ({...prev, [name]: value}));
+  }, []);
+
+  const handleSave = useCallback(() => {
+    setPending(true);
     api
-      .saveCollection(this.state.item)
-      .then(() => this.props.history.goBack())
-      .catch((errors) => this.setState({errors, pending: false}));
-  };
+      .saveCollection(item)
+      .then(() => navigate(-1))
+      .catch((errors) => {
+        setErrors(errors);
+        setPending(false);
+      });
+  }, [item, navigate]);
 
-  handleDelete = () => {
-    const {id, etag} = this.state.item;
+  const handleDelete = useCallback(() => {
+    const {id, etag} = item;
     if (!id) return;
-    this.setState({pending: true});
+
+    setPending(true);
     api
       .deleteCollection(id, etag)
-      .then(() => this.props.history.goBack())
-      .catch((errors) => this.setState({errors, pending: false}));
-  };
+      .then(() => navigate(-1))
+      .catch((errors) => {
+        setErrors(errors);
+        setPending(false);
+      });
+  }, [item, navigate]);
 
-  render() {
-    const {item, pending, errors} = this.state;
-    return (
-      <Layout title={`Collection ${item.name}`} errors={errors}>
-        <CollectionForm
-          item={item}
-          pending={pending}
-          errors={errors}
-          onChange={this.handleChange}
-          onSave={this.handleSave}
-          onDelete={this.handleDelete}
-        />
-      </Layout>
-    );
-  }
+  return (
+    <Layout title={`Collection ${item.name}`} errors={errors}>
+      <CollectionForm
+        item={item}
+        pending={pending}
+        errors={errors}
+        onChange={handleChange}
+        onSave={handleSave}
+        onDelete={handleDelete}
+      />
+    </Layout>
+  );
 }

@@ -1,27 +1,30 @@
 import {act, fireEvent, render, screen} from '@testing-library/react';
-import {MemoryRouter as Router} from 'react-router-dom';
-
+import {Route, MemoryRouter as Router, Routes} from 'react-router-dom';
 import CollectionContainer from './collection';
 import * as api from './collection-api';
 
 jest.mock('./collection-api');
 
-describe('collection', () => {
-  type Props = ConstructorParameters<typeof CollectionContainer>[0];
-  let props: Props;
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => {
+  const actual = jest.requireActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
+describe('collection container', () => {
+  const goBack = jest.fn();
 
   beforeEach(() => {
-    props = {
-      match: {params: {}},
-      history: {
-        goBack: jest.fn(),
-      },
-    } as unknown as Props;
     jest.clearAllMocks();
+    mockNavigate.mockImplementationOnce(goBack);
   });
 
-  it('renders add item if no id specified', () => {
-    render(<CollectionContainer {...props} />);
+  it('renders add item if no id specified', async () => {
+    await actRenderAdd();
 
     expect(api.retrieveCollection).toHaveBeenCalledTimes(0);
     expect(screen.getByRole('form')).toHaveFormValues({
@@ -31,15 +34,12 @@ describe('collection', () => {
   });
 
   it('renders edit item', async () => {
-    props.match.params.id = '65ada2f9';
     jest.mocked(api.retrieveCollection).mockResolvedValue({
       name: 'My Other App',
       state: 'disabled',
     });
 
-    await act(async () => {
-      render(<CollectionContainer {...props} />);
-    });
+    await actRenderEdit();
 
     expect(api.retrieveCollection).toHaveBeenCalledWith('65ada2f9');
     expect(screen.getByRole('form')).toHaveFormValues({
@@ -49,20 +49,17 @@ describe('collection', () => {
   });
 
   it('handles retrieve error', async () => {
-    props.match.params.id = '65ada2f9';
     const errors = {__ERROR__: 'The error text.'};
     jest.mocked(api.retrieveCollection).mockRejectedValue(errors);
 
-    await act(async () => {
-      render(<CollectionContainer {...props} />);
-    });
+    await actRenderEdit();
 
-    expect(api.retrieveCollection).toHaveBeenCalled();
+    expect(api.retrieveCollection).toHaveBeenCalledWith('65ada2f9');
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
   });
 
-  it('handles change', () => {
-    render(<CollectionContainer {...props} />);
+  it('handles change', async () => {
+    await actRenderEdit();
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: {
@@ -79,9 +76,8 @@ describe('collection', () => {
 
   it('saves item', async () => {
     jest.mocked(api.saveCollection).mockResolvedValue();
-    await act(async () => {
-      render(<CollectionContainer {...props} />);
-    });
+
+    await actRenderAdd();
 
     await act(async () => {
       fireEvent.submit(screen.getByText('Save'));
@@ -92,7 +88,7 @@ describe('collection', () => {
       name: '',
       state: 'enabled',
     });
-    expect(props.history.goBack).toHaveBeenCalledTimes(1);
+    expect(goBack).toHaveBeenCalledTimes(1);
   });
 
   it('handles save errors', async () => {
@@ -101,22 +97,20 @@ describe('collection', () => {
       name: 'The field error message.',
     };
     jest.mocked(api.saveCollection).mockRejectedValue(errors);
-    await act(async () => {
-      render(<CollectionContainer {...props} />);
-    });
+
+    await actRenderAdd();
 
     await act(async () => {
       fireEvent.submit(screen.getByText('Save'));
     });
 
     expect(api.saveCollection).toHaveBeenCalledTimes(1);
-    expect(props.history.goBack).not.toHaveBeenCalled();
+    expect(goBack).not.toHaveBeenCalled();
     expect(screen.getByText(errors.__ERROR__)).toBeVisible();
     expect(screen.getByText(errors.name)).toBeVisible();
   });
 
   it('deletes item', async () => {
-    props.match.params.id = '65ada2f9';
     jest.mocked(api.retrieveCollection).mockResolvedValue({
       id: '65ada2f9',
       name: '',
@@ -124,14 +118,10 @@ describe('collection', () => {
       etag: '"1n9er1hz749r"',
     });
     jest.mocked(api.deleteCollection).mockResolvedValue();
-    const {container} = await act(async () =>
-      render(
-        <Router>
-          <CollectionContainer {...props} />
-        </Router>,
-      ),
-    );
-    expect(api.retrieveCollection).toHaveBeenCalled();
+
+    const {container} = await actRenderEdit();
+
+    expect(api.retrieveCollection).toHaveBeenCalledWith('65ada2f9');
 
     await act(async () => {
       fireEvent.click(screen.getByText('Delete'));
@@ -141,12 +131,11 @@ describe('collection', () => {
       '65ada2f9',
       '"1n9er1hz749r"',
     );
-    expect(props.history.goBack).toHaveBeenCalledTimes(1);
+    expect(goBack).toHaveBeenCalledTimes(1);
     expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
   });
 
   it('handles delete error', async () => {
-    props.match.params.id = '65ada2f9';
     jest.mocked(api.retrieveCollection).mockResolvedValue({
       id: '65ada2f9',
       name: '',
@@ -155,14 +144,10 @@ describe('collection', () => {
     });
     const errors = {__ERROR__: 'The error text.'};
     jest.mocked(api.deleteCollection).mockRejectedValue(errors);
-    const {container} = await act(async () =>
-      render(
-        <Router>
-          <CollectionContainer {...props} />
-        </Router>,
-      ),
-    );
-    expect(api.retrieveCollection).toHaveBeenCalled();
+
+    const {container} = await actRenderEdit();
+
+    expect(api.retrieveCollection).toHaveBeenCalledWith('65ada2f9');
 
     await act(async () => {
       fireEvent.click(screen.getByText('Delete'));
@@ -172,7 +157,29 @@ describe('collection', () => {
       '65ada2f9',
       '"1n9er1hz749r"',
     );
-    expect(props.history.goBack).not.toHaveBeenCalled();
+    expect(goBack).not.toHaveBeenCalled();
     expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
   });
 });
+
+const actRenderAdd = () =>
+  act(async () =>
+    render(
+      <Router initialEntries={['/collections/add']}>
+        <Routes>
+          <Route path="/collections/add" element={<CollectionContainer />} />
+        </Routes>
+      </Router>,
+    ),
+  );
+
+const actRenderEdit = () =>
+  act(async () =>
+    render(
+      <Router initialEntries={['/collections/65ada2f9']}>
+        <Routes>
+          <Route path="/collections/:id" element={<CollectionContainer />} />
+        </Routes>
+      </Router>,
+    ),
+  );
