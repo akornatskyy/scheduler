@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/CAFxX/httpcompression"
 	"github.com/akornatskyy/goext/errorstate"
 	"github.com/akornatskyy/goext/httpjson"
 	"github.com/akornatskyy/scheduler/core"
@@ -21,9 +22,10 @@ type Server struct {
 }
 
 func (s *Server) Start() {
+	compress, _ := httpcompression.DefaultAdapter()
 	s.srv = &http.Server{
 		Addr:    addr,
-		Handler: s.Routes(),
+		Handler: compress(s.Routes()),
 	}
 
 	go func() {

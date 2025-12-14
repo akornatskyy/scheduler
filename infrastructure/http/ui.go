@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/NYTimes/gziphandler"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -25,7 +24,7 @@ func serveFavicon() httprouter.Handle {
 }
 
 func serveJavascript() httprouter.Handle {
-	fileServer := gziphandler.GzipHandler(http.FileServer(http.Dir("static/js")))
+	fileServer := http.FileServer(http.Dir("static/js"))
 	return func(w http.ResponseWriter, req *http.Request, p httprouter.Params) {
 		req.URL.Path = p.ByName("filepath")
 		w.Header().Set("X-Content-Type-Options", "nosniff")
