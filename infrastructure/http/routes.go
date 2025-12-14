@@ -3,6 +3,7 @@ package http
 import (
 	"net/http"
 
+	"github.com/CAFxX/httpcompression"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -39,5 +40,6 @@ func (s *Server) Routes() http.Handler {
 	r.Handle("GET", "/favicon.ico", serveFavicon())
 	r.Handle("GET", "/js/*filepath", serveJavascript())
 
-	return r
+	compress, _ := httpcompression.DefaultAdapter()
+	return compress(r)
 }
