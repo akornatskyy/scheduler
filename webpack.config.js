@@ -5,22 +5,27 @@ const TerserPlugin = require('terser-webpack-plugin');
 const plugins = [
   new HtmlPlugin({
     template: 'index.html',
-    favicon: 'favicon.ico'
-  })
+    favicon: 'favicon.ico',
+  }),
 ];
 
+/** @type {import('webpack').Configuration} */
 module.exports = {
   mode: 'development',
   context: path.resolve(__dirname, 'ui'),
   entry: {
-    app: ['./index.tsx']
+    app: ['./index.tsx'],
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    alias: {
+      $shared: path.resolve('ui/shared'),
+      $features: path.resolve('ui/features'),
+    },
+    extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
     path: path.resolve(__dirname, 'static'),
-    filename: 'js/[name].[chunkhash:5].js'
+    filename: 'js/[name].[chunkhash:5].js',
   },
   devtool: 'source-map',
   plugins: plugins,
@@ -30,18 +35,20 @@ module.exports = {
         lib: {
           name: 'lib',
           chunks: 'all',
-          test: /[\\/]node_modules[\\/]/
-        }
-      }
-    },
-    minimizer: [new TerserPlugin({
-      extractComments: false,
-      terserOptions: {
-        output: {
-          comments: false,
+          test: /[\\/]node_modules[\\/]/,
         },
       },
-    })],
+    },
+    minimizer: [
+      new TerserPlugin({
+        extractComments: false,
+        terserOptions: {
+          output: {
+            comments: false,
+          },
+        },
+      }),
+    ],
   },
   module: {
     rules: [
@@ -53,9 +60,9 @@ module.exports = {
             transpileOnly: true,
           },
         },
-        exclude: /node_modules/
-      }
-    ]
+        exclude: /node_modules/,
+      },
+    ],
   },
   devServer: {
     static: {
@@ -67,9 +74,9 @@ module.exports = {
     proxy: [
       {
         target: 'http://127.0.0.1:8080',
-        context: ['/collections', '/variables', '/jobs']
+        context: ['/collections', '/variables', '/jobs'],
         // pathRewrite: {'^/api' : ''}
-      }
-    ]
-  }
+      },
+    ],
+  },
 };

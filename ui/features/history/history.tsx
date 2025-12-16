@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {Layout} from '../../shared/components';
-import {Errors} from '../../shared/types';
+import {Layout} from '$shared/components';
+import {Errors} from '$shared/types';
 import * as api from './history-api';
 import {JobHistoryList} from './history-components';
 import {Job, JobHistory, JobStatus} from './types';

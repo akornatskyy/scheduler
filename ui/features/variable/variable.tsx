@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
-import {Layout} from '../../shared/components';
-import {Errors} from '../../shared/types';
+import {Layout} from '$shared/components';
+import {Errors} from '$shared/types';
 import {Collection, Variable} from './types';
 import * as api from './variable-api';
 import {VariableForm} from './variable-components';

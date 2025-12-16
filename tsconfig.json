@@ -11,7 +11,12 @@
     "moduleResolution": "bundler",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": "./ui",
+    "paths": {
+      "$shared/*": ["shared/*"],
+      "$features/*": ["features/*"]
+    }
   },
   "include": ["ui/**/*"]
 }

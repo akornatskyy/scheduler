@@ -1,26 +1,22 @@
-import {go} from '../../shared/fetch';
+import {api} from '$features/job';
+import {go} from '$shared/fetch';
 import {JobHistory, JobStatus} from './types';
 
-export {retrieveJob} from '../job/job-api';
+export const retrieveJob = api.retrieveJob;
 
-export function retrieveJobStatus(id: string): Promise<JobStatus> {
-  return go('GET', `/jobs/${id}/status`);
-}
+export const retrieveJobStatus = (id: string): Promise<JobStatus> =>
+  go('GET', `/jobs/${id}/status`);
 
-export function patchJobStatus(
+export const patchJobStatus = (
   id: string,
   status: Partial<JobStatus>,
-): Promise<void> {
-  return go('PATCH', `/jobs/${id}/status`, status);
-}
+): Promise<void> => go('PATCH', `/jobs/${id}/status`, status);
 
-export function listJobHistory(id: string): Promise<ListJobHistoryResponse> {
-  return go('GET', `/jobs/${id}/history`);
-}
+export const listJobHistory = (id: string): Promise<ListJobHistoryResponse> =>
+  go('GET', `/jobs/${id}/history`);
 
-export function deleteJobHistory(id: string, etag?: string): Promise<void> {
-  return go('DELETE', `/jobs/${id}/history`, etag);
-}
+export const deleteJobHistory = (id: string, etag?: string): Promise<void> =>
+  go('DELETE', `/jobs/${id}/history`, etag);
 
 type ListJobHistoryResponse = {
   items: JobHistory[];

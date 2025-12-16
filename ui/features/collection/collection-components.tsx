@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button, Form} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
-import {FieldError, Tip} from '../../shared/components';
+import {FieldError, Tip} from '$shared/components';
 import {Collection} from './types';
 
 type Errors = Record<string, string>;

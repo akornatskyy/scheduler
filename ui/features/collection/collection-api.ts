@@ -1,16 +1,11 @@
-import {go} from '../../shared/fetch';
+import {go} from '$shared/fetch';
 import {Collection} from './types';
 
-export function retrieveCollection(id: string): Promise<Collection> {
-  return go('GET', `/collections/${id}`);
-}
+export const retrieveCollection = (id: string): Promise<Collection> =>
+  go('GET', `/collections/${id}`);
 
-export function saveCollection(c: Collection): Promise<void> {
-  return c.id
-    ? go('PATCH', `/collections/${c.id}`, c)
-    : go('POST', '/collections', c);
-}
+export const saveCollection = (c: Collection): Promise<void> =>
+  c.id ? go('PATCH', `/collections/${c.id}`, c) : go('POST', '/collections', c);
 
-export function deleteCollection(id: string, etag?: string): Promise<void> {
-  return go('DELETE', `/collections/${id}`, etag);
-}
+export const deleteCollection = (id: string, etag?: string): Promise<void> =>
+  go('DELETE', `/collections/${id}`, etag);

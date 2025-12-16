@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {Link, useLocation} from 'react-router-dom';
-import {Layout} from '../../shared/components';
-import {Errors} from '../../shared/types';
+import {Layout} from '$shared/components';
+import {Errors} from '$shared/types';
 import * as api from './jobs-api';
 import {JobList} from './jobs-components';
 import {Collection, Job} from './types';

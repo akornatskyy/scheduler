@@ -59,6 +59,10 @@
   "jest": {
     "testEnvironment": "jsdom",
     "preset": "ts-jest",
+    "moduleNameMapper": {
+      "^\\$shared/(.*)$": "<rootDir>/ui/shared/$1",
+      "^\\$features/(.*)$": "<rootDir>/ui/features/$1"
+    },
     "testMatch": [
       "<rootDir>/ui/**/*.test.ts",
       "<rootDir>/ui/**/*.test.tsx"

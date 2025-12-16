@@ -1,11 +1,12 @@
+import {api} from '$features/collections';
+import {go} from '$shared/fetch';
 import update from 'immutability-helper';
-import {go} from '../../shared/fetch';
 import {HttpRequest, JobDefinition, JobInput, RetryPolicy} from './types';
-export {listCollections} from '../collections/collections-api';
 
-export async function retrieveJob(id: string): Promise<JobDefinition> {
+export const listCollections = api.listCollections;
+
+export const retrieveJob = async (id: string): Promise<JobDefinition> => {
   const data = await go<JobDefinition>('GET', `/jobs/${id}`);
-
   const a = data.action;
   a.request = update(defaultRequest, {$merge: a.request});
   if (a.retryPolicy) {
@@ -15,15 +16,13 @@ export async function retrieveJob(id: string): Promise<JobDefinition> {
   }
 
   return data;
-}
+};
 
-export function saveJob(j: JobInput): Promise<void> {
-  return j.id ? go('PATCH', `/jobs/${j.id}`, j) : go('POST', '/jobs', j);
-}
+export const saveJob = (j: JobInput): Promise<void> =>
+  j.id ? go('PATCH', `/jobs/${j.id}`, j) : go('POST', '/jobs', j);
 
-export function deleteJob(id: string, etag?: string): Promise<void> {
-  return go('DELETE', `/jobs/${id}`, etag);
-}
+export const deleteJob = (id: string, etag?: string): Promise<void> =>
+  go('DELETE', `/jobs/${id}`, etag);
 
 const defaultRequest: HttpRequest = {
   method: 'GET',

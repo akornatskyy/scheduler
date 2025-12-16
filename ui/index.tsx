@@ -2,13 +2,13 @@ import React from 'react';
 import {Container} from 'react-bootstrap';
 import {createRoot} from 'react-dom/client';
 import {Navigate, Route, HashRouter as Router, Routes} from 'react-router-dom';
-import CollectionContainer from './features/collection/collection';
-import CollectionsContainer from './features/collections/collections';
-import JobHistory from './features/history/history';
-import JobContainer from './features/job/job';
-import JobsContainer from './features/jobs/jobs';
-import VariableContainer from './features/variable/variable';
-import VariablesContainer from './features/variables/variables';
+import {CollectionContainer} from './features/collection';
+import {CollectionsContainer} from './features/collections';
+import {JobHistoryContainer} from './features/history';
+import {JobContainer} from './features/job';
+import {JobsContainer} from './features/jobs';
+import {VariableContainer} from './features/variable';
+import {VariablesContainer} from './features/variables';
 import {Footer, Header} from './shared/components';
 
 export const App = (): React.ReactElement => (
@@ -24,7 +24,7 @@ export const App = (): React.ReactElement => (
       <Route path="/variables/:id" element={<VariableContainer />} />
       <Route path="/jobs" element={<JobsContainer />} />
       <Route path="/jobs/add" element={<JobContainer />} />
-      <Route path="/jobs/:id/history" element={<JobHistory />} />
+      <Route path="/jobs/:id/history" element={<JobHistoryContainer />} />
       <Route path="/jobs/:id" element={<JobContainer />} />
     </Routes>
     <Footer />

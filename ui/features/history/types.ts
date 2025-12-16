@@ -1,6 +1,6 @@
 export type Job = {
   name: string;
-}
+};
 
 export type JobHistoryStatus = 'ready' | 'running' | 'passing' | 'failing';
 

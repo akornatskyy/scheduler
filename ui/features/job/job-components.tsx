@@ -1,7 +1,7 @@
+import {FieldError, Tip} from '$shared/components';
 import React from 'react';
 import {Button, Col, Form, Row} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
-import {FieldError, Tip} from '../../shared/components';
 import {
   Collection,
   HttpRequest,

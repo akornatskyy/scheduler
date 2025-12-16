@@ -1,7 +1,7 @@
+import {Layout} from '$shared/components';
+import {Errors} from '$shared/types';
 import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
-import {Layout} from '../../shared/components';
-import {Errors} from '../../shared/types';
 import * as api from './collections-api';
 import {CollectionList} from './collections-components';
 import {Collection} from './types';

@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from 'react';
 import {Link, useLocation} from 'react-router-dom';
-import {Layout} from '../../shared/components';
-import {Errors} from '../../shared/types';
+import {Layout} from '$shared/components';
+import {Errors} from '$shared/types';
 import {Collection, Variable} from './types';
 import * as api from './variables-api';
 import {VariableList} from './variables-components';
