@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
-import {Link, useLocation} from 'react-router-dom';
+import {Link, useLocation} from 'react-router';
 import {Layout} from '$shared/components';
 import {Errors} from '$shared/types';
 import * as api from './jobs-api';

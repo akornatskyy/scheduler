@@ -2,7 +2,7 @@ import {fireEvent, render, screen} from '@testing-library/react';
 import {formatDate, formatRunning, JobHistoryList} from './history-components';
 import {JobHistory, JobStatus} from './types';
 
-describe('job history status', () => {
+describe('job history status formatters', () => {
   it.each([
     [null, ''],
     [undefined, ''],
@@ -19,12 +19,12 @@ describe('job history status', () => {
   ])('format date %o to %o', (s, expected) => {
     expect(formatDate(s)).toEqual(expected);
   });
-});
 
-it('formats UTC date as local locale', () => {
-  expect(formatDate('2019-08-29T13:29:36.976Z')).toEqual(
-    new Date('2019-08-29T13:29:36Z').toLocaleString(),
-  );
+  it('formats UTC date as local locale', () => {
+    expect(formatDate('2019-08-29T13:29:36.976Z')).toEqual(
+      new Date('2019-08-29T13:29:36Z').toLocaleString(),
+    );
+  });
 });
 
 describe('job history component', () => {

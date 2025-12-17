@@ -1,5 +1,5 @@
 import {render, screen} from '@testing-library/react';
-import {MemoryRouter as Router} from 'react-router-dom';
+import {MemoryRouter as Router} from 'react-router';
 import {CollectionList} from './collections-components';
 import {Collection} from './types';
 

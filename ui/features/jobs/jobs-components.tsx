@@ -1,6 +1,6 @@
 import React from 'react';
 import {Table} from 'react-bootstrap';
-import {Link} from 'react-router-dom';
+import {Link} from 'react-router';
 import {GroupByList} from '$shared/components';
 import {Collection, Job} from './types';
 

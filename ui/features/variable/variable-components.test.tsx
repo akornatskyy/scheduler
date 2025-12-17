@@ -1,7 +1,7 @@
 import {fireEvent, render, screen} from '@testing-library/react';
 import {VariableForm} from './variable-components';
 
-describe('variable', () => {
+describe('variable form component', () => {
   let props: Parameters<typeof VariableForm>[0];
 
   beforeEach(() => {

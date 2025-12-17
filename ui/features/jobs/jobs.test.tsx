@@ -1,5 +1,5 @@
 import {act, render, screen, waitFor} from '@testing-library/react';
-import {MemoryRouter as Router} from 'react-router-dom';
+import {MemoryRouter as Router} from 'react-router';
 import JobsContainer from './jobs';
 import * as api from './jobs-api';
 import {Job} from './types';

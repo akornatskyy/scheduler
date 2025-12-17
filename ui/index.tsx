@@ -1,41 +1,9 @@
-import React from 'react';
-import {Container} from 'react-bootstrap';
 import {createRoot} from 'react-dom/client';
-import {Navigate, Route, HashRouter as Router, Routes} from 'react-router-dom';
-import {CollectionContainer} from './features/collection';
-import {CollectionsContainer} from './features/collections';
-import {JobHistoryContainer} from './features/history';
-import {JobContainer} from './features/job';
-import {JobsContainer} from './features/jobs';
-import {VariableContainer} from './features/variable';
-import {VariablesContainer} from './features/variables';
-import {Footer, Header} from './shared/components';
+import {createHashRouter} from 'react-router';
+import {RouterProvider} from 'react-router/dom';
+import {routes} from './routes';
 
-export const App = (): React.ReactElement => (
-  <Container>
-    <Header />
-    <Routes>
-      <Route path="/" element={<Navigate to="/collections" replace />} />
-      <Route path="/collections" element={<CollectionsContainer />} />
-      <Route path="/collections/add" element={<CollectionContainer />} />
-      <Route path="/collections/:id" element={<CollectionContainer />} />
-      <Route path="/variables" element={<VariablesContainer />} />
-      <Route path="/variables/add" element={<VariableContainer />} />
-      <Route path="/variables/:id" element={<VariableContainer />} />
-      <Route path="/jobs" element={<JobsContainer />} />
-      <Route path="/jobs/add" element={<JobContainer />} />
-      <Route path="/jobs/:id/history" element={<JobHistoryContainer />} />
-      <Route path="/jobs/:id" element={<JobContainer />} />
-    </Routes>
-    <Footer />
-  </Container>
-);
-
-const root = createRoot(
-  document.querySelector('#root') || document.createElement('div'),
-);
-root.render(
-  <Router>
-    <App />
-  </Router>,
+const router = createHashRouter(routes);
+createRoot(document.querySelector('#root')!).render(
+  <RouterProvider router={router} />,
 );

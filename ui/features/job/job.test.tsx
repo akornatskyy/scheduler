@@ -1,5 +1,5 @@
 import {act, fireEvent, render, screen} from '@testing-library/react';
-import {Route, MemoryRouter as Router, Routes} from 'react-router-dom';
+import {Route, MemoryRouter as Router, Routes} from 'react-router';
 import JobContainer from './job';
 import * as api from './job-api';
 import {JobDefinition} from './types';
@@ -8,15 +8,15 @@ jest.mock('./job-api');
 
 const mockNavigate = jest.fn();
 
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+jest.mock('react-router', () => {
+  const actual = jest.requireActual('react-router');
   return {
     ...actual,
     useNavigate: () => mockNavigate,
   };
 });
 
-describe('job', () => {
+describe('job container', () => {
   const goBack = jest.fn();
   const sampleJob: JobDefinition = {
     id: '7ce1f17e',

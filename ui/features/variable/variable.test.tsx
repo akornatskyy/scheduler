@@ -1,6 +1,5 @@
 import {act, fireEvent, render, screen} from '@testing-library/react';
-import {Route, MemoryRouter as Router, Routes} from 'react-router-dom';
-
+import {Route, MemoryRouter as Router, Routes} from 'react-router';
 import VariableContainer from './variable';
 import * as api from './variable-api';
 
@@ -8,15 +7,15 @@ jest.mock('./variable-api');
 
 const mockNavigate = jest.fn();
 
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+jest.mock('react-router', () => {
+  const actual = jest.requireActual('react-router');
   return {
     ...actual,
     useNavigate: () => mockNavigate,
   };
 });
 
-describe('variable', () => {
+describe('variable container', () => {
   const goBack = jest.fn();
 
   beforeEach(() => {

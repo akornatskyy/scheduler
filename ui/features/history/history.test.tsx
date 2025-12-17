@@ -1,5 +1,5 @@
 import {act, fireEvent, render, screen, waitFor} from '@testing-library/react';
-import {Route, MemoryRouter as Router, Routes} from 'react-router-dom';
+import {Route, MemoryRouter as Router, Routes} from 'react-router';
 import {default as JobHistoryContainer} from './history';
 import * as api from './history-api';
 import {JobHistory, JobStatus} from './types';
@@ -8,8 +8,8 @@ jest.mock('./history-api');
 
 const mockNavigate = jest.fn();
 
-jest.mock('react-router-dom', () => {
-  const actual = jest.requireActual('react-router-dom');
+jest.mock('react-router', () => {
+  const actual = jest.requireActual('react-router');
   return {
     ...actual,
     useNavigate: () => mockNavigate,

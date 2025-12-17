@@ -1,10 +1,7 @@
 import * as api from './jobs-api';
 
 describe('jobs api', () => {
-  afterEach(() => {
-    (global.fetch as jest.Mock).mockClear();
-    delete (global as {fetch?: typeof fetch}).fetch;
-  });
+  afterEach(() => (global.fetch as jest.Mock).mockClear());
 
   it('list', async () => {
     global.fetch = jest.fn().mockResolvedValue({

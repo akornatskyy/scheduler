@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router';
 import {Layout} from '$shared/components';
 import {Errors} from '$shared/types';
 import {Collection, Variable} from './types';
@@ -14,7 +14,7 @@ const INITIAL: Variable = {
 
 export default function VariableContainer() {
   const navigate = useNavigate();
-  const {id} = useParams<{id?: string}>();
+  const {id} = useParams<{id: string}>();
   const [item, setItem] = useState<Variable>(INITIAL);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [pending, setPending] = useState<boolean>(true);

@@ -1,15 +1,12 @@
-import React from 'react';
 import Alert from 'react-bootstrap/Alert';
 
 type Props = {
-  errors: Record<string, string>;
+  errors?: Record<string, string>;
 };
 
-const ErrorSummary = ({errors}: Props): React.ReactElement | null => {
-  const message = errors['__ERROR__'];
-  if (!message) {
-    return null;
-  }
+const ErrorSummary = ({errors}: Props) => {
+  const message = errors?.['__ERROR__'];
+  if (!message) return null;
 
   return (
     <Alert variant="danger">

@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router';
 import {Layout} from '$shared/components';
 import {Errors} from '$shared/types';
 import * as api from './collection-api';

@@ -1,5 +1,5 @@
 import {act, render, screen} from '@testing-library/react';
-import {MemoryRouter as Router} from 'react-router-dom';
+import {MemoryRouter as Router} from 'react-router';
 import VariablesContainer from './variables';
 import * as api from './variables-api';
 

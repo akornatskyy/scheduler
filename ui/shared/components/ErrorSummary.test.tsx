@@ -1,9 +1,15 @@
 import {render, screen} from '@testing-library/react';
 import ErrorSummary from './ErrorSummary';
 
-describe('errors summary', () => {
+describe('error summary component', () => {
   it('handles no errors', () => {
     const {container} = render(<ErrorSummary errors={{}} />);
+
+    expect(container.firstChild).toBeNull();
+  });
+
+  it('handles undefined', () => {
+    const {container} = render(<ErrorSummary />);
 
     expect(container.firstChild).toBeNull();
   });

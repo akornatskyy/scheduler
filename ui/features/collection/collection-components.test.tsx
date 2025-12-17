@@ -1,6 +1,5 @@
 import {fireEvent, render, screen} from '@testing-library/react';
-import {MemoryRouter as Router} from 'react-router-dom';
-
+import {MemoryRouter as Router} from 'react-router';
 import {CollectionForm} from './collection-components';
 
 describe('collection form component', () => {
