@@ -1,9 +1,7 @@
 import * as api from './collections-api';
 
 describe('collections api', () => {
-  afterEach(() => {
-    (global.fetch as jest.Mock).mockClear();
-  });
+  afterEach(() => jest.mocked(global.fetch).mockClear());
 
   it('list', async () => {
     global.fetch = jest.fn().mockResolvedValue({
@@ -20,9 +18,6 @@ describe('collections api', () => {
     });
     expect(global.fetch).toHaveBeenCalledWith('/collections', {
       method: 'GET',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-      },
     });
   });
 });

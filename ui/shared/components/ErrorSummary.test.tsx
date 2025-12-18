@@ -2,29 +2,16 @@ import {render, screen} from '@testing-library/react';
 import ErrorSummary from './ErrorSummary';
 
 describe('error summary component', () => {
-  it('handles no errors', () => {
-    const {container} = render(<ErrorSummary errors={{}} />);
+  it('renders provided message', () => {
+    render(<ErrorSummary message="The error message." />);
 
-    expect(container.firstChild).toBeNull();
-  });
-
-  it('handles undefined', () => {
-    const {container} = render(<ErrorSummary />);
-
-    expect(container.firstChild).toBeNull();
-  });
-
-  it('ignores field error', () => {
-    const errors = {name: 'some error'};
-    const {container} = render(<ErrorSummary errors={errors} />);
-
-    expect(container.firstChild).toBeNull();
-  });
-
-  it('shows error', () => {
-    const errors = {__ERROR__: 'The error message.'};
-    render(<ErrorSummary errors={errors} />);
-
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(
+      screen.getByRole('heading', {name: 'The error message.'}),
+    ).toBeVisible();
+    expect(
+      screen.getByText(
+        'An unexpected error has occurred. Retry your request later, please.',
+      ),
+    ).toBeVisible();
   });
 });

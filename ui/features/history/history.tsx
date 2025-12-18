@@ -1,7 +1,7 @@
+import {Layout} from '$shared/components';
+import {Errors, toErrorMap} from '$shared/errors';
 import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router';
-import {Layout} from '$shared/components';
-import {Errors} from '$shared/types';
 import * as api from './history-api';
 import {JobHistoryList} from './history-components';
 import {Job, JobHistory, JobStatus} from './types';
@@ -21,44 +21,43 @@ export default function JobHistoryContainer() {
   const [errors, setErrors] = useState<Errors>({});
 
   useEffect(() => {
-    api
-      .retrieveJob(id)
-      .then((job) => setJob(job))
-      .catch((errors) => setErrors(errors));
-
-    api
-      .retrieveJobStatus(id)
-      .then((status) => setStatus(status))
-      .catch((errors) => setErrors(errors));
-
-    api
-      .listJobHistory(id)
-      .then(({items}) => setItems(items.slice(0, 7)))
-      .catch((errors) => setErrors(errors));
+    (async () => {
+      try {
+        const [job, status, {items}] = await Promise.all([
+          api.retrieveJob(id),
+          api.retrieveJobStatus(id),
+          api.listJobHistory(id),
+        ]);
+        setJob(job);
+        setStatus(status);
+        setItems(items.slice(0, 7));
+      } catch (error) {
+        setErrors(toErrorMap(error));
+      }
+    })();
   }, [id]);
 
-  const handleBack = useCallback(() => navigate(-1), [navigate]);
+  const handleBack = useCallback(() => navigate(`/jobs/${id}`), [id, navigate]);
 
-  const handleRun = useCallback(() => {
-    const {etag} = status;
-    api
-      .patchJobStatus(id, {running: true, etag})
-      .then(() =>
-        api
-          .retrieveJobStatus(id)
-          .then((status) => setStatus(status))
-          .catch((errors) => setErrors(errors)),
-      )
-      .catch((errors) => setErrors(errors));
-  }, [id, status]);
+  const handleRun = useCallback(async () => {
+    try {
+      await api.patchJobStatus(id, {running: true, etag: status.etag});
 
-  const handleDelete = useCallback(() => {
-    const {etag} = status;
-    api
-      .deleteJobHistory(id, etag)
-      .then(() => navigate(-1))
-      .catch((errors) => setErrors(errors));
-  }, [id, status, navigate]);
+      const updatedStatus = await api.retrieveJobStatus(id);
+      setStatus(updatedStatus);
+    } catch (error) {
+      setErrors(toErrorMap(error));
+    }
+  }, [id, status.etag]);
+
+  const handleDelete = useCallback(async () => {
+    try {
+      await api.deleteJobHistory(id, status.etag);
+      navigate(`/jobs/${id}`);
+    } catch (error) {
+      setErrors(toErrorMap(error));
+    }
+  }, [id, status.etag, navigate]);
 
   return (
     <Layout title={`Job History ${job.name}`} errors={errors}>

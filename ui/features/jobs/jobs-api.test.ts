@@ -1,7 +1,7 @@
 import * as api from './jobs-api';
 
 describe('jobs api', () => {
-  afterEach(() => (global.fetch as jest.Mock).mockClear());
+  afterEach(() => jest.mocked(global.fetch).mockClear());
 
   it('list', async () => {
     global.fetch = jest.fn().mockResolvedValue({
@@ -18,9 +18,6 @@ describe('jobs api', () => {
     });
     expect(global.fetch).toHaveBeenCalledWith('/jobs?fields=status,errorRate', {
       method: 'GET',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-      },
     });
   });
 
@@ -41,9 +38,6 @@ describe('jobs api', () => {
       '/jobs?fields=status,errorRate&collectionId=123',
       {
         method: 'GET',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-        },
       },
     );
   });

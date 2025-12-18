@@ -20,16 +20,10 @@ describe('job history container', () => {
   const job = {name: 'My Task'} as Awaited<ReturnType<typeof api.retrieveJob>>;
   const jobStatus = {etag: '"1n9er1hz749r"'} as JobStatus;
 
-  const goBack = jest.fn();
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockNavigate.mockImplementationOnce(goBack);
-  });
+  beforeEach(() => jest.clearAllMocks());
 
   it('handles retrieve job error', async () => {
-    const errors = {__ERROR__: 'The error text.'};
-    jest.mocked(api.retrieveJob).mockRejectedValue(errors);
+    jest.mocked(api.retrieveJob).mockRejectedValue(new Error('Unexpected'));
     jest.mocked(api.retrieveJobStatus).mockResolvedValue(jobStatus);
     jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
 
@@ -41,13 +35,12 @@ describe('job history container', () => {
     expect(api.retrieveJobStatus).toHaveBeenCalledWith('65ada2f9');
     expect(api.listJobHistory).toHaveBeenCalledTimes(1);
     expect(api.listJobHistory).toHaveBeenCalledWith('65ada2f9');
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('handles retrieve job status error', async () => {
-    const errors = {__ERROR__: 'The error text.'};
     jest.mocked(api.retrieveJob).mockResolvedValue(job);
-    jest.mocked(api.retrieveJobStatus).mockRejectedValue(errors);
+    jest.mocked(api.retrieveJobStatus).mockRejectedValue(new Error('Unexpected'));
     jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
 
     await actRender();
@@ -58,14 +51,13 @@ describe('job history container', () => {
     expect(api.retrieveJobStatus).toHaveBeenCalledWith('65ada2f9');
     expect(api.listJobHistory).toHaveBeenCalledTimes(1);
     expect(api.listJobHistory).toHaveBeenCalledWith('65ada2f9');
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('handles list job history error', async () => {
-    const errors = {__ERROR__: 'The error text.'};
     jest.mocked(api.retrieveJob).mockResolvedValue(job);
     jest.mocked(api.retrieveJobStatus).mockResolvedValue(jobStatus);
-    jest.mocked(api.listJobHistory).mockRejectedValue(errors);
+    jest.mocked(api.listJobHistory).mockRejectedValue(new Error('Unexpected'));
 
     await actRender();
 
@@ -74,7 +66,7 @@ describe('job history container', () => {
     expect(api.retrieveJobStatus).toHaveBeenCalledWith('65ada2f9');
     expect(api.listJobHistory).toHaveBeenCalledTimes(1);
     expect(api.listJobHistory).toHaveBeenCalledWith('65ada2f9');
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('updates state with fetched items', async () => {
@@ -99,9 +91,10 @@ describe('job history container', () => {
     jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
 
     await actRender();
-
     fireEvent.click(screen.getByText('Back'));
-    expect(goBack).toHaveBeenCalledTimes(1);
+
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith('/jobs/65ada2f9');
   });
 
   it('handles on run', async () => {
@@ -124,15 +117,14 @@ describe('job history container', () => {
     });
     expect(api.retrieveJobStatus).toHaveBeenCalledTimes(2);
     expect(api.retrieveJobStatus).toHaveBeenCalledWith('65ada2f9');
-    expect(goBack).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it('handles on run patch job status error', async () => {
-    const errors = {__ERROR__: 'The error text.'};
     jest.mocked(api.retrieveJob).mockResolvedValue(job);
     jest.mocked(api.retrieveJobStatus).mockResolvedValue(jobStatus);
     jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
-    jest.mocked(api.patchJobStatus).mockRejectedValue(errors);
+    jest.mocked(api.patchJobStatus).mockRejectedValue(new Error('Unexpected'));
 
     await actRender();
     expect(api.retrieveJob).toHaveBeenCalled();
@@ -147,14 +139,13 @@ describe('job history container', () => {
       etag: '"1n9er1hz749r"',
     });
     expect(api.retrieveJobStatus).toHaveBeenCalledTimes(1);
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('handles on run retrieve job status error', async () => {
-    const errors = {__ERROR__: 'The error text.'};
     jest.mocked(api.retrieveJob).mockResolvedValue(job);
     jest.mocked(api.retrieveJobStatus).mockResolvedValueOnce(jobStatus);
-    jest.mocked(api.retrieveJobStatus).mockRejectedValue(errors);
+    jest.mocked(api.retrieveJobStatus).mockRejectedValue(new Error('Unexpected'));
     jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
     jest.mocked(api.patchJobStatus).mockResolvedValue();
 
@@ -171,7 +162,7 @@ describe('job history container', () => {
       etag: '"1n9er1hz749r"',
     });
     expect(api.retrieveJobStatus).toHaveBeenCalledTimes(2);
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('handles on delete', async () => {
@@ -192,17 +183,17 @@ describe('job history container', () => {
       '65ada2f9',
       '"1n9er1hz749r"',
     );
-    expect(goBack).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith('/jobs/65ada2f9');
   });
 
   it('handles on delete error', async () => {
-    const errors = {__ERROR__: 'The error text.'};
     jest.mocked(api.retrieveJob).mockResolvedValue(job);
     jest.mocked(api.retrieveJobStatus).mockResolvedValue(jobStatus);
     jest
       .mocked(api.listJobHistory)
       .mockResolvedValue({items: [{} as JobHistory]});
-    jest.mocked(api.deleteJobHistory).mockRejectedValue(errors);
+    jest.mocked(api.deleteJobHistory).mockRejectedValue(new Error('Unexpected'));
 
     await actRender();
     expect(api.retrieveJob).toHaveBeenCalled();
@@ -216,7 +207,7 @@ describe('job history container', () => {
       '65ada2f9',
       '"1n9er1hz749r"',
     );
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 });
 

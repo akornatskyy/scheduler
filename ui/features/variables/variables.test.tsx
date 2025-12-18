@@ -9,8 +9,7 @@ describe('variables container', () => {
   beforeEach(() => jest.clearAllMocks());
 
   it('handles list collections error', async () => {
-    const errors = {__ERROR__: 'The error text.'};
-    jest.mocked(api.listCollections).mockRejectedValue(errors);
+    jest.mocked(api.listCollections).mockRejectedValue(new Error('Unexpected'));
     jest.mocked(api.listVariables).mockResolvedValue({items: []});
 
     await actRender();
@@ -19,13 +18,12 @@ describe('variables container', () => {
     expect(api.listCollections).toHaveBeenCalledWith();
     expect(api.listVariables).toHaveBeenCalledTimes(1);
     expect(api.listVariables).toHaveBeenCalledWith(null);
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('handles list variables error', async () => {
-    const errors = {__ERROR__: 'The error text.'};
     jest.mocked(api.listCollections).mockResolvedValue({items: []});
-    jest.mocked(api.listVariables).mockRejectedValue(errors);
+    jest.mocked(api.listVariables).mockRejectedValue(new Error('Unexpected'));
 
     await actRender();
 
@@ -33,7 +31,7 @@ describe('variables container', () => {
     expect(api.listCollections).toHaveBeenCalledWith();
     expect(api.listVariables).toHaveBeenCalledTimes(1);
     expect(api.listVariables).toHaveBeenCalledWith(null);
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('updates state with fetched items', async () => {

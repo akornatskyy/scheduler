@@ -1,5 +1,5 @@
 import {Layout} from '$shared/components';
-import {Errors} from '$shared/types';
+import {Errors, toErrorMap} from '$shared/errors';
 import {useEffect, useState} from 'react';
 import {Link} from 'react-router';
 import * as api from './collections-api';
@@ -8,13 +8,17 @@ import {Collection} from './types';
 
 export default function CollectionsContainer() {
   const [items, setItems] = useState<Collection[]>([]);
-  const [errors, setErrors] = useState<Errors>({});
+  const [errors, setErrors] = useState<Errors>();
 
   useEffect(() => {
-    api
-      .listCollections()
-      .then(({items}) => setItems(items))
-      .catch((errors) => setErrors(errors));
+    (async () => {
+      try {
+        const {items} = await api.listCollections();
+        setItems(items);
+      } catch (error) {
+        setErrors(toErrorMap(error));
+      }
+    })();
   }, []);
 
   return (

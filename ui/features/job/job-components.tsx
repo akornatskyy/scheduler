@@ -1,4 +1,5 @@
 import {FieldError, Tip} from '$shared/components';
+import {Errors} from '$shared/errors';
 import React from 'react';
 import {Button, Col, Form, Row} from 'react-bootstrap';
 import {Link} from 'react-router';
@@ -9,8 +10,6 @@ import {
   JobInput,
   RetryPolicy,
 } from './types';
-
-type Errors = Record<string, string>;
 
 type Props = {
   item: JobInput;

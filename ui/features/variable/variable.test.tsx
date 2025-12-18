@@ -1,3 +1,4 @@
+import {ValidationError} from '$shared/errors';
 import {act, fireEvent, render, screen} from '@testing-library/react';
 import {Route, MemoryRouter as Router, Routes} from 'react-router';
 import VariableContainer from './variable';
@@ -16,11 +17,8 @@ jest.mock('react-router', () => {
 });
 
 describe('variable container', () => {
-  const goBack = jest.fn();
-
   beforeEach(() => {
     jest.clearAllMocks();
-    mockNavigate.mockImplementationOnce(goBack);
     jest.mocked(api.listCollections).mockResolvedValue({
       items: [
         {
@@ -77,6 +75,9 @@ describe('variable container', () => {
     await actRenderAdd();
 
     expect(api.listCollections).toHaveBeenCalled();
+    expect(screen.getByRole('combobox', {name: 'Collection'})).toHaveClass(
+      'is-invalid',
+    );
     expect(screen.getByText('There is no collection available.')).toBeVisible();
   });
 
@@ -101,7 +102,8 @@ describe('variable container', () => {
 
     await actRenderEdit();
 
-    expect(api.listCollections).toHaveBeenCalled();
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledWith();
     expect(screen.getByRole('form')).toHaveFormValues({
       name: 'My Var #1',
       collectionId: '65ada2f9',
@@ -110,23 +112,24 @@ describe('variable container', () => {
   });
 
   it('shows summary error when list collections fails', async () => {
-    const errors = {__ERROR__: 'The error text.'};
-    jest.mocked(api.listCollections).mockRejectedValue(errors);
+    jest.mocked(api.listCollections).mockRejectedValue(new Error('Unexpected'));
 
     await actRenderEdit();
 
-    expect(api.listCollections).toHaveBeenCalled();
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledWith();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('retrieve error', async () => {
-    const errors = {__ERROR__: 'The error text.'};
-    jest.mocked(api.retrieveVariable).mockRejectedValue(errors);
+    jest
+      .mocked(api.retrieveVariable)
+      .mockRejectedValue(new Error('Unexpected'));
 
     await actRenderEdit();
 
     expect(api.retrieveVariable).toHaveBeenCalled();
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('handles change', async () => {
@@ -173,7 +176,8 @@ describe('variable container', () => {
       name: '',
       value: '',
     });
-    expect(goBack).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith('/variables');
   });
 
   it('handles save errors', async () => {
@@ -181,9 +185,11 @@ describe('variable container', () => {
       __ERROR__: 'The error text.',
       name: 'The field error message.',
     };
-    jest.mocked(api.saveVariable).mockRejectedValue(errors);
+    jest
+      .mocked(api.saveVariable)
+      .mockRejectedValue(new ValidationError(errors));
 
-    await actRenderAdd();
+    const {container} = await actRenderAdd();
 
     expect(api.listCollections).toHaveBeenCalled();
 
@@ -191,14 +197,19 @@ describe('variable container', () => {
       fireEvent.submit(screen.getByText('Save'));
     });
 
+    expect(api.saveVariable).toHaveBeenCalledTimes(1);
     expect(api.saveVariable).toHaveBeenCalledWith({
       collectionId: '65ada2f9',
       name: '',
       value: '',
     });
-    expect(goBack).not.toHaveBeenCalled();
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(screen.getByRole('heading', {name: /The error text/})).toBeVisible();
+    expect(screen.getByRole('textbox', {name: 'Name'})).toHaveClass(
+      'is-invalid',
+    );
     expect(screen.getByText(errors.name)).toBeVisible();
+    expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(1);
   });
 
   it('deletes item', async () => {
@@ -223,7 +234,8 @@ describe('variable container', () => {
       '65ada2f9',
       '"1n9er1hz749r"',
     );
-    expect(goBack).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith('/variables', {replace: true});
   });
 
   it('handles delete error', async () => {
@@ -233,8 +245,9 @@ describe('variable container', () => {
       collectionId: 'abc',
       value: 'Some Value',
     });
-    const errors = {__ERROR__: 'The error text.'};
-    jest.mocked(api.deleteVariable).mockRejectedValue(errors);
+    jest
+      .mocked(api.deleteVariable)
+      .mockRejectedValue(new Error('The error text.'));
 
     await actRenderEdit();
 
@@ -245,8 +258,8 @@ describe('variable container', () => {
     });
 
     expect(api.deleteVariable).toHaveBeenCalled();
-    expect(goBack).not.toHaveBeenCalled();
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /The error text/})).toBeVisible();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
 

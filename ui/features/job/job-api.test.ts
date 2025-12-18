@@ -2,9 +2,7 @@ import * as api from './job-api';
 import {JobInput} from './types';
 
 describe('job api', () => {
-  afterEach(() => {
-    (global.fetch as jest.Mock).mockClear();
-  });
+  afterEach(() => jest.mocked(global.fetch).mockClear());
 
   it('retrieve', async () => {
     global.fetch = jest.fn().mockResolvedValue({
@@ -47,9 +45,6 @@ describe('job api', () => {
     });
     expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
       method: 'GET',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-      },
     });
   });
 
@@ -92,9 +87,6 @@ describe('job api', () => {
     });
     expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
       method: 'GET',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-      },
     });
   });
 
@@ -108,8 +100,7 @@ describe('job api', () => {
     expect(global.fetch).toHaveBeenCalledWith('/jobs', {
       method: 'POST',
       headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/json',
+        'content-type': 'application/json',
       },
       body: '{"name":"My Task"}',
     });
@@ -129,9 +120,8 @@ describe('job api', () => {
     expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
       method: 'PATCH',
       headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/json',
-        'If-Match': '"2hhaswzbz72p8"',
+        'content-type': 'application/json',
+        'if-match': '"2hhaswzbz72p8"',
       },
       body: '{"name":"My Task"}',
     });
@@ -147,8 +137,7 @@ describe('job api', () => {
     expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
       method: 'DELETE',
       headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'If-Match': '"2hhaswzbz72p8"',
+        'if-match': '"2hhaswzbz72p8"',
       },
     });
   });

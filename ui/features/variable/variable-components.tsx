@@ -1,9 +1,8 @@
+import {FieldError, Tip} from '$shared/components';
+import {Errors} from '$shared/errors';
 import React from 'react';
 import {Button, Col, Form, Row} from 'react-bootstrap';
-import {FieldError, Tip} from '$shared/components';
 import {Collection, Variable} from './types';
-
-type Errors = Record<string, string>;
 
 type Props = {
   item: Variable;

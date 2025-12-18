@@ -2,9 +2,7 @@ import {Variable} from './types';
 import * as api from './variable-api';
 
 describe('variable api', () => {
-  afterEach(() => {
-    (global.fetch as jest.Mock).mockClear();
-  });
+  afterEach(() => jest.mocked(global.fetch).mockClear());
 
   it('retrieve', async () => {
     global.fetch = jest.fn().mockResolvedValue({
@@ -21,9 +19,6 @@ describe('variable api', () => {
     });
     expect(global.fetch).toHaveBeenCalledWith('/variables/123', {
       method: 'GET',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-      },
     });
   });
 
@@ -37,8 +32,7 @@ describe('variable api', () => {
     expect(global.fetch).toHaveBeenCalledWith('/variables', {
       method: 'POST',
       headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/json',
+        'content-type': 'application/json',
       },
       body: '{"name":"My Var"}',
     });
@@ -58,9 +52,8 @@ describe('variable api', () => {
     expect(global.fetch).toHaveBeenCalledWith('/variables/123', {
       method: 'PATCH',
       headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/json',
-        'If-Match': '"2hhaswzbz72p8"',
+        'content-type': 'application/json',
+        'if-match': '"2hhaswzbz72p8"',
       },
       body: '{"name":"My Var"}',
     });
@@ -76,8 +69,7 @@ describe('variable api', () => {
     expect(global.fetch).toHaveBeenCalledWith('/variables/123', {
       method: 'DELETE',
       headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'If-Match': '"2hhaswzbz72p8"',
+        'if-match': '"2hhaswzbz72p8"',
       },
     });
   });

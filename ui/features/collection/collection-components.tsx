@@ -1,10 +1,9 @@
+import {FieldError, Tip} from '$shared/components';
+import {Errors} from '$shared/errors';
 import React from 'react';
 import {Button, Form} from 'react-bootstrap';
 import {Link} from 'react-router';
-import {FieldError, Tip} from '$shared/components';
 import {Collection} from './types';
-
-type Errors = Record<string, string>;
 
 type Props = {
   item: Collection;
@@ -84,21 +83,13 @@ export const CollectionForm = ({
         <>
           <Link
             to={`/variables?collectionId=${item.id}`}
-            className={`btn btn-outline-secondary mx-2${
-              pending ? ' disabled' : ''
-            }`}
-            aria-disabled={pending}
-            tabIndex={pending ? -1 : 0}
-            onClick={pending ? (e) => e.preventDefault() : undefined}
+            className="btn btn-outline-secondary mx-2"
           >
             Variables
           </Link>
           <Link
             to={`/jobs?collectionId=${item.id}`}
-            className={`btn btn-outline-secondary${pending ? ' disabled' : ''}`}
-            aria-disabled={pending}
-            tabIndex={pending ? -1 : 0}
-            onClick={pending ? (e) => e.preventDefault() : undefined}
+            className="btn btn-outline-secondary"
           >
             Jobs
           </Link>

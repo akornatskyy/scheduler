@@ -23,6 +23,6 @@ describe('routes', () => {
 
     await act(async () => render(<RouterProvider router={router} />));
 
-    expect(screen.getByRole('heading')).toHaveTextContent(content);
+    expect(screen.getByRole('heading', {level: 1})).toHaveTextContent(content);
   });
 });

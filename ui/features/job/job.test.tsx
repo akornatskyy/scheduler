@@ -3,6 +3,7 @@ import {Route, MemoryRouter as Router, Routes} from 'react-router';
 import JobContainer from './job';
 import * as api from './job-api';
 import {JobDefinition} from './types';
+import {ValidationError} from '$shared/errors';
 
 jest.mock('./job-api');
 
@@ -17,7 +18,6 @@ jest.mock('react-router', () => {
 });
 
 describe('job container', () => {
-  const goBack = jest.fn();
   const sampleJob: JobDefinition = {
     id: '7ce1f17e',
     name: 'My Job #1',
@@ -46,19 +46,10 @@ describe('job container', () => {
     jest.clearAllMocks();
     jest.mocked(api.listCollections).mockResolvedValue({
       items: [
-        {
-          id: '65ada2f9',
-          name: 'My App #1',
-          state: 'enabled',
-        },
-        {
-          id: '123de331',
-          name: 'My App #2',
-          state: 'disabled' as const,
-        },
+        {id: '65ada2f9', name: 'My App #1', state: 'enabled'},
+        {id: '123de331', name: 'My App #2', state: 'disabled'},
       ],
     });
-    mockNavigate.mockImplementationOnce(goBack);
   });
 
   it('renders add item if no id specified', async () => {
@@ -87,6 +78,9 @@ describe('job container', () => {
 
     await actRenderAdd();
 
+    expect(screen.getByRole('combobox', {name: 'Collection'})).toHaveClass(
+      'is-invalid',
+    );
     expect(screen.getByText('There is no collection available.')).toBeVisible();
   });
 
@@ -97,25 +91,23 @@ describe('job container', () => {
   });
 
   it('list collections fails', async () => {
-    const errors = {__ERROR__: 'The error text.'};
-    jest.mocked(api.listCollections).mockRejectedValue(errors);
+    jest.mocked(api.listCollections).mockRejectedValue(new Error('Unexpected'));
 
     await actRenderAdd();
 
     expect(api.listCollections).toHaveBeenCalledTimes(1);
     expect(api.listCollections).toHaveBeenCalledWith();
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('handles retrieve job error', async () => {
-    const errors = {__ERROR__: 'The error text.'};
-    jest.mocked(api.retrieveJob).mockRejectedValue(errors);
+    jest.mocked(api.retrieveJob).mockRejectedValue(new Error('Unexpected'));
 
     await actRenderEdit();
 
     expect(api.retrieveJob).toHaveBeenCalledTimes(1);
     expect(api.retrieveJob).toHaveBeenCalledWith('7ce1f17e');
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('handles item change', async () => {
@@ -301,7 +293,8 @@ describe('job container', () => {
       },
     });
     expect(api.saveJob).toHaveBeenCalled();
-    expect(goBack).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith('/jobs');
   });
 
   it('handles save errors', async () => {
@@ -309,9 +302,9 @@ describe('job container', () => {
       __ERROR__: 'The error text.',
       name: 'The field error message.',
     };
-    jest.mocked(api.saveJob).mockRejectedValue(errors);
+    jest.mocked(api.saveJob).mockRejectedValue(new ValidationError(errors));
 
-    await actRenderAdd();
+    const {container} = await actRenderAdd();
     expect(api.listCollections).toHaveBeenCalledTimes(1);
 
     await act(async () => {
@@ -319,9 +312,13 @@ describe('job container', () => {
     });
 
     expect(api.saveJob).toHaveBeenCalled();
-    expect(goBack).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(screen.getByRole('heading', {name: /The error text/})).toBeVisible();
+    expect(screen.getByRole('textbox', {name: 'Name'})).toHaveClass(
+      'is-invalid',
+    );
     expect(screen.getByText(errors.name)).toBeVisible();
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(1);
   });
 
   it('deletes item', async () => {
@@ -341,13 +338,13 @@ describe('job container', () => {
 
     expect(api.deleteJob).toHaveBeenCalledWith('7ce1f17e', '"2hhaswzbz72p8"');
     expect(api.deleteJob).toHaveBeenCalled();
-    expect(goBack).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith('/jobs', {replace: true});
   });
 
   it('handles delete errors', async () => {
     jest.mocked(api.retrieveJob).mockResolvedValue(sampleJob);
-    const errors = {__ERROR__: 'The error text.'};
-    jest.mocked(api.deleteJob).mockRejectedValue(errors);
+    jest.mocked(api.deleteJob).mockRejectedValue(new Error('The error text.'));
 
     await actRenderEdit();
 
@@ -358,8 +355,8 @@ describe('job container', () => {
     });
 
     expect(api.deleteJob).toHaveBeenCalledWith('7ce1f17e', undefined);
-    expect(goBack).not.toHaveBeenCalled();
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /The error text/})).toBeVisible();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
 

@@ -1,3 +1,4 @@
+import {ValidationError} from '$shared/errors';
 import {act, fireEvent, render, screen} from '@testing-library/react';
 import {Route, MemoryRouter as Router, Routes} from 'react-router';
 import CollectionContainer from './collection';
@@ -16,12 +17,7 @@ jest.mock('react-router', () => {
 });
 
 describe('collection container', () => {
-  const goBack = jest.fn();
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockNavigate.mockImplementationOnce(goBack);
-  });
+  beforeEach(() => jest.clearAllMocks());
 
   it('renders add item if no id specified', async () => {
     await actRenderAdd();
@@ -49,13 +45,14 @@ describe('collection container', () => {
   });
 
   it('handles retrieve error', async () => {
-    const errors = {__ERROR__: 'The error text.'};
-    jest.mocked(api.retrieveCollection).mockRejectedValue(errors);
+    jest
+      .mocked(api.retrieveCollection)
+      .mockRejectedValue(new Error('Unexpected'));
 
     await actRenderEdit();
 
     expect(api.retrieveCollection).toHaveBeenCalledWith('65ada2f9');
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('handles change', async () => {
@@ -88,7 +85,8 @@ describe('collection container', () => {
       name: '',
       state: 'enabled',
     });
-    expect(goBack).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith('/collections');
   });
 
   it('handles save errors', async () => {
@@ -96,18 +94,24 @@ describe('collection container', () => {
       __ERROR__: 'The error text.',
       name: 'The field error message.',
     };
-    jest.mocked(api.saveCollection).mockRejectedValue(errors);
+    jest
+      .mocked(api.saveCollection)
+      .mockRejectedValue(new ValidationError(errors));
 
-    await actRenderAdd();
+    const {container} = await actRenderAdd();
 
     await act(async () => {
       fireEvent.submit(screen.getByText('Save'));
     });
 
     expect(api.saveCollection).toHaveBeenCalledTimes(1);
-    expect(goBack).not.toHaveBeenCalled();
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(screen.getByRole('heading', {name: /The error text/})).toBeVisible();
+    expect(screen.getByRole('textbox', {name: 'Name'})).toHaveClass(
+      'is-invalid',
+    );
     expect(screen.getByText(errors.name)).toBeVisible();
+    expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(1);
   });
 
   it('deletes item', async () => {
@@ -131,7 +135,8 @@ describe('collection container', () => {
       '65ada2f9',
       '"1n9er1hz749r"',
     );
-    expect(goBack).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith('/collections', {replace: true});
     expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
   });
 
@@ -142,8 +147,9 @@ describe('collection container', () => {
       state: 'disabled',
       etag: '"1n9er1hz749r"',
     });
-    const errors = {__ERROR__: 'The error text.'};
-    jest.mocked(api.deleteCollection).mockRejectedValue(errors);
+    jest
+      .mocked(api.deleteCollection)
+      .mockRejectedValue(new Error('The error text.'));
 
     const {container} = await actRenderEdit();
 
@@ -157,7 +163,8 @@ describe('collection container', () => {
       '65ada2f9',
       '"1n9er1hz749r"',
     );
-    expect(goBack).not.toHaveBeenCalled();
+    expect(screen.getByRole('heading', {name: /The error text/})).toBeVisible();
+    expect(mockNavigate).not.toHaveBeenCalled();
     expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
   });
 });

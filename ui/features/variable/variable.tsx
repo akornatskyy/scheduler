@@ -1,7 +1,8 @@
+import {Layout} from '$shared/components';
+import {Errors, toErrorMap} from '$shared/errors';
+import {} from '$shared/types';
 import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router';
-import {Layout} from '$shared/components';
-import {Errors} from '$shared/types';
 import {Collection, Variable} from './types';
 import * as api from './variable-api';
 import {VariableForm} from './variable-components';
@@ -22,27 +23,24 @@ export default function VariableContainer() {
 
   useEffect(() => {
     if (id) {
-      api
-        .retrieveVariable(id)
-        .then((item) => {
-          setItem(item);
+      (async () => {
+        try {
+          const data = await api.retrieveVariable(id);
+          setItem(data);
           setPending(false);
-        })
-        .catch((errors) => {
-          setErrors(errors);
+        } catch (error) {
+          setErrors(toErrorMap(error));
           setPending(false);
-        });
-      return;
+        }
+      })();
+    } else {
+      setItem(INITIAL);
+      setPending(false);
     }
 
-    setItem(INITIAL);
-    setPending(false);
-  }, [id]);
-
-  useEffect(() => {
-    api
-      .listCollections()
-      .then(({items}) => {
+    (async () => {
+      try {
+        const {items} = await api.listCollections();
         setCollections(items);
         setItem((prev) => {
           if (prev.collectionId) return prev;
@@ -50,38 +48,41 @@ export default function VariableContainer() {
           setErrors({collectionId: 'There is no collection available.'});
           return prev;
         });
-      })
-      .catch((errors) => setErrors(errors));
-  }, []);
+      } catch (error) {
+        setErrors(toErrorMap(error));
+      }
+    })();
+  }, [id]);
 
   const handleChange = useCallback((name: string, value: string) => {
     setItem((prev) => ({...prev, [name]: value}));
   }, []);
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     setPending(true);
-    api
-      .saveVariable(item)
-      .then(() => navigate(-1))
-      .catch((errors) => {
-        setErrors(errors);
-        setPending(false);
-      });
+
+    try {
+      await api.saveVariable(item);
+      navigate('/variables');
+    } catch (error) {
+      setErrors(toErrorMap(error));
+      setPending(false);
+    }
   }, [item, navigate]);
 
-  const handleDelete = useCallback(() => {
-    const {id, etag} = item;
-    if (!id) return;
+  const handleDelete = useCallback(async () => {
+    if (!item.id) return;
 
     setPending(true);
-    api
-      .deleteVariable(id, etag)
-      .then(() => navigate(-1))
-      .catch((errors) => {
-        setErrors(errors);
-        setPending(false);
-      });
-  }, [item, navigate]);
+
+    try {
+      await api.deleteVariable(item.id, item.etag);
+      navigate('/variables', {replace: true});
+    } catch (error) {
+      setErrors(toErrorMap(error));
+      setPending(false);
+    }
+  }, [item.id, item.etag, navigate]);
 
   return (
     <Layout title={`Variable ${item.name}`} errors={errors}>

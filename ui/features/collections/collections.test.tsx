@@ -10,14 +10,13 @@ describe('collections container', () => {
   beforeEach(() => jest.clearAllMocks());
 
   it('handles list error', async () => {
-    const errors = {__ERROR__: 'The error text.'};
-    jest.mocked(api.listCollections).mockRejectedValue(errors);
+    jest.mocked(api.listCollections).mockRejectedValue(new Error('Unexpected'));
 
     await actRender();
 
     expect(api.listCollections).toHaveBeenCalledTimes(1);
     expect(api.listCollections).toHaveBeenCalledWith();
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('updates state with fetched items', async () => {

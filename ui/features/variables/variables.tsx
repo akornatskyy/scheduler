@@ -1,7 +1,7 @@
+import {Layout} from '$shared/components';
+import {Errors, toErrorMap} from '$shared/errors';
 import {useEffect, useMemo, useState} from 'react';
 import {Link, useLocation} from 'react-router';
-import {Layout} from '$shared/components';
-import {Errors} from '$shared/types';
 import {Collection, Variable} from './types';
 import * as api from './variables-api';
 import {VariableList} from './variables-components';
@@ -9,7 +9,7 @@ import {VariableList} from './variables-components';
 export default function VariablesContainer() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [variables, setVariables] = useState<Variable[]>([]);
-  const [errors, setErrors] = useState<Errors>({});
+  const [errors, setErrors] = useState<Errors>();
 
   const location = useLocation();
   const collectionId = useMemo(
@@ -18,15 +18,19 @@ export default function VariablesContainer() {
   );
 
   useEffect(() => {
-    api
-      .listCollections()
-      .then(({items}) => setCollections(items))
-      .catch((errors) => setErrors(errors));
+    (async () => {
+      try {
+        const [{items: collections}, {items: variables}] = await Promise.all([
+          api.listCollections(),
+          api.listVariables(collectionId),
+        ]);
 
-    api
-      .listVariables(collectionId)
-      .then(({items}) => setVariables(items))
-      .catch((errors) => setErrors(errors));
+        setCollections(collections);
+        setVariables(variables);
+      } catch (error) {
+        setErrors(toErrorMap(error));
+      }
+    })();
   }, [collectionId]);
 
   return (

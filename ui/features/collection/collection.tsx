@@ -1,7 +1,7 @@
+import {Layout} from '$shared/components';
+import {Errors, toErrorMap} from '$shared/errors';
 import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router';
-import {Layout} from '$shared/components';
-import {Errors} from '$shared/types';
 import * as api from './collection-api';
 import {CollectionForm} from './collection-components';
 import {Collection} from './types';
@@ -20,16 +20,16 @@ export default function CollectionContainer() {
 
   useEffect(() => {
     if (id) {
-      api
-        .retrieveCollection(id)
-        .then((data) => {
+      (async () => {
+        try {
+          const data = await api.retrieveCollection(id);
           setItem(data);
           setPending(false);
-        })
-        .catch((errors) => {
-          setErrors(errors);
+        } catch (error) {
+          setErrors(toErrorMap(error));
           setPending(false);
-        });
+        }
+      })();
       return;
     }
 
@@ -40,30 +40,31 @@ export default function CollectionContainer() {
     setItem((prev) => ({...prev, [name]: value}));
   }, []);
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     setPending(true);
-    api
-      .saveCollection(item)
-      .then(() => navigate(-1))
-      .catch((errors) => {
-        setErrors(errors);
-        setPending(false);
-      });
+
+    try {
+      await api.saveCollection(item);
+      navigate('/collections');
+    } catch (error) {
+      setErrors(toErrorMap(error));
+      setPending(false);
+    }
   }, [item, navigate]);
 
-  const handleDelete = useCallback(() => {
-    const {id, etag} = item;
-    if (!id) return;
+  const handleDelete = useCallback(async () => {
+    if (!item.id) return;
 
     setPending(true);
-    api
-      .deleteCollection(id, etag)
-      .then(() => navigate(-1))
-      .catch((errors) => {
-        setErrors(errors);
-        setPending(false);
-      });
-  }, [item, navigate]);
+
+    try {
+      await api.deleteCollection(item.id, item.etag);
+      navigate('/collections', {replace: true});
+    } catch (error) {
+      setErrors(toErrorMap(error));
+      setPending(false);
+    }
+  }, [item.id, item.etag, navigate]);
 
   return (
     <Layout title={`Collection ${item.name}`} errors={errors}>

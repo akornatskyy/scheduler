@@ -10,31 +10,29 @@ describe('jobs container', () => {
   beforeEach(() => jest.clearAllMocks());
 
   it('handles list collections error', async () => {
-    const errors = {__ERROR__: 'The error text.'};
-    jest.mocked(api.listCollections).mockRejectedValue(errors);
+    jest.mocked(api.listCollections).mockRejectedValue(new Error('Unexpected'));
     jest.mocked(api.listJobs).mockResolvedValue({items: []});
 
     await actRender();
 
-    expect(api.listCollections).toHaveBeenCalledWith();
     expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledWith();
     expect(api.listJobs).toHaveBeenCalledTimes(1);
     expect(api.listJobs).toHaveBeenCalledWith(null);
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('handles list jobs error', async () => {
-    const errors = {__ERROR__: 'The error text.'};
     jest.mocked(api.listCollections).mockResolvedValue({items: []});
-    jest.mocked(api.listJobs).mockRejectedValue(errors);
+    jest.mocked(api.listJobs).mockRejectedValue(new Error('Unexpected'));
 
     await actRender();
 
-    expect(api.listCollections).toHaveBeenCalledWith();
     expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledWith();
     expect(api.listJobs).toHaveBeenCalledTimes(1);
     expect(api.listJobs).toHaveBeenCalledWith(null);
-    expect(screen.getByText(errors.__ERROR__)).toBeVisible();
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
   });
 
   it('updates state with fetched items', async () => {
@@ -58,8 +56,8 @@ describe('jobs container', () => {
       );
     });
 
-    expect(api.listCollections).toHaveBeenCalledWith();
     expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listCollections).toHaveBeenCalledWith();
     expect(api.listJobs).toHaveBeenCalledTimes(1);
     expect(api.listJobs).toHaveBeenCalledWith('65ada2f9');
   });

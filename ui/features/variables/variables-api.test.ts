@@ -1,9 +1,7 @@
 import * as api from './variables-api';
 
 describe('variables api', () => {
-  afterEach(() => {
-    (global.fetch as jest.Mock).mockClear();
-  });
+  afterEach(() => jest.mocked(global.fetch).mockClear());
 
   it('list', async () => {
     global.fetch = jest.fn().mockResolvedValue({
@@ -20,9 +18,6 @@ describe('variables api', () => {
     });
     expect(global.fetch).toHaveBeenCalledWith('/variables', {
       method: 'GET',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-      },
     });
   });
 
@@ -41,9 +36,6 @@ describe('variables api', () => {
     });
     expect(global.fetch).toHaveBeenCalledWith('/variables?collectionId=123', {
       method: 'GET',
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-      },
     });
   });
 });

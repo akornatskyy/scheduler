@@ -1,7 +1,7 @@
+import {Layout} from '$shared/components';
+import {Errors, toErrorMap} from '$shared/errors';
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {Link, useLocation} from 'react-router';
-import {Layout} from '$shared/components';
-import {Errors} from '$shared/types';
 import * as api from './jobs-api';
 import {JobList} from './jobs-components';
 import {Collection, Job} from './types';
@@ -9,7 +9,7 @@ import {Collection, Job} from './types';
 export default function JobsContainer() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [errors, setErrors] = useState<Errors>({});
+  const [errors, setErrors] = useState<Errors>();
 
   const location = useLocation();
   const collectionId = useMemo(
@@ -17,25 +17,25 @@ export default function JobsContainer() {
     [location.search],
   );
 
-  const refresh = useCallback(() => {
-    api
-      .listCollections()
-      .then(({items}) => setCollections(items))
-      .catch((errors) => setErrors(errors));
+  const refresh = useCallback(async () => {
+    try {
+      const [{items: collections}, {items: jobs}] = await Promise.all([
+        api.listCollections(),
+        api.listJobs(collectionId),
+      ]);
 
-    api
-      .listJobs(collectionId)
-      .then(({items}) => setJobs(items))
-      .catch((errors) => setErrors(errors));
+      setCollections(collections);
+      setJobs(jobs);
+    } catch (error) {
+      setErrors(toErrorMap(error));
+    }
   }, [collectionId]);
 
   useEffect(() => {
     refresh();
-    const timer = setInterval(() => refresh(), 10000);
+    const timer = setInterval(refresh, 10000);
 
-    return () => {
-      clearInterval(timer);
-    };
+    return () => clearInterval(timer);
   }, [refresh]);
 
   return (

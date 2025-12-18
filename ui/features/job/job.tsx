@@ -1,8 +1,8 @@
+import {Layout} from '$shared/components';
+import {Errors, toErrorMap} from '$shared/errors';
 import update from 'immutability-helper';
 import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router';
-import {Layout} from '$shared/components';
-import {Errors} from '$shared/types';
 import * as api from './job-api';
 import {JobForm} from './job-components';
 import {Collection, JobInput} from './types';
@@ -38,24 +38,24 @@ export default function JobContainer() {
 
   useEffect(() => {
     if (id) {
-      setPending(true);
-      api
-        .retrieveJob(id)
-        .then((item) => {
-          setItem(item);
+      (async () => {
+        try {
+          const data = await api.retrieveJob(id);
+          setItem(data);
           setPending(false);
-        })
-        .catch((errors) => {
-          setErrors(errors);
+        } catch (error) {
+          setErrors(toErrorMap(error));
           setPending(false);
-        });
+        }
+      })();
     } else {
+      setItem(INITIAL);
       setPending(false);
     }
 
-    api
-      .listCollections()
-      .then(({items}) => {
+    (async () => {
+      try {
+        const {items} = await api.listCollections();
         setCollections(items);
         setItem((prev) => {
           if (prev.collectionId) return prev;
@@ -63,8 +63,10 @@ export default function JobContainer() {
           setErrors({collectionId: 'There is no collection available.'});
           return prev;
         });
-      })
-      .catch((errors) => setErrors(errors));
+      } catch (error) {
+        setErrors(toErrorMap(error));
+      }
+    })();
   }, [id]);
 
   const handleItemChange = useCallback((name: string, value: string) => {
@@ -117,29 +119,31 @@ export default function JobContainer() {
     );
   }, []);
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     setPending(true);
-    api
-      .saveJob(item)
-      .then(() => navigate(-1))
-      .catch((errors) => {
-        setErrors(errors);
-        setPending(false);
-      });
+
+    try {
+      await api.saveJob(item);
+      navigate('/jobs');
+    } catch (error) {
+      setErrors(toErrorMap(error));
+      setPending(false);
+    }
   }, [item, navigate]);
 
-  const handleDelete = useCallback(() => {
-    const {id, etag} = item;
-    if (!id) return;
+  const handleDelete = useCallback(async () => {
+    if (!item.id) return;
+
     setPending(true);
-    api
-      .deleteJob(id, etag)
-      .then(() => navigate(-1))
-      .catch((errors) => {
-        setErrors(errors);
-        setPending(false);
-      });
-  }, [item, navigate]);
+
+    try {
+      await api.deleteJob(item.id, item.etag);
+      navigate('/jobs', {replace: true});
+    } catch (error) {
+      setErrors(toErrorMap(error));
+      setPending(false);
+    }
+  }, [item.id, item.etag, navigate]);
 
   return (
     <Layout title={`Job ${item.name}`} errors={errors}>

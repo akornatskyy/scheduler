@@ -72,6 +72,7 @@ module.exports = (env, argv) => {
         directory: path.join(__dirname, 'ui/'),
       },
       host: '127.0.0.1',
+      allowedHosts: 'localhost',
       port: 3000,
       compress: true,
       proxy: [

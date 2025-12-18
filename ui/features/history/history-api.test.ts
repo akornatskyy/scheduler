@@ -1,9 +1,7 @@
 import * as api from './history-api';
 
 describe('history api', () => {
-  afterEach(() => {
-    (global.fetch as jest.Mock).mockClear();
-  });
+  afterEach(() => jest.mocked(global.fetch).mockClear());
 
   describe('job status', () => {
     it('retrieve', async () => {
@@ -21,9 +19,6 @@ describe('history api', () => {
       });
       expect(global.fetch).toHaveBeenCalledWith('/jobs/123/status', {
         method: 'GET',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-        },
       });
     });
 
@@ -40,9 +35,8 @@ describe('history api', () => {
       expect(global.fetch).toHaveBeenCalledWith('/jobs/123/status', {
         method: 'PATCH',
         headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'Content-Type': 'application/json',
-          'If-Match': '"2hhaswzbz72p8"',
+          'content-type': 'application/json',
+          'if-match': '"2hhaswzbz72p8"',
         },
         body: '{"running":true}',
       });
@@ -65,9 +59,6 @@ describe('history api', () => {
       });
       expect(global.fetch).toHaveBeenCalledWith('/jobs/123/history', {
         method: 'GET',
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-        },
       });
     });
 
@@ -81,8 +72,7 @@ describe('history api', () => {
       expect(global.fetch).toHaveBeenCalledWith('/jobs/123/history', {
         method: 'DELETE',
         headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'If-Match': '"2hhaswzbz72p8"',
+          'if-match': '"2hhaswzbz72p8"',
         },
       });
     });

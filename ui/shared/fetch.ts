@@ -1,101 +1,95 @@
-const host = '';
-
-type FieldErrorMap = Record<string, string>;
-
-type FetchError = {
-  __ERROR__: string;
-};
+/* eslint-disable no-redeclare */
+import {DomainError, Errors, ValidationError} from './errors';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 
-type FieldError = {
-  type: 'field' | string;
-  location: string;
-  message: string;
-};
+type PatchData = {id?: unknown; etag?: string; updated?: unknown};
 
-type BadRequestBody = {
-  errors: FieldError[];
-};
-
-type WithETag = {
-  etag: string | null;
-};
-
-type Resolve<T> = (value?: T | PromiseLike<T>) => void;
-type Reject = (reason?: unknown) => void;
-
-type FetchOptions = {
-  method: Method;
-  headers: Record<string, string>;
-  body?: string;
-};
-
-const thenHandle = <T>(r: Response, resolve: Resolve<T>, reject: Reject) => {
-  if (r.status === 201 || r.status === 204) {
-    return resolve();
-  } else if (r.status >= 200 && r.status < 300) {
-    return r.json().then((d: T & Partial<WithETag>) => {
-      d.etag = r.headers.get('etag');
-      resolve(d);
-    });
-  } else if (r.status === 400) {
-    return r.json().then((data: unknown) => {
-      const errors: FieldErrorMap = {};
-      const body = data as BadRequestBody;
-      body.errors
-        .filter((err) => err.type === 'field')
-        .forEach((err) => {
-          errors[err.location] = err.message;
-        });
-      reject(errors);
-    });
-  }
-
-  return reject({
-    __ERROR__: `${r.status}: ${r.statusText}`,
-  } satisfies FetchError);
-};
-
-type PatchData = {
-  etag: string;
-  id?: unknown;
-  updated?: unknown;
-} & Record<string, unknown>;
-
-type PostData = Record<string, unknown>;
-
-type GoData = string | PatchData | PostData | undefined;
-
-export const go = <T>(method: Method, path: string, data?: GoData) => {
-  const options: FetchOptions = {
-    method: method,
-    headers: {
-      'X-Requested-With': 'XMLHttpRequest',
-    },
-  };
+export function go<T>(method: 'GET', path: string): Promise<T>;
+export function go<T>(method: 'POST', path: string, data: unknown): Promise<T>;
+export function go(
+  method: 'PATCH',
+  path: string,
+  data: PatchData,
+): Promise<void>;
+export function go(
+  method: 'DELETE',
+  path: string,
+  etag?: string,
+): Promise<void>;
+export async function go<T>(
+  method: Method,
+  path: string,
+  data?: unknown,
+): Promise<T | void> {
+  const options: RequestInit = {method};
   switch (method) {
-    case 'DELETE':
-      options.headers['If-Match'] = String(data ?? '');
+    case 'DELETE': {
+      if (data && typeof data === 'string') {
+        options.headers = {'if-match': data};
+      }
+
       break;
-    case 'PATCH': {
-      const {etag, id: _id, updated: _updated, ...rest} = data as PatchData;
-      options.headers['If-Match'] = etag;
-      data = rest;
     }
-    // eslint-disable-next-line no-fallthrough
-    case 'POST':
-      options.headers['Content-Type'] = 'application/json';
+
+    case 'PATCH': {
+      const {etag, id: _id, updated: _updated, ...body} = data as PatchData;
+      options.headers = {'content-type': 'application/json'};
+      if (etag) options.headers['if-match'] = etag;
+      options.body = JSON.stringify(body);
+      break;
+    }
+
+    case 'POST': {
+      options.headers = {'content-type': 'application/json'};
       options.body = JSON.stringify(data);
       break;
+    }
   }
-  return new Promise<T>((resolve, reject) =>
-    fetch(host + path, options as RequestInit)
-      .then((r) => thenHandle<T>(r, resolve as Resolve<T>, reject))
-      .catch((error: unknown) =>
-        reject({
-          __ERROR__: (error as {message?: string}).message || 'unknown',
-        } satisfies FetchError),
-      ),
-  );
-};
+
+  const response = await fetch(path, options);
+  return handleResponse<T>(response);
+}
+
+async function handleResponse<T>(response: Response): Promise<T | void> {
+  const {status} = response;
+
+  if (status === 201 || status === 204) {
+    return;
+  }
+
+  if (status >= 200 && status < 300) {
+    const data: T & {etag: string} = await response.json();
+    const etag = response.headers.get('etag');
+    if (etag && data && typeof data === 'object') {
+      data.etag = etag;
+    }
+
+    return data;
+  }
+
+  throw await createErrorFromResponse(response);
+}
+
+type FieldError = {type: 'field' | string; location: string; message: string};
+
+type BadRequestResponse = {errors: FieldError[]};
+
+async function createErrorFromResponse(response: Response): Promise<Error> {
+  const {status} = response;
+  if (status === 400) {
+    const parsed: BadRequestResponse = await response.json();
+    const details: Errors = {};
+    for (const error of parsed.errors) {
+      if (error.type === 'field') {
+        details[error.location] = error.message;
+      } else {
+        return new DomainError(error.message, status);
+      }
+    }
+
+    return new ValidationError(details);
+  }
+
+  return new DomainError(response.statusText, status);
+}
