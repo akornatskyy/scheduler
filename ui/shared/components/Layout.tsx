@@ -1,6 +1,6 @@
 import {Errors} from '$shared/errors';
 import React from 'react';
-import ErrorSummary from './ErrorSummary';
+import {ErrorSummary} from './ErrorSummary';
 
 type Props = {
   title: string;
@@ -8,7 +8,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-const Layout = ({title, errors, children}: Props) => {
+export const Layout = ({title, errors, children}: Props) => {
   const message = errors?.__ERROR__;
   return (
     <>
@@ -21,5 +21,3 @@ const Layout = ({title, errors, children}: Props) => {
     </>
   );
 };
-
-export default Layout;

@@ -1,5 +1,5 @@
 import {render, screen} from '@testing-library/react';
-import ErrorSummary from './ErrorSummary';
+import {ErrorSummary} from './ErrorSummary';
 
 describe('error summary component', () => {
   it('renders provided message', () => {

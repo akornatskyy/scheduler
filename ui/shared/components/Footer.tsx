@@ -1,8 +1,6 @@
-import React from 'react';
-
 const year = new Date().getFullYear();
 
-const Footer = (): React.ReactElement => (
+export const Footer = () => (
   <footer>
     <p className="small text-center text-secondary py-3">
       &copy; {year} 1.5.1{' '}
@@ -15,5 +13,3 @@ const Footer = (): React.ReactElement => (
     </p>
   </footer>
 );
-
-export default Footer;

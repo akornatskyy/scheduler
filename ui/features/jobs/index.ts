@@ -1,1 +1,1 @@
-export {default as JobsContainer} from './jobs';
+export {JobsPage} from './JobsPage';

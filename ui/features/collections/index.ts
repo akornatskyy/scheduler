@@ -1,2 +1,2 @@
-export {default as CollectionsContainer} from './collections';
-export * as api from './collections-api';
+export * as api from './api';
+export {CollectionsPage} from './CollectionsPage';

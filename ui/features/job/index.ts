@@ -1,2 +1,2 @@
-export {default as JobContainer} from './job';
-export * as api from './job-api';
+export * as api from './api';
+export {JobPage} from './JobPage';

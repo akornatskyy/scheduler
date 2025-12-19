@@ -1,13 +1,9 @@
-import React from 'react';
-
 type Props = {
   message?: string;
 };
 
-const FieldError = ({message}: Props): React.ReactElement | null => {
-  if (!message) {
-    return null;
-  }
+export const FieldError = ({message}: Props) => {
+  if (!message) return null;
 
   return (
     <p className="invalid-feedback mb-0">
@@ -16,5 +12,3 @@ const FieldError = ({message}: Props): React.ReactElement | null => {
     </p>
   );
 };
-
-export default FieldError;

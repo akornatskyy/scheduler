@@ -4,7 +4,7 @@ type Props = {
   message: string;
 };
 
-const ErrorSummary = ({message}: Props) => (
+export const ErrorSummary = ({message}: Props) => (
   <Alert variant="danger">
     <h4 className="alert-heading">
       <i className="fa fa-exclamation fs-lg me-2" aria-hidden="true" />
@@ -15,5 +15,3 @@ const ErrorSummary = ({message}: Props) => (
     </p>
   </Alert>
 );
-
-export default ErrorSummary;

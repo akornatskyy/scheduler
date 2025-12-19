@@ -6,13 +6,10 @@ const groupBy = <T extends Record<string, unknown>>(
   items: T[],
   key: KeyOf<T>,
 ): Record<GroupByKey, T[]> =>
-  items.reduce(
-    (result, value) => {
-      (result[value[key] as GroupByKey] ??= []).push(value);
-      return result;
-    },
-    {} as Record<GroupByKey, T[]>,
-  );
+  items.reduce((result, value) => {
+    (result[value[key] as GroupByKey] ??= []).push(value);
+    return result;
+  }, {} as Record<GroupByKey, T[]>);
 
 type Props<G, I> = {
   groups: G[];
@@ -22,7 +19,7 @@ type Props<G, I> = {
   itemRow: (i: I) => React.ReactNode;
 };
 
-const GroupByList = <
+export const GroupByList = <
   G extends {id: GroupByKey},
   I extends Record<string, unknown>,
 >({
@@ -43,5 +40,3 @@ const GroupByList = <
   });
   return rows;
 };
-
-export default GroupByList;

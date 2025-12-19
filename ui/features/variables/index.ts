@@ -1,1 +1,1 @@
-export {default as VariablesContainer} from './variables';
+export {VariablesPage} from './VariablesPage';

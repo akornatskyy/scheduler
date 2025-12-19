@@ -14,7 +14,9 @@ describe('fetch go', () => {
         },
       });
 
-      await expect(go<{foo: string}>('GET', '/')).resolves.toEqual({foo: 'bar'});
+      await expect(go<{foo: string}>('GET', '/')).resolves.toEqual({
+        foo: 'bar',
+      });
 
       expect(global.fetch).toHaveBeenCalledWith('/', {method: 'GET'});
     });
@@ -28,7 +30,9 @@ describe('fetch go', () => {
         },
       });
 
-      await expect(go<{foo: string; etag: string}>('GET', '/')).resolves.toEqual({
+      await expect(
+        go<{foo: string; etag: string}>('GET', '/'),
+      ).resolves.toEqual({
         foo: 'bar',
         etag: 'W/"123"',
       });
@@ -65,11 +69,13 @@ describe('fetch go', () => {
     it('PATCH strips id/updated, sets if-match from etag', async () => {
       global.fetch = jest.fn().mockResolvedValue({status: 204});
 
-      await (go as unknown as (method: 'PATCH', path: string, data: unknown) => Promise<void>)(
-        'PATCH',
-        '/',
-        {id: 1, updated: 'x', etag: 'abc', a: 1},
-      );
+      await (
+        go as unknown as (
+          method: 'PATCH',
+          path: string,
+          data: unknown,
+        ) => Promise<void>
+      )('PATCH', '/', {id: 1, updated: 'x', etag: 'abc', a: 1});
 
       expect(global.fetch).toHaveBeenCalledWith('/', {
         method: 'PATCH',

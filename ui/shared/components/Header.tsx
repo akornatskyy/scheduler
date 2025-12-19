@@ -3,7 +3,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import {Link} from 'react-router';
 
-const Header = (): React.ReactElement => (
+export const Header = () => (
   <Navbar className="mb-3">
     <Navbar.Brand>Scheduler</Navbar.Brand>
     <Nav>
@@ -19,5 +19,3 @@ const Header = (): React.ReactElement => (
     </Nav>
   </Navbar>
 );
-
-export default Header;
