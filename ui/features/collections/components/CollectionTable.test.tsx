@@ -1,11 +1,11 @@
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import {Collection} from '../types';
+import {CollectionItem} from '../types';
 import {CollectionTable} from './CollectionTable';
 
 describe('collections table component ', () => {
   it('renders empty list', () => {
-    const items: Collection[] = [];
+    const items: CollectionItem[] = [];
 
     const {container} = render(<CollectionTable items={items} />);
 
@@ -13,7 +13,7 @@ describe('collections table component ', () => {
   });
 
   it('renders items', () => {
-    const items: Collection[] = [
+    const items: CollectionItem[] = [
       {
         id: '65ada2f9',
         name: 'My App #1',

@@ -1,10 +1,10 @@
 import {fireEvent, render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
 import {JobForm} from './JobForm';
-import {Collection} from '../types';
+import {CollectionItem} from '../../job/types';
 
 describe('job form component', () => {
-  const collections: Collection[] = [
+  const collections: CollectionItem[] = [
     {id: '65ada2f9', name: 'My App #1'},
     {id: '7d76cb30', name: 'My Other App'},
   ];

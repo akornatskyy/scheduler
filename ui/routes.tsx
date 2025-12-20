@@ -1,12 +1,9 @@
+import {JobHistoryPage} from '$features/jobs';
 import {Container} from 'react-bootstrap';
 import {Navigate, Outlet, RouteObject} from 'react-router';
-import {CollectionPage} from './features/collection';
-import {CollectionsPage} from './features/collections';
-import {JobHistoryPage} from './features/history';
-import {JobPage} from './features/job';
-import {JobsPage} from './features/jobs';
-import {VariablePage} from './features/variable';
-import {VariablesPage} from './features/variables';
+import {CollectionPage, CollectionsPage} from './features/collections';
+import {JobPage, JobsPage} from './features/jobs';
+import {VariablePage, VariablesPage} from './features/variables';
 import {Footer, Header} from './shared/components';
 
 const Shell = () => (

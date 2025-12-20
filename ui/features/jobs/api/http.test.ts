@@ -1,4 +1,4 @@
-import * as api from './api';
+import * as api from './http';
 
 describe('jobs api', () => {
   afterEach(() => jest.mocked(global.fetch).mockClear());

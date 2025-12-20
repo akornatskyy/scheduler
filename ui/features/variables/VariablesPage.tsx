@@ -2,13 +2,13 @@ import {Layout} from '$shared/components';
 import {Errors, toErrorMap} from '$shared/errors';
 import {useEffect, useMemo, useState} from 'react';
 import {Link, useLocation} from 'react-router';
-import {Collection, Variable} from './types';
 import * as api from './api';
 import {VariableTable} from './components/VariableTable';
+import {CollectionItem, VariableItem} from './types';
 
 export function VariablesPage() {
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [variables, setVariables] = useState<Variable[]>([]);
+  const [collections, setCollections] = useState<CollectionItem[]>([]);
+  const [variables, setVariables] = useState<VariableItem[]>([]);
   const [errors, setErrors] = useState<Errors>();
 
   const location = useLocation();

@@ -1,8 +1,21 @@
 import {api} from '$features/collections';
 import {go} from '$shared/fetch';
-import {Variable} from './types';
+import {Variable, VariableItem} from '../types';
 
 export const listCollections = api.listCollections;
+
+type ListVariablesResponse = {
+  items: VariableItem[];
+  etag?: string | null;
+};
+
+export const listVariables = (
+  collectionId?: string | null,
+): Promise<ListVariablesResponse> =>
+  go(
+    'GET',
+    collectionId ? `/variables?collectionId=${collectionId}` : '/variables',
+  );
 
 export const retrieveVariable = (id: string): Promise<Variable> =>
   go('GET', `/variables/${id}`);

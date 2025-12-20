@@ -2,7 +2,7 @@ import {act, render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
 import * as api from './api';
 import {CollectionsPage} from './CollectionsPage';
-import {Collection} from './types';
+import {CollectionItem} from './types';
 
 jest.mock('./api');
 
@@ -20,7 +20,7 @@ describe('collections page', () => {
   });
 
   it('updates state with fetched items', async () => {
-    const items: Collection[] = [
+    const items: CollectionItem[] = [
       {
         id: '65ada2f9',
         name: 'My App #1',

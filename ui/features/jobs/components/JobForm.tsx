@@ -4,16 +4,16 @@ import React from 'react';
 import {Button, Col, Form, Row} from 'react-bootstrap';
 import {Link} from 'react-router';
 import {
-  Collection,
+  CollectionItem,
   HttpRequest,
   HttpRequestHeader,
   JobInput,
   RetryPolicy,
-} from '../types';
+} from '../../job/types';
 
 type Props = {
   item: JobInput;
-  collections: Collection[];
+  collections: CollectionItem[];
   pending: boolean;
   errors: Errors;
   onItemChange?: (name: string, value: string) => void;

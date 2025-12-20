@@ -2,9 +2,9 @@ import {Layout} from '$shared/components';
 import {Errors, toErrorMap} from '$shared/errors';
 import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router';
-import {Collection, Variable} from './types';
 import * as api from './api';
 import {VariableForm} from './components/VariableForm';
+import {CollectionItem, Variable} from './types';
 
 const INITIAL: Variable = {
   collectionId: '',
@@ -16,7 +16,7 @@ export function VariablePage() {
   const navigate = useNavigate();
   const {id} = useParams<{id: string}>();
   const [item, setItem] = useState<Variable>(INITIAL);
-  const [collections, setCollections] = useState<Collection[]>([]);
+  const [collections, setCollections] = useState<CollectionItem[]>([]);
   const [pending, setPending] = useState<boolean>(true);
   const [errors, setErrors] = useState<Errors>({});
 

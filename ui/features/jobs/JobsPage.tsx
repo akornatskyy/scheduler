@@ -4,11 +4,11 @@ import {useCallback, useEffect, useMemo, useState} from 'react';
 import {Link, useLocation} from 'react-router';
 import * as api from './api';
 import {JobTable} from './components/JobTable';
-import {Collection, Job} from './types';
+import {CollectionItem, JobItem} from './types';
 
 export function JobsPage() {
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [collections, setCollections] = useState<CollectionItem[]>([]);
+  const [jobs, setJobs] = useState<JobItem[]>([]);
   const [errors, setErrors] = useState<Errors>();
 
   const location = useLocation();

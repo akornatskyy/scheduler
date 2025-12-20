@@ -1,11 +1,11 @@
 import {GroupByList} from '$shared/components';
 import {Table} from 'react-bootstrap';
 import {Link} from 'react-router';
-import {Collection, Variable} from '../types';
+import {CollectionItem, VariableItem} from '../types';
 
 type VariableListProps = {
-  collections: Collection[];
-  variables: Variable[];
+  collections: CollectionItem[];
+  variables: VariableItem[];
 };
 
 export const VariableTable = ({collections, variables}: VariableListProps) => (
@@ -29,7 +29,7 @@ export const VariableTable = ({collections, variables}: VariableListProps) => (
 );
 
 type GroupRowProps = {
-  collection: Collection;
+  collection: CollectionItem;
 };
 
 export const GroupRow = ({collection}: GroupRowProps) => (
@@ -44,7 +44,7 @@ export const GroupRow = ({collection}: GroupRowProps) => (
 );
 
 type ItemRowProps = {
-  variable: Variable;
+  variable: VariableItem;
 };
 
 export const ItemRow = ({variable}: ItemRowProps) => (

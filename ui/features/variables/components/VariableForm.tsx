@@ -2,7 +2,7 @@ import {FieldError, Tip} from '$shared/components';
 import {Errors} from '$shared/errors';
 import React from 'react';
 import {Button, Col, Form, Row} from 'react-bootstrap';
-import {Collection, Variable} from '../types';
+import {Collection, Variable} from '../../variable/types';
 
 type Props = {
   item: Variable;

@@ -5,7 +5,7 @@ import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router';
 import * as api from './api';
 import {JobForm} from './components/JobForm';
-import {Collection, JobInput} from './types';
+import {CollectionItem, JobInput} from './types';
 
 const INITIAL: JobInput = {
   name: '',
@@ -32,7 +32,7 @@ export function JobPage() {
   const navigate = useNavigate();
   const {id} = useParams<{id: string}>();
   const [item, setItem] = useState<JobInput>(INITIAL);
-  const [collections, setCollections] = useState<Collection[]>([]);
+  const [collections, setCollections] = useState<CollectionItem[]>([]);
   const [pending, setPending] = useState(true);
   const [errors, setErrors] = useState<Errors>({});
 

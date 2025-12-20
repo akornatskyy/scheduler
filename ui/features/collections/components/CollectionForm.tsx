@@ -3,7 +3,7 @@ import {Errors} from '$shared/errors';
 import React from 'react';
 import {Button, Form} from 'react-bootstrap';
 import {Link} from 'react-router';
-import {Collection} from '../types';
+import {Collection} from '../../collection/types';
 
 type Props = {
   item: Collection;

@@ -1,5 +1,12 @@
 import {go} from '$shared/fetch';
-import {Collection} from './types';
+import {Collection, CollectionItem} from '../types';
+
+type ListCollectionsResponse = {
+  items: CollectionItem[];
+};
+
+export const listCollections = (): Promise<ListCollectionsResponse> =>
+  go('GET', '/collections');
 
 export const retrieveCollection = (id: string): Promise<Collection> =>
   go('GET', `/collections/${id}`);

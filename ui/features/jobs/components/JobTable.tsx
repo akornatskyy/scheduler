@@ -1,11 +1,11 @@
 import {GroupByList} from '$shared/components';
 import {Table} from 'react-bootstrap';
 import {Link} from 'react-router';
-import {Collection, Job} from '../types';
+import {CollectionItem, JobItem} from '../types';
 
 type JobListProps = {
-  jobs: Job[];
-  collections: Collection[];
+  jobs: JobItem[];
+  collections: CollectionItem[];
 };
 
 export const JobTable = ({jobs, collections}: JobListProps) => (
@@ -30,7 +30,7 @@ export const JobTable = ({jobs, collections}: JobListProps) => (
 );
 
 type GroupRowProps = {
-  collection: Collection;
+  collection: CollectionItem;
 };
 
 export const GroupRow = ({collection}: GroupRowProps) => (
@@ -50,7 +50,7 @@ export const GroupRow = ({collection}: GroupRowProps) => (
 );
 
 type ItemRowProps = {
-  job: Job;
+  job: JobItem;
 };
 
 export const ItemRow = ({job}: ItemRowProps) => (
@@ -76,7 +76,7 @@ export const ItemRow = ({job}: ItemRowProps) => (
 );
 
 type JobStatusProps = {
-  job: Job;
+  job: JobItem;
 };
 
 export const JobStatus = ({job}: JobStatusProps) => {

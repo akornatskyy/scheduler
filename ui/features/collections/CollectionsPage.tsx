@@ -4,10 +4,10 @@ import {useEffect, useState} from 'react';
 import {Link} from 'react-router';
 import * as api from './api';
 import {CollectionTable} from './components/CollectionTable';
-import {Collection} from './types';
+import {CollectionItem} from './types';
 
 export function CollectionsPage() {
-  const [items, setItems] = useState<Collection[]>([]);
+  const [items, setItems] = useState<CollectionItem[]>([]);
   const [errors, setErrors] = useState<Errors>();
 
   useEffect(() => {

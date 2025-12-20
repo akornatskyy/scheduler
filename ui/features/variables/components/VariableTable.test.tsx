@@ -1,12 +1,12 @@
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import {Collection, Variable} from '../types';
+import {CollectionItem, VariableItem} from '../types';
 import {GroupRow, ItemRow, VariableTable} from './VariableTable';
 
 describe('variables list component', () => {
   it('renders empty list', () => {
-    const collections: Collection[] = [];
-    const variables: Variable[] = [];
+    const collections: CollectionItem[] = [];
+    const variables: VariableItem[] = [];
 
     const {container} = render(
       <VariableTable collections={collections} variables={variables} />,
@@ -16,7 +16,7 @@ describe('variables list component', () => {
   });
 
   it('renders items', () => {
-    const collections: Collection[] = [
+    const collections: CollectionItem[] = [
       {
         id: '65ada2f9',
         name: 'My App #1',
@@ -33,7 +33,7 @@ describe('variables list component', () => {
         state: 'enabled',
       },
     ];
-    const variables: Variable[] = [
+    const variables: VariableItem[] = [
       {
         id: 'ce3457aa',
         collectionId: '65ada2f9',
@@ -61,7 +61,7 @@ describe('variables list component', () => {
 
 describe('variables group row component', () => {
   it('renders collection name', () => {
-    const c: Collection = {id: '123', name: 'My App #1', state: 'enabled'};
+    const c: CollectionItem = {id: '123', name: 'My App #1', state: 'enabled'};
 
     render(
       <Router>
@@ -79,7 +79,7 @@ describe('variables group row component', () => {
 
 describe('variables item row component', () => {
   it('renders variable name', () => {
-    const v: Variable = {
+    const v: VariableItem = {
       id: '123',
       name: 'My Var',
       collectionId: 'c1',

@@ -4,7 +4,7 @@ import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router';
 import * as api from './api';
 import {JobHistoryTable} from './components/JobHistoryTable';
-import {Job, JobHistory, JobStatus} from './types';
+import {JobDefinition, JobHistory, JobStatus} from './types';
 
 const INITIAL: JobStatus = {
   runCount: 0,
@@ -15,7 +15,7 @@ export function JobHistoryPage() {
   const navigate = useNavigate();
   const {id} = useParams<{id: string}>();
   if (!id) return null;
-  const [job, setJob] = useState<Job>({name: ''});
+  const [job, setJob] = useState<Pick<JobDefinition, 'name'>>({name: ''});
   const [status, setStatus] = useState<JobStatus>(INITIAL);
   const [items, setItems] = useState<JobHistory[]>([]);
   const [errors, setErrors] = useState<Errors>({});
