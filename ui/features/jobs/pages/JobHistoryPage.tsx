@@ -2,9 +2,9 @@ import {Layout} from '$shared/components';
 import {Errors, toErrorMap} from '$shared/errors';
 import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router';
-import * as api from './api';
-import {JobHistoryTable} from './components/JobHistoryTable';
-import {JobDefinition, JobHistory, JobStatus} from './types';
+import * as api from '../api';
+import {JobHistoryTable} from '../components/JobHistoryTable';
+import {JobDefinition, JobHistory, JobStatus} from '../types';
 
 const INITIAL: JobStatus = {
   runCount: 0,

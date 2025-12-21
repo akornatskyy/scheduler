@@ -2,9 +2,9 @@ import {Layout} from '$shared/components';
 import {Errors, toErrorMap} from '$shared/errors';
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {Link, useLocation} from 'react-router';
-import * as api from './api';
-import {JobTable} from './components/JobTable';
-import {CollectionItem, JobItem} from './types';
+import * as api from '../api';
+import {JobTable} from '../components/JobTable';
+import {CollectionItem, JobItem} from '../types';
 
 export function JobsPage() {
   const [collections, setCollections] = useState<CollectionItem[]>([]);

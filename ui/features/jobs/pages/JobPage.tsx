@@ -3,9 +3,9 @@ import {Errors, toErrorMap} from '$shared/errors';
 import update from 'immutability-helper';
 import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router';
-import * as api from './api';
-import {JobForm} from './components/JobForm';
-import {CollectionItem, JobInput} from './types';
+import * as api from '../api';
+import {JobForm} from '../components/JobForm';
+import {CollectionItem, JobInput} from '../types';
 
 const INITIAL: JobInput = {
   name: '',

@@ -1,10 +1,10 @@
 import {act, render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import * as api from './api';
+import * as api from '../api';
 import {CollectionsPage} from './CollectionsPage';
-import {CollectionItem} from './types';
+import {CollectionItem} from '../types';
 
-jest.mock('./api');
+jest.mock('../api');
 
 describe('collections page', () => {
   beforeEach(() => jest.clearAllMocks());

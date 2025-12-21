@@ -1,12 +1,11 @@
 import {api} from '$features/collections';
-import {go} from '$shared/fetch';
+import {go} from '$shared/api';
 import {Variable, VariableItem} from '../types';
 
 export const listCollections = api.listCollections;
 
 type ListVariablesResponse = {
   items: VariableItem[];
-  etag?: string | null;
 };
 
 export const listVariables = (

@@ -1,4 +1,4 @@
-import {go} from '$shared/fetch';
+import {go} from '$shared/api';
 import {Collection, CollectionItem} from '../types';
 
 type ListCollectionsResponse = {

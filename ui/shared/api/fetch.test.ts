@@ -1,4 +1,4 @@
-import {DomainError, ValidationError} from './errors';
+import {DomainError, ValidationError} from '../errors';
 import {go} from './fetch';
 
 describe('fetch go', () => {

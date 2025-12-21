@@ -1,10 +1,10 @@
 import {act, render, screen, waitFor} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import * as api from './api';
+import * as api from '../api';
+import {JobItem} from '../types';
 import {JobsPage} from './JobsPage';
-import {JobItem} from './types';
 
-jest.mock('./api');
+jest.mock('../api');
 
 describe('jobs page', () => {
   beforeEach(() => jest.clearAllMocks());

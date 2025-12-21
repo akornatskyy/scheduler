@@ -1,9 +1,9 @@
 import {act, render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import * as api from './api';
+import * as api from '../api';
 import {VariablesPage} from './VariablesPage';
 
-jest.mock('./api');
+jest.mock('../api');
 
 describe('variables page', () => {
   beforeEach(() => jest.clearAllMocks());

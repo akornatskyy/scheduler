@@ -2,21 +2,19 @@ import {Layout} from '$shared/components';
 import {Errors, toErrorMap} from '$shared/errors';
 import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router';
-import * as api from './api';
-import {VariableForm} from './components/VariableForm';
-import {CollectionItem, Variable} from './types';
+import * as api from '../api';
+import {CollectionForm} from '../components/CollectionForm';
+import {Collection} from '../types';
 
-const INITIAL: Variable = {
-  collectionId: '',
+const INITIAL: Collection = {
   name: '',
-  value: '',
+  state: 'enabled',
 };
 
-export function VariablePage() {
+export function CollectionPage() {
   const navigate = useNavigate();
   const {id} = useParams<{id: string}>();
-  const [item, setItem] = useState<Variable>(INITIAL);
-  const [collections, setCollections] = useState<CollectionItem[]>([]);
+  const [item, setItem] = useState<Collection>(INITIAL);
   const [pending, setPending] = useState<boolean>(true);
   const [errors, setErrors] = useState<Errors>({});
 
@@ -24,7 +22,7 @@ export function VariablePage() {
     if (id) {
       (async () => {
         try {
-          const data = await api.retrieveVariable(id);
+          const data = await api.retrieveCollection(id);
           setItem(data);
           setPending(false);
         } catch (error) {
@@ -32,25 +30,10 @@ export function VariablePage() {
           setPending(false);
         }
       })();
-    } else {
-      setItem(INITIAL);
-      setPending(false);
+      return;
     }
 
-    (async () => {
-      try {
-        const {items} = await api.listCollections();
-        setCollections(items);
-        setItem((prev) => {
-          if (prev.collectionId) return prev;
-          if (items.length > 0) return {...prev, collectionId: items[0].id};
-          setErrors({collectionId: 'There is no collection available.'});
-          return prev;
-        });
-      } catch (error) {
-        setErrors(toErrorMap(error));
-      }
-    })();
+    setPending(false);
   }, [id]);
 
   const handleChange = useCallback((name: string, value: string) => {
@@ -61,8 +44,8 @@ export function VariablePage() {
     setPending(true);
 
     try {
-      await api.saveVariable(item);
-      navigate('/variables');
+      await api.saveCollection(item);
+      navigate('/collections');
     } catch (error) {
       setErrors(toErrorMap(error));
       setPending(false);
@@ -75,8 +58,8 @@ export function VariablePage() {
     setPending(true);
 
     try {
-      await api.deleteVariable(item.id, item.etag);
-      navigate('/variables', {replace: true});
+      await api.deleteCollection(item.id, item.etag);
+      navigate('/collections', {replace: true});
     } catch (error) {
       setErrors(toErrorMap(error));
       setPending(false);
@@ -84,10 +67,9 @@ export function VariablePage() {
   }, [item.id, item.etag, navigate]);
 
   return (
-    <Layout title={`Variable ${item.name}`} errors={errors}>
-      <VariableForm
+    <Layout title={`Collection ${item.name}`} errors={errors}>
+      <CollectionForm
         item={item}
-        collections={collections}
         pending={pending}
         errors={errors}
         onChange={handleChange}

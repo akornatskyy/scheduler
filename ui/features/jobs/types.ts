@@ -1,8 +1,4 @@
-export type CollectionItem = {
-  id: string;
-  name: string;
-  state: string;
-};
+export type {CollectionItem} from '$features/collections';
 
 export type JobState = 'enabled' | 'disabled';
 

@@ -1,11 +1,11 @@
 import {ValidationError} from '$shared/errors';
 import {act, fireEvent, render, screen} from '@testing-library/react';
 import {Route, MemoryRouter as Router, Routes} from 'react-router';
-import * as api from './api';
+import * as api from '../api';
+import {JobDefinition} from '../types';
 import {JobPage} from './JobPage';
-import {JobDefinition} from './types';
 
-jest.mock('./api');
+jest.mock('../api');
 
 const mockNavigate = jest.fn();
 

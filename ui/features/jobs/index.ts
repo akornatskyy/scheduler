@@ -1,3 +1,3 @@
-export {JobHistoryPage} from './JobHistoryPage';
-export {JobPage} from './JobPage';
-export {JobsPage} from './JobsPage';
+export {JobHistoryPage} from './pages/JobHistoryPage';
+export {JobPage} from './pages/JobPage';
+export {JobsPage} from './pages/JobsPage';

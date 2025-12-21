@@ -1,5 +1,5 @@
 import {api} from '$features/collections';
-import {go} from '$shared/fetch';
+import {go} from '$shared/api';
 import update from 'immutability-helper';
 import {
   HttpRequest,
@@ -15,7 +15,6 @@ export const listCollections = api.listCollections;
 
 type ListJobsResponse = {
   items: JobItem[];
-  etag?: string | null;
 };
 
 export const listJobs = (

@@ -2,9 +2,9 @@ import {Layout} from '$shared/components';
 import {Errors, toErrorMap} from '$shared/errors';
 import {useEffect, useState} from 'react';
 import {Link} from 'react-router';
-import * as api from './api';
-import {CollectionTable} from './components/CollectionTable';
-import {CollectionItem} from './types';
+import * as api from '../api';
+import {CollectionTable} from '../components/CollectionTable';
+import {CollectionItem} from '../types';
 
 export function CollectionsPage() {
   const [items, setItems] = useState<CollectionItem[]>([]);

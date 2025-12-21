@@ -1,5 +1,5 @@
 /* eslint-disable no-redeclare */
-import {DomainError, Errors, ValidationError} from './errors';
+import {DomainError, Errors, ValidationError} from '../errors';
 
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
 

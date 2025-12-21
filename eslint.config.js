@@ -51,7 +51,10 @@ module.exports = [
         'error',
         {argsIgnorePattern: '^_', varsIgnorePattern: '^_'},
       ],
-      'no-restricted-imports': ['error', {patterns: ['$features/*/*']}],
+      'no-restricted-imports': [
+        'error',
+        {patterns: ['$features/*/*', '$shared/*/*']},
+      ],
 
       ...prettierConfig.rules,
     },

@@ -1,2 +1,2 @@
-export {VariablePage} from './VariablePage';
-export {VariablesPage} from './VariablesPage';
+export {VariablePage} from './pages/VariablePage';
+export {VariablesPage} from './pages/VariablesPage';

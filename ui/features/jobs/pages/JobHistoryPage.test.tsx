@@ -1,10 +1,10 @@
 import {act, fireEvent, render, screen, waitFor} from '@testing-library/react';
 import {Route, MemoryRouter as Router, Routes} from 'react-router';
+import * as api from '../api';
+import {JobHistory, JobStatus} from '../types';
 import {JobHistoryPage} from './JobHistoryPage';
-import * as api from './api';
-import {JobHistory, JobStatus} from './types';
 
-jest.mock('./api');
+jest.mock('../api');
 
 const mockNavigate = jest.fn();
 
