@@ -7,13 +7,15 @@ export type VariableItem = {
   updated: string;
 };
 
-export type VariableInput = {
-  name: string;
-  collectionId: string;
+export type Variable = VariableItem & {
   value: string;
+  etag?: string;
 };
 
-export type Variable = VariableInput & {
+export type VariableInput = {
   id?: string;
+  collectionId: string;
+  name: string;
+  value: string;
   etag?: string;
 };

@@ -9,7 +9,7 @@ import {
   HttpRequestHeader,
   JobInput,
   RetryPolicy,
-} from '../../job/types';
+} from '../types';
 
 type Props = {
   item: JobInput;

@@ -4,9 +4,9 @@ import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router';
 import * as api from '../api';
 import {VariableForm} from '../components/VariableForm';
-import {CollectionItem, Variable} from '../types';
+import {CollectionItem, VariableInput} from '../types';
 
-const INITIAL: Variable = {
+const INITIAL: VariableInput = {
   collectionId: '',
   name: '',
   value: '',
@@ -15,7 +15,7 @@ const INITIAL: Variable = {
 export function VariablePage() {
   const navigate = useNavigate();
   const {id} = useParams<{id: string}>();
-  const [item, setItem] = useState<Variable>(INITIAL);
+  const [item, setItem] = useState<VariableInput>(INITIAL);
   const [collections, setCollections] = useState<CollectionItem[]>([]);
   const [pending, setPending] = useState<boolean>(true);
   const [errors, setErrors] = useState<Errors>({});

@@ -3,10 +3,10 @@ import {Errors} from '$shared/errors';
 import React from 'react';
 import {Button, Form} from 'react-bootstrap';
 import {Link} from 'react-router';
-import {Collection} from '../../collection/types';
+import {CollectionInput} from '../types';
 
 type Props = {
-  item: Collection;
+  item: CollectionInput;
   pending: boolean;
   errors: Errors;
   onChange?: (name: string, value: string) => void;

@@ -54,6 +54,7 @@ describe('variable page', () => {
       collectionId: '65ada2f9',
       name: 'My Var #1',
       value: 'Some Value',
+      updated: '2025-12-29T22:00:58.348',
     });
 
     await actRenderEdit();
@@ -98,6 +99,7 @@ describe('variable page', () => {
       collectionId: '65ada2f9',
       name: 'My Var #1',
       value: 'Some Value',
+      updated: '2025-12-29T22:00:58.348',
     });
 
     await actRenderEdit();
@@ -218,6 +220,7 @@ describe('variable page', () => {
       name: 'My Var #1',
       collectionId: 'abc',
       value: 'Some Value',
+      updated: '2025-12-29T22:00:58.348',
       etag: '"1n9er1hz749r"',
     });
     jest.mocked(api.deleteVariable).mockResolvedValue();
@@ -244,6 +247,7 @@ describe('variable page', () => {
       name: 'My Var #1',
       collectionId: 'abc',
       value: 'Some Value',
+      updated: '2025-12-29T22:00:58.348',
     });
     jest
       .mocked(api.deleteVariable)

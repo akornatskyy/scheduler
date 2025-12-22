@@ -1,4 +1,3 @@
-import React from 'react';
 import {Table} from 'react-bootstrap';
 import {Link} from 'react-router';
 import {CollectionItem} from '../types';

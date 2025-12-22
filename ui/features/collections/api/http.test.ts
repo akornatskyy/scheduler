@@ -65,10 +65,9 @@ describe('collections api', () => {
 
     await api.saveCollection({
       id: '123',
-      etag: '"2hhaswzbz72p8"',
       name: 'My App',
       state: 'enabled',
-      updated: '2019-08-29T13:29:36.976Z',
+      etag: '"2hhaswzbz72p8"',
     });
 
     expect(global.fetch).toHaveBeenCalledWith('/collections/123', {

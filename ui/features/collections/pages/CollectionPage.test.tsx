@@ -31,8 +31,10 @@ describe('collection page', () => {
 
   it('renders edit item', async () => {
     jest.mocked(api.retrieveCollection).mockResolvedValue({
+      id: 'GrvOG8yC',
       name: 'My Other App',
       state: 'disabled',
+      updated: '2025-12-29T22:00:58.348',
     });
 
     await actRenderEdit();
@@ -119,6 +121,7 @@ describe('collection page', () => {
       id: '65ada2f9',
       name: '',
       state: 'enabled',
+      updated: '2025-12-29T22:00:58.348',
       etag: '"1n9er1hz749r"',
     });
     jest.mocked(api.deleteCollection).mockResolvedValue();
@@ -145,6 +148,7 @@ describe('collection page', () => {
       id: '65ada2f9',
       name: '',
       state: 'disabled',
+      updated: '2025-12-29T22:00:58.348',
       etag: '"1n9er1hz749r"',
     });
     jest

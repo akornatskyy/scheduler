@@ -1,6 +1,6 @@
 import {fireEvent, render, screen} from '@testing-library/react';
 import {formatDate, formatRunning, JobHistoryTable} from './JobHistoryTable';
-import {JobHistory, JobStatus} from '../../history/types';
+import {JobHistory, JobStatus} from '../types';
 
 describe('job history status formatters', () => {
   it.each([

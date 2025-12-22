@@ -1,12 +1,12 @@
 import {fireEvent, render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
+import {CollectionItem} from '../types';
 import {JobForm} from './JobForm';
-import {CollectionItem} from '../../job/types';
 
 describe('job form component', () => {
   const collections: CollectionItem[] = [
-    {id: '65ada2f9', name: 'My App #1'},
-    {id: '7d76cb30', name: 'My Other App'},
+    {id: '65ada2f9', name: 'My App #1', state: 'disabled'},
+    {id: '7d76cb30', name: 'My Other App', state: 'enabled'},
   ];
   let props: Parameters<typeof JobForm>[0];
 

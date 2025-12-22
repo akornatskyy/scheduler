@@ -4,9 +4,9 @@ import {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router';
 import * as api from '../api';
 import {CollectionForm} from '../components/CollectionForm';
-import {Collection} from '../types';
+import {CollectionInput} from '../types';
 
-const INITIAL: Collection = {
+const INITIAL: CollectionInput = {
   name: '',
   state: 'enabled',
 };
@@ -14,7 +14,7 @@ const INITIAL: Collection = {
 export function CollectionPage() {
   const navigate = useNavigate();
   const {id} = useParams<{id: string}>();
-  const [item, setItem] = useState<Collection>(INITIAL);
+  const [item, setItem] = useState<CollectionInput>(INITIAL);
   const [pending, setPending] = useState<boolean>(true);
   const [errors, setErrors] = useState<Errors>({});
 

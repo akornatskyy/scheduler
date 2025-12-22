@@ -1,5 +1,5 @@
 import {go} from '$shared/api';
-import {Collection, CollectionItem} from '../types';
+import {Collection, CollectionInput, CollectionItem} from '../types';
 
 type ListCollectionsResponse = {
   items: CollectionItem[];
@@ -11,7 +11,7 @@ export const listCollections = (): Promise<ListCollectionsResponse> =>
 export const retrieveCollection = (id: string): Promise<Collection> =>
   go('GET', `/collections/${id}`);
 
-export const saveCollection = (c: Collection): Promise<void> =>
+export const saveCollection = (c: CollectionInput): Promise<void> =>
   c.id ? go('PATCH', `/collections/${c.id}`, c) : go('POST', '/collections', c);
 
 export const deleteCollection = (id: string, etag?: string): Promise<void> =>

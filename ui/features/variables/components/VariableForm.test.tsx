@@ -13,8 +13,8 @@ describe('variable form component', () => {
         value: 'Some Value',
       },
       collections: [
-        {id: '65ada2f9', name: 'My App #1'},
-        {id: 'de1044cc', name: 'My App #2'},
+        {id: '65ada2f9', name: 'My App #1', state: 'disabled'},
+        {id: 'de1044cc', name: 'My App #2', state: 'enabled'},
       ],
       pending: false,
       errors: {},
