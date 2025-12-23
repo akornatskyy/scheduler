@@ -1,18 +1,8 @@
-import {JobHistoryPage} from '$features/jobs';
-import {Container} from 'react-bootstrap';
-import {Navigate, Outlet, RouteObject} from 'react-router';
+import {Navigate, RouteObject} from 'react-router';
 import {CollectionPage, CollectionsPage} from './features/collections';
-import {JobPage, JobsPage} from './features/jobs';
+import {JobHistoryPage, JobPage, JobsPage} from './features/jobs';
 import {VariablePage, VariablesPage} from './features/variables';
-import {Footer, Header} from './shared/components';
-
-const Shell = () => (
-  <Container>
-    <Header />
-    <Outlet />
-    <Footer />
-  </Container>
-);
+import {Shell} from './shared/components';
 
 export const routes: RouteObject[] = [
   {

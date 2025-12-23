@@ -52,7 +52,7 @@ export type RetryPolicy = {
 };
 
 export type JobHistory = {
-  action: string;
+  action: 'HTTP';
   started: string;
   finished?: string;
   status: JobHistoryStatus;

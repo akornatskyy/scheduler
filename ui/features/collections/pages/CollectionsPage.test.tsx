@@ -1,47 +1,60 @@
-import {act, render, screen} from '@testing-library/react';
+import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import * as api from '../api';
+import {useCollections} from '../hooks/useCollections';
 import {CollectionsPage} from './CollectionsPage';
-import {CollectionItem} from '../types';
 
-jest.mock('../api');
+jest.mock('../hooks/useCollections');
 
 describe('collections page', () => {
-  beforeEach(() => jest.clearAllMocks());
-
-  it('handles list error', async () => {
-    jest.mocked(api.listCollections).mockRejectedValue(new Error('Unexpected'));
-
-    await actRender();
-
-    expect(api.listCollections).toHaveBeenCalledTimes(1);
-    expect(api.listCollections).toHaveBeenCalledWith();
-    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
+  const base: ReturnType<typeof useCollections> = {
+    items: [],
+    errors: undefined,
+  };
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.mocked(useCollections).mockReturnValue(base);
   });
 
-  it('updates state with fetched items', async () => {
-    const items: CollectionItem[] = [
-      {
-        id: '65ada2f9',
-        name: 'My App #1',
-        state: 'enabled',
-      },
-    ];
-    jest.mocked(api.listCollections).mockResolvedValue({items});
+  it('wires hook errors into layout', () => {
+    jest.mocked(useCollections).mockReturnValue({
+      ...base,
+      errors: {__ERROR__: 'Unexpected'},
+    });
 
-    await actRender();
-
-    expect(api.listCollections).toHaveBeenCalled();
-    expect(api.listCollections).toHaveBeenCalledTimes(1);
-    expect(screen.getByText('My App #1')).toBeVisible();
-  });
-});
-
-const actRender = () =>
-  act(async () =>
     render(
       <Router>
         <CollectionsPage />
       </Router>,
-    ),
-  );
+    );
+
+    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
+  });
+
+  it('renders items from hook', () => {
+    jest.mocked(useCollections).mockReturnValue({
+      ...base,
+      items: [{id: '65ada2f9', name: 'My App #1', state: 'enabled'}],
+    });
+
+    render(
+      <Router>
+        <CollectionsPage />
+      </Router>,
+    );
+
+    expect(screen.getByText('My App #1')).toBeVisible();
+  });
+
+  it('renders add link', () => {
+    render(
+      <Router>
+        <CollectionsPage />
+      </Router>,
+    );
+
+    expect(screen.getByRole('link', {name: 'Add'})).toHaveAttribute(
+      'href',
+      '/collections/add',
+    );
+  });
+});

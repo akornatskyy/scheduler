@@ -1,5 +1,6 @@
 import {Button, Col, Row, Table} from 'react-bootstrap';
 import {JobHistory, JobStatus} from '../types';
+import {formatDate, formatRunning} from './utils';
 
 type Props = {
   status: JobStatus;
@@ -79,9 +80,3 @@ export const JobHistoryTable = ({
     )}
   </>
 );
-
-export const formatRunning = (r: boolean | null | undefined) =>
-  r === true ? 'Running' : r === false ? 'Scheduled' : '';
-
-export const formatDate = (s: string | null | undefined) =>
-  s ? new Date(s).toLocaleString() : 'N/A';

@@ -59,6 +59,14 @@ describe('job form component', () => {
     expect(screen.getByText('Delete')).toBeEnabled();
   });
 
+  it('renders add item without Router', () => {
+    render(<JobForm {...props} item={{...props.item, id: ''}} />);
+
+    expect(screen.getByText('Save')).toBeEnabled();
+    expect(screen.queryByText('History')).not.toBeInTheDocument();
+    expect(screen.queryByText('Delete')).not.toBeInTheDocument();
+  });
+
   it('calls on item change callback', () => {
     const handler = jest.fn();
     render(<JobForm {...props} onItemChange={handler} />);
@@ -84,6 +92,10 @@ describe('job form component', () => {
     fireEvent.click(screen.getByLabelText('Disabled'));
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler).toHaveBeenNthCalledWith(1, 'state', 'disabled');
+
+    handler.mockClear();
+    fireEvent.click(screen.getByLabelText('Enabled'));
+    expect(handler).toHaveBeenCalledTimes(0);
 
     handler.mockClear();
     fireEvent.change(
