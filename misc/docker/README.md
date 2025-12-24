@@ -3,24 +3,25 @@
 Build docker images.
 
 ```sh
-docker build -t akorn/scheduler -f misc/docker/Dockerfile .
+docker build -t akorn/scheduler --build-arg VERSION=${VERSION} \
+  -f misc/docker/Dockerfile .
 ```
 
 ## Docker componse
 
 ```sh
-cd misc/docker
+export COMPOSE_FILE=./misc/docker/compose.yml
 
-docker-compose up -d
-docker-compose logs -f --tail=10
-docker-compose down
+docker compose up -d
+docker compose logs -f --tail=10
+docker compose down
 ```
 
 Update api with a fresh image.
 
 ```sh
-docker-compose stop api
-docker-compose up -d api
+docker compose stop api
+docker compose up -d api
 
 docker image prune --all
 # or

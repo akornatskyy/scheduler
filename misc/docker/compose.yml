@@ -1,16 +1,18 @@
-version: '3'
+name: scheduler
+
 services:
   db:
     container_name: db
     restart: always
-    image: postgres:12-alpine
+    image: akorn/postgres:18-scratch
     ports:
       - 5432:5432
     volumes:
       - db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=postgres
-        #command: postgres -c 'log_statement=all'
+      POSTGRES_DB: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+      #command: postgres -c 'log_statement=all'
     networks:
       - db
   api:
@@ -18,6 +20,7 @@ services:
     depends_on:
       - db
     restart: always
+    read_only: true
     stop_signal: SIGINT
     image: akorn/scheduler
     ports:
@@ -27,9 +30,11 @@ services:
     networks:
       - api
       - db
+
 volumes:
   db:
     driver: local
+
 networks:
   db:
   api:

@@ -3,6 +3,9 @@ name: image
 on:
   schedule:
     - cron: "0 4 * * 0"  # At 04:00 on Sunday.
+  push:
+    tags:
+      - 'v*.*.*'
   workflow_dispatch:
     inputs:
       tag:
@@ -14,24 +17,29 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout code
-        uses: actions/checkout@v6
-      - name: login to docker hub
-        uses: docker/login-action@v3
+      - uses: actions/checkout@v6
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
         with:
           username: akorn
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: install buildx
-        uses: docker/setup-buildx-action@v3
       - id: vars
         if: ${{ github.ref_type == 'tag' }}
         run: |
           echo ::set-output name=tag::$(echo ${{ github.ref_name }} | sed s/v//)
+      - run: |
+          echo "VERSION=$(git describe --tags --dirty --always | sed s/v//)" \
+            >> $GITHUB_ENV
+          echo "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
       - name: build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           file: misc/docker/Dockerfile
+          build-args: |
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            VERSION=${{ env.VERSION }}
           tags: akorn/scheduler${{
                 github.event.inputs.tag
                 && format(',akorn/scheduler:{0}', github.event.inputs.tag)
@@ -41,4 +49,5 @@ jobs:
                 && format(',akorn/scheduler:{0}', steps.vars.outputs.tag)
                 || ''
             }}
+          platforms: linux/amd64,linux/arm64
           push: true

@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-const (
-	Version = "1.5.1"
+var (
+	Version = "0.0.0-dev"
 )
 
 var (

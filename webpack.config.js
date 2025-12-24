@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
@@ -6,6 +7,9 @@ const plugins = [
   new HtmlPlugin({
     template: 'index.html',
     favicon: 'favicon.ico',
+  }),
+  new webpack.DefinePlugin({
+    'process.env.VERSION': JSON.stringify(process.env.VERSION ?? '0.0.0-dev'),
   }),
 ];
 
