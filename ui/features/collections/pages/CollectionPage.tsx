@@ -5,7 +5,7 @@ import {useCollection} from '../hooks/useCollection';
 
 export function CollectionPage() {
   const {id} = useParams<{id: string}>();
-  const {item, pending, errors, updateField, save, remove} = useCollection(id);
+  const {item, pending, errors, mutate, save, remove} = useCollection(id);
 
   return (
     <Layout title={`Collection ${item.name}`} errors={errors}>
@@ -13,7 +13,7 @@ export function CollectionPage() {
         item={item}
         pending={pending}
         errors={errors}
-        onChange={updateField}
+        mutate={mutate}
         onSave={save}
         onDelete={remove}
       />

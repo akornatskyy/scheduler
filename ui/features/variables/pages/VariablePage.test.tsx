@@ -1,7 +1,6 @@
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
 import {useVariable} from '../hooks/useVariable';
-import {VariableInput} from '../types';
 import {VariablePage} from './VariablePage';
 
 jest.mock('../hooks/useVariable');
@@ -16,10 +15,10 @@ jest.mock('react-router', () => {
 describe('variable page', () => {
   const base: ReturnType<typeof useVariable> = {
     collections: [],
-    item: {name: '', collectionId: '', value: ''} satisfies VariableInput,
+    item: {name: '', collectionId: '', value: ''},
     pending: false,
     errors: {},
-    updateField: jest.fn(),
+    mutate: jest.fn(),
     save: jest.fn(),
     remove: jest.fn(),
   };

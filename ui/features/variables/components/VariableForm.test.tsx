@@ -1,32 +1,31 @@
 import {fireEvent, render, screen} from '@testing-library/react';
+import {VariableInput} from '../types';
 import {VariableForm} from './VariableForm';
 
 describe('variable form component', () => {
+  let draft: VariableInput;
   let props: Parameters<typeof VariableForm>[0];
 
   beforeEach(() => {
     props = {
-      item: {
-        id: '',
-        collectionId: '65ada2f9',
-        name: 'My Var #1',
-        value: 'Some Value',
-      },
+      item: {name: 'My Var #1', collectionId: '65ada2f9', value: 'Some Value'},
       collections: [
         {id: '65ada2f9', name: 'My App #1', state: 'disabled'},
         {id: 'de1044cc', name: 'My App #2', state: 'enabled'},
       ],
       pending: false,
       errors: {},
+      mutate: jest.fn((recipe) => recipe(draft)),
+      onSave: jest.fn(),
+      onDelete: jest.fn(),
     };
+    draft = JSON.parse(JSON.stringify(props.item));
   });
 
   it('renders add item', () => {
     render(<VariableForm {...props} />);
 
-    expect(screen.getByLabelText('Name')).toHaveValue('My Var #1');
-    expect(screen.getByLabelText('Value')).toHaveValue('Some Value');
-    expect(screen.getByLabelText('Collection')).toHaveTextContent('My App #1');
+    expect(screen.getByRole('form')).toHaveFormValues(props.item);
     expect(screen.getByText('Save')).toBeVisible();
     expect(screen.queryByText('Delete')).not.toBeInTheDocument();
   });
@@ -34,42 +33,45 @@ describe('variable form component', () => {
   it('renders edit item', () => {
     render(<VariableForm {...props} item={{...props.item, id: '123de331'}} />);
 
-    expect(screen.getByLabelText('Name')).toHaveValue('My Var #1');
-    expect(screen.getByLabelText('Collection')).toHaveTextContent('My App #1');
-    expect(screen.getByLabelText('Value')).toHaveValue('Some Value');
+    expect(screen.getByRole('form')).toHaveFormValues(props.item);
     expect(screen.getByText('Save')).toBeVisible();
     expect(screen.getByText('Delete')).toBeVisible();
   });
 
-  it('calls on change callback', () => {
-    const handler = jest.fn();
-    render(<VariableForm {...props} onChange={handler} />);
+  it('calls mutate callback', () => {
+    const mutate = jest.mocked(props.mutate);
+    render(<VariableForm {...props} />);
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: {
         value: 'My Other Var',
       },
     });
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.name).toBe('My Other Var');
+
+    mutate.mockClear();
     fireEvent.change(screen.getByLabelText('Collection'), {
       target: {
         value: 'de1044cc',
       },
     });
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.collectionId).toBe('de1044cc');
+
+    mutate.mockClear();
     fireEvent.change(screen.getByLabelText('Value'), {
       target: {
         value: 'Hello',
       },
     });
-
-    expect(handler).toHaveBeenCalledTimes(3);
-    expect(handler).toHaveBeenNthCalledWith(1, 'name', 'My Other Var');
-    expect(handler).toHaveBeenNthCalledWith(2, 'collectionId', 'de1044cc');
-    expect(handler).toHaveBeenNthCalledWith(3, 'value', 'Hello');
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.value).toBe('Hello');
   });
 
   it('calls on save callback', () => {
-    const handler = jest.fn();
-    render(<VariableForm {...props} onSave={handler} />);
+    const handler = jest.mocked(props.onSave);
+    render(<VariableForm {...props} />);
 
     fireEvent.submit(screen.getByText('Save'));
 
@@ -78,21 +80,12 @@ describe('variable form component', () => {
 
   it('calls on delete callback', () => {
     props.item.id = '65ada2f9';
-    const handler = jest.fn();
-    render(<VariableForm {...props} onDelete={handler} />);
+    const handler = jest.mocked(props.onDelete);
+    render(<VariableForm {...props} />);
 
     fireEvent.click(screen.getByText('Delete'));
 
     expect(handler).toHaveBeenCalled();
-  });
-
-  it('handles undefined callbacks', () => {
-    props.item.id = '65ada2f9';
-    render(<VariableForm {...props} />);
-
-    fireEvent.change(screen.getByLabelText('Name'));
-    fireEvent.click(screen.getByText('Save'));
-    fireEvent.click(screen.getByText('Delete'));
   });
 
   it('renders no errors', () => {

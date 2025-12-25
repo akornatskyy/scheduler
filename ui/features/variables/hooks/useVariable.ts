@@ -1,4 +1,5 @@
 import {Errors, toErrorMap} from '$shared/errors';
+import {produce} from 'immer';
 import {useCallback, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router';
 import * as api from '../api';
@@ -50,9 +51,15 @@ export function useVariable(id?: string) {
     })();
   }, [id]);
 
-  const updateField = useCallback((name: string, value: string) => {
-    setItem((prev) => ({...prev, [name]: value}));
-  }, []);
+  const mutate = useCallback(
+    (recipe: (input: VariableInput) => void) =>
+      setItem(
+        produce((draft) => {
+          recipe(draft);
+        }),
+      ),
+    [],
+  );
 
   const save = useCallback(async () => {
     setPending(true);
@@ -80,5 +87,5 @@ export function useVariable(id?: string) {
     }
   }, [item.id, item.etag, navigate]);
 
-  return {collections, item, pending, errors, updateField, save, remove};
+  return {collections, item, pending, errors, mutate, save, remove};
 }

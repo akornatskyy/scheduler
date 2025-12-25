@@ -1,6 +1,6 @@
-import {FieldError, Tip} from '$shared/components';
+import {FieldError, Mutate, Tip} from '$shared/components';
 import {Errors} from '$shared/errors';
-import React from 'react';
+import React, {ChangeEvent} from 'react';
 import {Button, Col, Form, Row} from 'react-bootstrap';
 import {Link} from 'react-router';
 import {
@@ -16,15 +16,9 @@ type Props = {
   collections: CollectionItem[];
   pending: boolean;
   errors: Errors;
-  onItemChange?: (name: string, value: string) => void;
-  onActionChange?: (name: string, value: string) => void;
-  onRequestChange?: (name: string, value: string) => void;
-  onPolicyChange?: (name: string, value: string | number) => void;
-  onHeaderChange?: (name: string, value: string, i: number) => void;
-  onAddHeader?: () => void;
-  onDeleteHeader?: (i: number) => void;
-  onSave?: () => void;
-  onDelete?: () => void;
+  mutate: Mutate<JobInput>;
+  onSave: () => void;
+  onDelete: () => void;
 };
 
 const httpMethodsWithBody = ['POST', 'PUT', 'PATCH'];
@@ -34,71 +28,13 @@ export const JobForm = ({
   collections,
   pending,
   errors,
-  onItemChange,
-  onActionChange,
-  onRequestChange,
-  onPolicyChange,
-  onHeaderChange,
-  onAddHeader,
-  onDeleteHeader,
+  mutate,
   onSave,
   onDelete,
 }: Props) => {
-  const handleItemChange = ({
-    target: {name, value},
-  }: React.ChangeEvent<HTMLInputElement>) => {
-    onItemChange?.(name, value);
-  };
-
-  const handleActionChange = ({
-    target: {name, value},
-  }: React.ChangeEvent<HTMLSelectElement>) => {
-    onActionChange?.(name, value);
-  };
-
-  const handleRequestChange = ({
-    target: {name, value},
-  }: React.ChangeEvent<
-    HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-  >) => {
-    onRequestChange?.(name, value);
-  };
-
-  const handlePolicyChange = ({
-    target: {name, value},
-  }: React.ChangeEvent<HTMLInputElement>) => {
-    onPolicyChange?.(
-      name,
-      name === 'retryCount' && value.length > 0 ? parseInt(value) : value,
-    );
-  };
-
-  const handleHeaderChange = (
-    {
-      target: {name, value},
-    }: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-    i: number,
-  ) => {
-    onHeaderChange?.(name, value, i);
-  };
-
-  const handleAddHeader = () => {
-    onAddHeader?.();
-  };
-
-  const handleDeleteHeader = (i: number) => {
-    onDeleteHeader?.(i);
-  };
-
   const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSave?.();
-  };
-
-  const handleDelete = () => {
-    onDelete?.();
+    onSave();
   };
 
   const action = item.action;
@@ -110,18 +46,21 @@ export const JobForm = ({
         <Form.Group as={Col} controlId="body">
           <Form.Label>Body</Form.Label>
           <Form.Control
+            name="body"
             as="textarea"
             rows={5}
-            name="body"
             value={request.body}
             isInvalid={!!errors.body}
-            onChange={handleRequestChange}
+            onChange={(e) =>
+              mutate((d) => (d.action.request.body = e.target.value))
+            }
           />
           <FieldError message={errors.body} />
         </Form.Group>
       </Row>
     );
   }
+
   return (
     <Form autoComplete="off" role="form" onSubmit={handleSave}>
       <Row className="mb-3">
@@ -134,7 +73,7 @@ export const JobForm = ({
             type="text"
             value={item.name}
             isInvalid={!!errors.name}
-            onChange={handleItemChange}
+            onChange={(e) => mutate((d) => (d.name = e.target.value))}
           />
           <FieldError message={errors.name} />
         </Form.Group>
@@ -146,7 +85,7 @@ export const JobForm = ({
             as="select"
             value={item.collectionId}
             isInvalid={!!errors.collectionId}
-            onChange={handleItemChange}
+            onChange={(e) => mutate((d) => (d.collectionId = e.target.value))}
           >
             {collections.map((c) => (
               <option key={c.id} value={c.id}>
@@ -168,7 +107,7 @@ export const JobForm = ({
           value="enabled"
           checked={item.state === 'enabled'}
           isInvalid={!!errors.state}
-          onChange={handleItemChange}
+          onChange={() => mutate((d) => (d.state = 'enabled'))}
         />
         <Form.Check
           id="stateDisabled"
@@ -180,20 +119,14 @@ export const JobForm = ({
           value="disabled"
           checked={item.state === 'disabled'}
           isInvalid={!!errors.state}
-          onChange={handleItemChange}
+          onChange={() => mutate((d) => (d.state = 'disabled'))}
         />
         <FieldError message={errors.state} />
       </Form.Group>
       <Row className="mb-3">
         <Form.Group as={Col} controlId="type" className="col-4">
           <Form.Label>Action</Form.Label>
-          <Form.Select
-            name="type"
-            required
-            value={action.type}
-            isInvalid={!!errors.type}
-            onChange={handleActionChange}
-          >
+          <Form.Select name="type" required isInvalid={!!errors.type}>
             <option>HTTP</option>
           </Form.Select>
           <FieldError message={errors.type} />
@@ -236,43 +169,40 @@ export const JobForm = ({
             type="text"
             value={item.schedule}
             isInvalid={!!errors.schedule}
-            onChange={handleItemChange}
+            onChange={(e) => mutate((d) => (d.schedule = e.target.value))}
           />
           <FieldError message={errors.schedule} />
         </Form.Group>
       </Row>
-      <RequestRow
-        value={action.request}
-        errors={errors}
-        onChange={handleRequestChange}
-      />
+      <RequestRow value={action.request} errors={errors} mutate={mutate} />
       <Row className="mb-3">
         <Form.Group className="col mb-0">
           <Form.Label>Headers</Form.Label>
           <button
+            title="Add Header"
             className="btn"
             type="button"
             disabled={pending}
-            onClick={handleAddHeader}
+            onClick={() =>
+              mutate((d) =>
+                d.action.request.headers.push({name: '', value: ''}),
+              )
+            }
           >
             <i className="fa fa-plus" />
           </button>
         </Form.Group>
       </Row>
-      {action.request.headers.map((h, i) => (
-        <HeaderRow
-          key={i}
-          value={h}
-          pending={pending}
-          onChange={(e) => handleHeaderChange(e, i)}
-          onClick={() => handleDeleteHeader(i)}
-        />
-      ))}
+      <HeadersRow
+        headers={action.request.headers}
+        pending={pending}
+        mutate={mutate}
+      />
       {body}
       <RetryPolicyRow
         value={action.retryPolicy}
         errors={errors}
-        onChange={handlePolicyChange}
+        mutate={mutate}
       />
       <Tip>
         You can use variables for URI, header value and body, e.g.{' '}
@@ -290,7 +220,7 @@ export const JobForm = ({
             History
           </Link>
           <Button
-            onClick={handleDelete}
+            onClick={onDelete}
             variant="danger"
             className="float-end"
             disabled={pending}
@@ -306,14 +236,10 @@ export const JobForm = ({
 interface RequestRowProps {
   value: HttpRequest;
   errors: Errors;
-  onChange?: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => void;
+  mutate: Mutate<JobInput>;
 }
 
-export const RequestRow = ({value, errors, onChange}: RequestRowProps) => (
+export const RequestRow = ({value, errors, mutate}: RequestRowProps) => (
   <Row className="mb-3">
     <Form.Group as={Col} controlId="method" className="col-4">
       <Form.Label>Method</Form.Label>
@@ -322,7 +248,9 @@ export const RequestRow = ({value, errors, onChange}: RequestRowProps) => (
         required
         value={value.method}
         isInvalid={!!errors.method}
-        onChange={onChange}
+        onChange={(e) =>
+          mutate((d) => (d.action.request.method = e.target.value))
+        }
       >
         <option>HEAD</option>
         <option>GET</option>
@@ -342,75 +270,71 @@ export const RequestRow = ({value, errors, onChange}: RequestRowProps) => (
         type="text"
         value={value.uri}
         isInvalid={!!errors.uri}
-        onChange={onChange}
+        onChange={(e) => mutate((d) => (d.action.request.uri = e.target.value))}
       />
       <FieldError message={errors.uri} />
     </Form.Group>
   </Row>
 );
 
-interface HeaderRowProps {
-  value: HttpRequestHeader;
+interface HeadersRowProps {
+  headers: HttpRequestHeader[];
   pending: boolean;
-  onChange?: (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
-  ) => void;
-  onClick?: () => void;
+  mutate: Mutate<JobInput>;
 }
 
-export const HeaderRow = ({
-  value,
-  pending,
-  onChange,
-  onClick,
-}: HeaderRowProps) => (
-  <Row className="mb-3">
-    <Form.Group as={Col} className="input-group">
-      <button
-        className="btn"
-        type="button"
-        disabled={pending}
-        onClick={onClick}
-      >
-        <i className="fa fa-times" />
-      </button>
-      <Form.Control
-        name="name"
-        placeholder="Name"
-        type="text"
-        required
-        minLength={5}
-        maxLength={32}
-        value={value.name}
-        onChange={onChange}
-      />
-    </Form.Group>
-    <Form.Group as={Col}>
-      <Form.Control
-        name="value"
-        placeholder="Value"
-        type="text"
-        required
-        maxLength={256}
-        value={value.value}
-        onChange={onChange}
-      />
-    </Form.Group>
-  </Row>
-);
+export const HeadersRow = ({headers, pending, mutate}: HeadersRowProps) =>
+  headers.map((header, i) => (
+    <Row key={i} className="mb-3">
+      <Form.Group as={Col} className="input-group">
+        <button
+          title="Remove Header"
+          className="btn"
+          type="button"
+          disabled={pending}
+          onClick={() => mutate((d) => d.action.request.headers.splice(i, 1))}
+        >
+          <i className="fa fa-times" />
+        </button>
+        <Form.Control
+          aria-label="Header Name"
+          placeholder="Name"
+          type="text"
+          required
+          minLength={5}
+          maxLength={32}
+          value={header.name}
+          onChange={(e) =>
+            mutate((d) => (d.action.request.headers[i].name = e.target.value))
+          }
+        />
+      </Form.Group>
+      <Form.Group as={Col}>
+        <Form.Control
+          aria-label="Header Value"
+          placeholder="Value"
+          type="text"
+          required
+          maxLength={256}
+          value={header.value}
+          onChange={(e) =>
+            mutate((d) => (d.action.request.headers[i].value = e.target.value))
+          }
+        />
+      </Form.Group>
+    </Row>
+  ));
 
 interface RetryPolicyRowProps {
   value: RetryPolicy;
   errors: Errors;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  mutate: Mutate<JobInput>;
 }
 
 export const RetryPolicyRow = ({
   value,
   errors,
-  onChange,
+  mutate,
 }: RetryPolicyRowProps) => (
   <Row className="mb-3">
     <Form.Group as={Col} controlId="retryCount">
@@ -424,7 +348,11 @@ export const RetryPolicyRow = ({
         type="number"
         value={value.retryCount}
         isInvalid={!!errors.retryCount}
-        onChange={onChange}
+        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+          mutate(
+            (d) => (d.action.retryPolicy.retryCount = e.target.valueAsNumber),
+          )
+        }
       />
       <FieldError message={errors.retryCount} />
     </Form.Group>
@@ -437,7 +365,9 @@ export const RetryPolicyRow = ({
         type="text"
         value={value.retryInterval}
         isInvalid={!!errors.retryInterval}
-        onChange={onChange}
+        onChange={(e) =>
+          mutate((d) => (d.action.retryPolicy.retryInterval = e.target.value))
+        }
       />
       <FieldError message={errors.retryInterval} />
     </Form.Group>
@@ -450,7 +380,9 @@ export const RetryPolicyRow = ({
         type="text"
         value={value.deadline}
         isInvalid={!!errors.deadline}
-        onChange={onChange}
+        onChange={(e) =>
+          mutate((d) => (d.action.retryPolicy.deadline = e.target.value))
+        }
       />
       <FieldError message={errors.deadline} />
     </Form.Group>

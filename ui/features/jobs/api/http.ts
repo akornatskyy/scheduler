@@ -1,6 +1,5 @@
 import {api} from '$features/collections';
 import {go} from '$shared/api';
-import update from 'immutability-helper';
 import {
   HttpRequest,
   JobDefinition,
@@ -29,14 +28,11 @@ export const listJobs = (
 
 export const retrieveJob = async (id: string): Promise<JobDefinition> => {
   const data = await go<JobDefinition>('GET', `/jobs/${id}`);
-  const a = data.action;
-  a.request = update(defaultRequest, {$merge: a.request});
-  if (a.retryPolicy) {
-    a.retryPolicy = update(defaultRetryPolicy, {$merge: a.retryPolicy});
-  } else {
-    a.retryPolicy = {...defaultRetryPolicy};
-  }
-
+  const {action} = data;
+  action.request = {...defaultRequest, ...action.request};
+  action.retryPolicy = action.retryPolicy
+    ? {...defaultRetryPolicy, ...action.retryPolicy}
+    : {...defaultRetryPolicy};
   return data;
 };
 

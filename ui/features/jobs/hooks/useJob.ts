@@ -1,5 +1,5 @@
 import {Errors, toErrorMap} from '$shared/errors';
-import update from 'immutability-helper';
+import {produce} from 'immer';
 import {useCallback, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router';
 import * as api from '../api';
@@ -66,49 +66,15 @@ export function useJob(id?: string) {
     })();
   }, [id]);
 
-  const updateItem = useCallback((name: string, value: string) => {
-    setItem((prev) => ({...prev, [name]: value}));
-  }, []);
-
-  const updateAction = useCallback((name: string, value: string) => {
-    setItem((prev) => update(prev, {action: {[name]: {$set: value}}}));
-  }, []);
-
-  const updateRequest = useCallback((name: string, value: string) => {
-    setItem((prev) =>
-      update(prev, {action: {request: {[name]: {$set: value}}}}),
-    );
-  }, []);
-
-  const updatePolicy = useCallback((name: string, value: string | number) => {
-    setItem((prev) =>
-      update(prev, {action: {retryPolicy: {[name]: {$set: value}}}}),
-    );
-  }, []);
-
-  const updateHeader = useCallback((name: string, value: string, i: number) => {
-    setItem((prev) =>
-      update(prev, {
-        action: {request: {headers: {[i]: {[name]: {$set: value}}}}},
-      }),
-    );
-  }, []);
-
-  const addHeader = useCallback(() => {
-    setItem((prev) =>
-      update(prev, {
-        action: {request: {headers: {$push: [{name: '', value: ''}]}}},
-      }),
-    );
-  }, []);
-
-  const removeHeader = useCallback((i: number) => {
-    setItem((prev) =>
-      update(prev, {
-        action: {request: {headers: {$splice: [[i, 1]]}}},
-      }),
-    );
-  }, []);
+  const mutate = useCallback(
+    (recipe: (input: JobInput) => void) =>
+      setItem(
+        produce((draft) => {
+          recipe(draft);
+        }),
+      ),
+    [],
+  );
 
   const save = useCallback(async () => {
     setPending(true);
@@ -141,13 +107,7 @@ export function useJob(id?: string) {
     item,
     pending,
     errors,
-    updateItem,
-    updateAction,
-    updateRequest,
-    updatePolicy,
-    updateHeader,
-    addHeader,
-    removeHeader,
+    mutate,
     save,
     remove,
   };

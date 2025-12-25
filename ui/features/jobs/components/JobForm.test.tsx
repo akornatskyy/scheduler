@@ -1,9 +1,10 @@
 import {fireEvent, render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import {CollectionItem} from '../types';
+import {CollectionItem, JobInput} from '../types';
 import {JobForm} from './JobForm';
 
 describe('job form component', () => {
+  let draft: JobInput;
   const collections: CollectionItem[] = [
     {id: '65ada2f9', name: 'My App #1', state: 'disabled'},
     {id: '7d76cb30', name: 'My Other App', state: 'enabled'},
@@ -20,23 +21,18 @@ describe('job form component', () => {
         schedule: '',
         action: {
           type: 'HTTP',
-          request: {
-            method: 'GET',
-            uri: '',
-            headers: [],
-            body: '',
-          },
-          retryPolicy: {
-            deadline: '',
-            retryCount: 0,
-            retryInterval: '',
-          },
+          request: {method: 'GET', uri: '', headers: [], body: ''},
+          retryPolicy: {deadline: '', retryCount: 0, retryInterval: ''},
         },
       },
       collections,
       pending: false,
       errors: {},
+      mutate: jest.fn((recipe) => recipe(draft)),
+      onSave: jest.fn(),
+      onDelete: jest.fn(),
     };
+    draft = JSON.parse(JSON.stringify(props.item));
   });
 
   it('renders add item', () => {
@@ -67,37 +63,33 @@ describe('job form component', () => {
     expect(screen.queryByText('Delete')).not.toBeInTheDocument();
   });
 
-  it('calls on item change callback', () => {
-    const handler = jest.fn();
-    render(<JobForm {...props} onItemChange={handler} />);
+  it('calls item mutate callback', () => {
+    const mutate = jest.mocked(props.mutate);
+    const {rerender} = render(<JobForm {...props} />);
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: {
         value: 'My Job',
       },
     });
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenNthCalledWith(1, 'name', 'My Job');
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.name).toBe('My Job');
 
-    handler.mockClear();
+    mutate.mockClear();
     fireEvent.change(screen.getByLabelText('Collection'), {
       target: {
         value: '7d76cb30',
       },
     });
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenNthCalledWith(1, 'collectionId', '7d76cb30');
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.collectionId).toBe('7d76cb30');
 
-    handler.mockClear();
+    mutate.mockClear();
     fireEvent.click(screen.getByLabelText('Disabled'));
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenNthCalledWith(1, 'state', 'disabled');
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.state).toBe('disabled');
 
-    handler.mockClear();
-    fireEvent.click(screen.getByLabelText('Enabled'));
-    expect(handler).toHaveBeenCalledTimes(0);
-
-    handler.mockClear();
+    mutate.mockClear();
     fireEvent.change(
       screen.getByLabelText((content) => content.startsWith('Schedule')),
       {
@@ -106,148 +98,124 @@ describe('job form component', () => {
         },
       },
     );
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenNthCalledWith(1, 'schedule', '@every 5m');
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.schedule).toBe('@every 5m');
+
+    props.item.state = 'disabled';
+    rerender(<JobForm {...props} />);
+
+    mutate.mockClear();
+    fireEvent.click(screen.getByLabelText('Enabled'));
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.state).toBe('enabled');
   });
 
-  it('handle action change', () => {
-    const handler = jest.fn();
-    render(<JobForm {...props} onActionChange={handler} />);
+  it('calls request mutate callback', () => {
+    const mutate = jest.mocked(props.mutate);
+    const {rerender} = render(<JobForm {...props} />);
 
-    fireEvent.change(screen.getByLabelText('Action'), {
-      target: {
-        value: 'HTTP',
-      },
-    });
-
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenNthCalledWith(1, 'type', 'HTTP');
-  });
-
-  it('handle request change', () => {
-    props.item.action.request.method = 'POST';
-    const handler = jest.fn();
-    render(<JobForm {...props} onRequestChange={handler} />);
-
+    mutate.mockClear();
     fireEvent.change(screen.getByLabelText('Method'), {
       target: {
         value: 'PUT',
       },
     });
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenNthCalledWith(1, 'method', 'PUT');
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.action.request.method).toBe('PUT');
 
-    handler.mockClear();
+    mutate.mockClear();
     fireEvent.change(screen.getByLabelText('URI'), {
       target: {
         value: 'https://localhost',
       },
     });
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenNthCalledWith(1, 'uri', 'https://localhost');
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.action.request.uri).toBe('https://localhost');
 
-    handler.mockClear();
+    expect(screen.queryByLabelText('Body')).toBeNull();
+
+    props.item.action.request.method = 'POST';
+    rerender(<JobForm {...props} />);
+
+    mutate.mockClear();
     fireEvent.change(screen.getByLabelText('Body'), {
       target: {
         value: '{}',
       },
     });
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenNthCalledWith(1, 'body', '{}');
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.action.request.body).toBe('{}');
   });
 
-  it('handle policy change', () => {
-    const handler = jest.fn();
-    render(<JobForm {...props} onPolicyChange={handler} />);
+  it('calls headers mutate callback', () => {
+    const mutate = jest.mocked(props.mutate);
+    const {rerender} = render(<JobForm {...props} />);
 
+    mutate.mockClear();
+    fireEvent.click(screen.getByRole('button', {name: 'Add Header'}));
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.action.request.headers).toEqual([{name: '', value: ''}]);
+
+    props.item.action.request.headers = [
+      {name: 'Content-Type', value: 'application/json'},
+    ];
+    draft = JSON.parse(JSON.stringify(props.item));
+    rerender(<JobForm {...props} />);
+
+    mutate.mockClear();
+    fireEvent.change(screen.getByRole('textbox', {name: 'Header Name'}), {
+      target: {
+        value: 'X-Requested-With',
+      },
+    });
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.action.request.headers[0].name).toBe('X-Requested-With');
+
+    mutate.mockClear();
+    fireEvent.change(screen.getByRole('textbox', {name: 'Header Value'}), {
+      target: {
+        value: 'XMLHttpRequest',
+      },
+    });
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.action.request.headers[0].value).toBe('XMLHttpRequest');
+
+    mutate.mockClear();
+    fireEvent.click(screen.getByRole('button', {name: 'Remove Header'}));
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.action.request.headers).toHaveLength(0);
+  });
+
+  it('calls policy mutate callback', () => {
+    const mutate = jest.mocked(props.mutate);
+    render(<JobForm {...props} />);
+
+    mutate.mockClear();
     fireEvent.change(screen.getByLabelText('Retry Count'), {
       target: {
         value: '7',
       },
     });
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenNthCalledWith(1, 'retryCount', 7);
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.action.retryPolicy.retryCount).toBe(7);
 
-    handler.mockClear();
+    mutate.mockClear();
     fireEvent.change(screen.getByLabelText('Interval'), {
       target: {
         value: '45s',
       },
     });
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenNthCalledWith(1, 'retryInterval', '45s');
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.action.retryPolicy.retryInterval).toBe('45s');
 
-    handler.mockClear();
+    mutate.mockClear();
     fireEvent.change(screen.getByLabelText('Deadline'), {
       target: {
         value: '3m',
       },
     });
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenNthCalledWith(1, 'deadline', '3m');
-  });
-
-  it('add header', () => {
-    const handler = jest.fn();
-    render(<JobForm {...props} onAddHeader={handler} />);
-
-    fireEvent.click(screen.getByRole('button', {name: ''}));
-
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenCalledWith();
-  });
-
-  it('delete header', () => {
-    props.item.action.request.headers = [
-      {
-        name: 'X-Requested-With',
-        value: 'XMLHttpRequest',
-      },
-    ];
-    const handler = jest.fn();
-    render(<JobForm {...props} onDeleteHeader={handler} />);
-
-    fireEvent.click(
-      screen.getByText(
-        (_, element) =>
-          !!(
-            element &&
-            (element as HTMLButtonElement).type === 'button' &&
-            element.querySelector('i.fa-times')
-          ),
-      ),
-    );
-
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenCalledWith(0);
-  });
-
-  it('handle header change', () => {
-    props.item.action.request.headers = [
-      {
-        name: '',
-        value: '',
-      },
-    ];
-    const handler = jest.fn();
-    render(<JobForm {...props} onHeaderChange={handler} />);
-
-    fireEvent.change(screen.getAllByPlaceholderText('Name')[1], {
-      target: {
-        value: 'X-Requested-With',
-      },
-    });
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenNthCalledWith(1, 'name', 'X-Requested-With', 0);
-
-    handler.mockClear();
-    fireEvent.change(screen.getByPlaceholderText('Value'), {
-      target: {
-        value: 'XMLHttpRequest',
-      },
-    });
-    expect(handler).toHaveBeenCalledTimes(1);
-    expect(handler).toHaveBeenNthCalledWith(1, 'value', 'XMLHttpRequest', 0);
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.action.retryPolicy.deadline).toBe('3m');
   });
 
   it('renders edit item', () => {
@@ -262,19 +230,10 @@ describe('job form component', () => {
         request: {
           method: 'GET',
           uri: 'http://example.com',
-          headers: [
-            {
-              name: 'X-Requested-With',
-              value: 'XMLHttpRequest',
-            },
-          ],
+          headers: [{name: 'X-Requested-With', value: 'XMLHttpRequest'}],
           body: '',
         },
-        retryPolicy: {
-          retryCount: 3,
-          retryInterval: '10s',
-          deadline: '1m',
-        },
+        retryPolicy: {retryCount: 3, retryInterval: '10s', deadline: '1m'},
       },
     };
 
@@ -305,8 +264,8 @@ describe('job form component', () => {
   });
 
   it('calls on save callback', () => {
-    const handler = jest.fn();
-    render(<JobForm {...props} onSave={handler} />);
+    const handler = jest.mocked(props.onSave);
+    render(<JobForm {...props} />);
 
     fireEvent.submit(screen.getByText('Save'));
 
@@ -315,29 +274,16 @@ describe('job form component', () => {
 
   it('calls on delete callback', () => {
     props.item.id = '65ada2f9';
-    const handler = jest.fn();
-    render(
-      <Router>
-        <JobForm {...props} onDelete={handler} />
-      </Router>,
-    );
-
-    fireEvent.click(screen.getByText('Delete'));
-
-    expect(handler).toHaveBeenCalledWith();
-  });
-
-  it('handles undefined callbacks', () => {
-    props.item.id = '65ada2f9';
+    const handler = jest.mocked(props.onDelete);
     render(
       <Router>
         <JobForm {...props} />
       </Router>,
     );
 
-    fireEvent.change(screen.getByLabelText('Name'));
-    fireEvent.click(screen.getByText('Save'));
     fireEvent.click(screen.getByText('Delete'));
+
+    expect(handler).toHaveBeenCalled();
   });
 
   it('renders no errors', () => {

@@ -112,15 +112,9 @@ describe('useVariable', () => {
 
     const {result} = await act(async () => renderHook(() => useVariable()));
 
-    act(() => result.current.updateField('name', 'Hello'));
-    act(() => result.current.updateField('collectionId', '123de331'));
-    act(() => result.current.updateField('value', 'World'));
+    act(() => result.current.mutate((draft) => (draft.name = 'New name')));
 
-    expect(result.current.item).toEqual({
-      name: 'Hello',
-      collectionId: '123de331',
-      value: 'World',
-    });
+    expect(result.current.item.name).toEqual('New name');
   });
 
   it('saves and navigates to list page', async () => {

@@ -6,7 +6,7 @@ import {useVariable} from '../hooks/useVariable';
 export function VariablePage() {
   const {id} = useParams<{id: string}>();
 
-  const {item, collections, pending, errors, updateField, save, remove} =
+  const {item, collections, pending, errors, mutate, save, remove} =
     useVariable(id);
 
   return (
@@ -16,7 +16,7 @@ export function VariablePage() {
         collections={collections}
         pending={pending}
         errors={errors}
-        onChange={updateField}
+        mutate={mutate}
         onSave={save}
         onDelete={remove}
       />

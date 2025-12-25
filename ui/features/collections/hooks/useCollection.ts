@@ -1,4 +1,5 @@
 import {Errors, toErrorMap} from '$shared/errors';
+import {produce} from 'immer';
 import {useCallback, useEffect, useState} from 'react';
 import {useNavigate} from 'react-router';
 import * as api from '../api';
@@ -33,9 +34,15 @@ export function useCollection(id?: string) {
     setPending(false);
   }, [id]);
 
-  const updateField = useCallback((name: string, value: string) => {
-    setItem((prev) => ({...prev, [name]: value}));
-  }, []);
+  const mutate = useCallback(
+    (recipe: (input: CollectionInput) => void) =>
+      setItem(
+        produce((draft) => {
+          recipe(draft);
+        }),
+      ),
+    [],
+  );
 
   const save = useCallback(async () => {
     setPending(true);
@@ -67,7 +74,7 @@ export function useCollection(id?: string) {
     item,
     pending,
     errors,
-    updateField,
+    mutate,
     save,
     remove,
   };

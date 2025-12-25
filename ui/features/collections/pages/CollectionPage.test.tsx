@@ -1,7 +1,6 @@
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
 import {useCollection} from '../hooks/useCollection';
-import {CollectionInput} from '../types';
 import {CollectionPage} from './CollectionPage';
 
 jest.mock('../hooks/useCollection');
@@ -15,10 +14,10 @@ jest.mock('react-router', () => {
 
 describe('collection page', () => {
   const base: ReturnType<typeof useCollection> = {
-    item: {name: '', state: 'enabled'} satisfies CollectionInput,
+    item: {name: '', state: 'enabled'},
     pending: false,
     errors: {},
-    updateField: jest.fn(),
+    mutate: jest.fn(),
     save: jest.fn(),
     remove: jest.fn(),
   };

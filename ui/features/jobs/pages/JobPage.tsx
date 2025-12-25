@@ -6,21 +6,7 @@ import {useJob} from '../hooks/useJob';
 export function JobPage() {
   const {id} = useParams<{id: string}>();
 
-  const {
-    collections,
-    item,
-    pending,
-    errors,
-    updateItem,
-    updateAction,
-    updateRequest,
-    updatePolicy,
-    updateHeader,
-    addHeader,
-    removeHeader,
-    save,
-    remove,
-  } = useJob(id);
+  const {collections, item, pending, errors, mutate, save, remove} = useJob(id);
 
   return (
     <Layout title={`Job ${item.name}`} errors={errors}>
@@ -29,13 +15,7 @@ export function JobPage() {
         collections={collections}
         pending={pending}
         errors={errors}
-        onItemChange={updateItem}
-        onActionChange={updateAction}
-        onRequestChange={updateRequest}
-        onPolicyChange={updatePolicy}
-        onHeaderChange={updateHeader}
-        onAddHeader={addHeader}
-        onDeleteHeader={removeHeader}
+        mutate={mutate}
         onSave={save}
         onDelete={remove}
       />

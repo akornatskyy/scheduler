@@ -6,7 +6,7 @@
   "scripts": {
     "start": "webpack serve",
     "lint": "eslint webpack.config.js ui/ --max-warnings 0",
-    "build": "rm -rf static && webpack",
+    "build": "tsc && rm -rf static && webpack",
     "test": "jest"
   },
   "repository": {
@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/akornatskyy/scheduler",
   "dependencies": {
-    "immutability-helper": "^3.1.1",
+    "immer": "^11.1.3",
     "react": "^19.2.3",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.2.3",

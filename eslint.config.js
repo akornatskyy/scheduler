@@ -35,7 +35,7 @@ module.exports = [
     settings: {
       react: {
         version: 'detect',
-      },
+      }
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
@@ -59,7 +59,7 @@ module.exports = [
       ],
       'no-restricted-imports': [
         'error',
-        {patterns: ['$features/*/*', '$shared/*/*']},
+        {patterns: ['$features/*/*', '$shared/*/*', 'react-bootstrap/*']},
       ],
 
       ...prettierConfig.rules,

@@ -107,74 +107,14 @@ describe('useJob', () => {
     expect(result.current.errors.__ERROR__).toMatch(/Unexpected/);
   });
 
-  it('updates item fields', async () => {
+  it('updates fields', async () => {
     jest.mocked(api.listCollections).mockResolvedValue({items: []});
 
     const {result} = await act(async () => renderHook(() => useJob()));
 
-    act(() => result.current.updateItem('name', 'New name'));
+    act(() => result.current.mutate((draft) => (draft.name = 'New name')));
 
     expect(result.current.item.name).toBe('New name');
-  });
-
-  it('updates action fields', async () => {
-    jest.mocked(api.listCollections).mockResolvedValue({items: []});
-
-    const {result} = await act(async () => renderHook(() => useJob()));
-
-    act(() => result.current.updateAction('type', 'HTTP'));
-
-    expect(result.current.item.action.type).toBe('HTTP');
-  });
-
-  it('updates request fields', async () => {
-    jest.mocked(api.listCollections).mockResolvedValue({items: []});
-
-    const {result} = await act(async () => renderHook(() => useJob()));
-
-    act(() => result.current.updateRequest('uri', 'https://example.com'));
-
-    expect(result.current.item.action.request.uri).toBe('https://example.com');
-  });
-
-  it('updates retry policy fields', async () => {
-    jest.mocked(api.listCollections).mockResolvedValue({items: []});
-
-    const {result} = await act(async () => renderHook(() => useJob()));
-
-    act(() => result.current.updatePolicy('retryCount', 9));
-
-    expect(result.current.item.action.retryPolicy.retryCount).toBe(9);
-  });
-
-  it('updates a header in place', async () => {
-    jest.mocked(api.listCollections).mockResolvedValue({items: []});
-
-    const {result} = await act(async () => renderHook(() => useJob()));
-
-    act(() => result.current.addHeader());
-    act(() => result.current.updateHeader('name', 'X-Test', 0));
-    act(() => result.current.updateHeader('value', '123', 0));
-
-    expect(result.current.item.action.request.headers[0]).toEqual({
-      name: 'X-Test',
-      value: '123',
-    });
-  });
-
-  it('adds and removes headers', async () => {
-    jest.mocked(api.listCollections).mockResolvedValue({items: []});
-
-    const {result} = await act(async () => renderHook(() => useJob()));
-
-    act(() => result.current.addHeader());
-    act(() => result.current.addHeader());
-
-    expect(result.current.item.action.request.headers).toHaveLength(2);
-
-    act(() => result.current.removeHeader(0));
-
-    expect(result.current.item.action.request.headers).toHaveLength(1);
   });
 
   it('saves and navigates on success', async () => {

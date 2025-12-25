@@ -66,20 +66,26 @@ describe('fetch go', () => {
       });
     });
 
-    it('PATCH strips id/updated, sets if-match from etag', async () => {
+    it('PATCH strips id/updated, sets `if-match from etag', async () => {
       global.fetch = jest.fn().mockResolvedValue({status: 204});
 
-      await (
-        go as unknown as (
-          method: 'PATCH',
-          path: string,
-          data: unknown,
-        ) => Promise<void>
-      )('PATCH', '/', {id: 1, updated: 'x', etag: 'abc', a: 1});
+      await go('PATCH', '/', {id: 1, updated: 'x', etag: 'W/"123"', a: 1});
 
       expect(global.fetch).toHaveBeenCalledWith('/', {
         method: 'PATCH',
-        headers: {'content-type': 'application/json', 'if-match': 'abc'},
+        headers: {'content-type': 'application/json', 'if-match': 'W/"123"'},
+        body: JSON.stringify({a: 1}),
+      });
+    });
+
+    it('PATCH without etag', async () => {
+      global.fetch = jest.fn().mockResolvedValue({status: 204});
+
+      await go('PATCH', '/', {id: '1', updated: 'x', a: 1});
+
+      expect(global.fetch).toHaveBeenCalledWith('/', {
+        method: 'PATCH',
+        headers: {'content-type': 'application/json'},
         body: JSON.stringify({a: 1}),
       });
     });
@@ -87,11 +93,21 @@ describe('fetch go', () => {
     it('DELETE sets if-match when etag passed', async () => {
       global.fetch = jest.fn().mockResolvedValue({status: 204});
 
-      await go('DELETE', '/', 'abc');
+      await go('DELETE', '/', 'W/"123"');
 
       expect(global.fetch).toHaveBeenCalledWith('/', {
         method: 'DELETE',
-        headers: {'if-match': 'abc'},
+        headers: {'if-match': 'W/"123"'},
+      });
+    });
+
+    it('DELETE without etag', async () => {
+      global.fetch = jest.fn().mockResolvedValue({status: 204});
+
+      await go('DELETE', '/');
+
+      expect(global.fetch).toHaveBeenCalledWith('/', {
+        method: 'DELETE',
       });
     });
   });

@@ -68,10 +68,9 @@ describe('useCollection', () => {
   it('updates fields', async () => {
     const {result} = await act(async () => renderHook(() => useCollection()));
 
-    act(() => result.current.updateField('name', 'Hello'));
-    act(() => result.current.updateField('state', 'disabled'));
+    act(() => result.current.mutate((draft) => (draft.name = 'New name')));
 
-    expect(result.current.item).toEqual({name: 'Hello', state: 'disabled'});
+    expect(result.current.item.name).toEqual('New name');
   });
 
   it('saves and navigates to list page', async () => {

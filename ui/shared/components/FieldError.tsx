@@ -7,7 +7,7 @@ export const FieldError = ({message}: Props) => {
 
   return (
     <p className="invalid-feedback mb-0">
-      <i className="fa fa-exclamation me-1" aria-hidden="true" />
+      <i className="fa fa-exclamation" aria-hidden="true" />
       {message}
     </p>
   );

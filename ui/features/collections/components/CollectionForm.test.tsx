@@ -1,19 +1,22 @@
 import {fireEvent, render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
+import {CollectionInput} from '../types';
 import {CollectionForm} from './CollectionForm';
 
 describe('collection form component', () => {
+  let draft: CollectionInput;
   let props: Parameters<typeof CollectionForm>[0];
 
   beforeEach(() => {
     props = {
-      item: {
-        name: 'My App',
-        state: 'disabled',
-      },
+      item: {name: 'My App', state: 'disabled'},
       pending: false,
       errors: {},
+      mutate: jest.fn((recipe) => recipe(draft)),
+      onSave: jest.fn(),
+      onDelete: jest.fn(),
     };
+    draft = JSON.parse(JSON.stringify(props.item));
   });
 
   it('renders add item', () => {
@@ -40,25 +43,35 @@ describe('collection form component', () => {
     expect(screen.getByText('Delete')).toBeEnabled();
   });
 
-  it('calls on change callback', () => {
-    const handler = jest.fn();
-    render(<CollectionForm {...props} onChange={handler} />);
+  it('calls mutate callback', () => {
+    const mutate = jest.mocked(props.mutate);
+    const {rerender} = render(<CollectionForm {...props} />);
 
     fireEvent.change(screen.getByLabelText('Name'), {
       target: {
         value: 'My Other App',
       },
     });
-    expect(handler).toHaveBeenCalledTimes(1);
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.name).toEqual('My Other App');
 
-    handler.mockClear();
+    mutate.mockClear();
     fireEvent.click(screen.getByLabelText('Enabled'));
-    expect(handler).toHaveBeenCalledTimes(1);
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.state).toBe('enabled');
+
+    props.item.state = 'enabled';
+    rerender(<CollectionForm {...props} />);
+
+    mutate.mockClear();
+    fireEvent.click(screen.getByLabelText('Disabled'));
+    expect(mutate).toHaveBeenCalledTimes(1);
+    expect(draft.state).toBe('disabled');
   });
 
   it('calls on save callback', () => {
-    const handler = jest.fn();
-    render(<CollectionForm {...props} onSave={handler} />);
+    const handler = jest.mocked(props.onSave);
+    render(<CollectionForm {...props} />);
 
     fireEvent.submit(screen.getByText('Save'));
 
@@ -67,29 +80,16 @@ describe('collection form component', () => {
 
   it('calls on delete callback', () => {
     props.item.id = '65ada2f9';
-    const handler = jest.fn();
-    render(
-      <Router>
-        <CollectionForm {...props} onDelete={handler} />
-      </Router>,
-    );
-
-    fireEvent.click(screen.getByText('Delete'));
-
-    expect(handler).toHaveBeenCalled();
-  });
-
-  it('handles undefined callbacks', () => {
-    props.item.id = '65ada2f9';
+    const handler = jest.mocked(props.onDelete);
     render(
       <Router>
         <CollectionForm {...props} />
       </Router>,
     );
 
-    fireEvent.change(screen.getByLabelText('Name'));
-    fireEvent.click(screen.getByText('Save'));
     fireEvent.click(screen.getByText('Delete'));
+
+    expect(handler).toHaveBeenCalled();
   });
 
   it('renders no errors', () => {

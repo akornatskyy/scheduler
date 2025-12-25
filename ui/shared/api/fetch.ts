@@ -7,10 +7,10 @@ type PatchData = {id?: unknown; etag?: string; updated?: unknown};
 
 export function go<T>(method: 'GET', path: string): Promise<T>;
 export function go<T>(method: 'POST', path: string, data: unknown): Promise<T>;
-export function go(
+export function go<T extends PatchData>(
   method: 'PATCH',
   path: string,
-  data: PatchData,
+  data: T,
 ): Promise<void>;
 export function go(
   method: 'DELETE',
