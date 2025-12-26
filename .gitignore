@@ -3,7 +3,7 @@
 *.test
 *.out
 node_modules/
-static/
+/apps/api/static/
 coverage/
 .env*
 !.env.example

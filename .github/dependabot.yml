@@ -5,11 +5,11 @@ updates:
   schedule:
     interval: daily
 - package-ecosystem: gomod
-  directory: '/'
+  directory: '/apps/api'
   schedule:
     interval: daily
 - package-ecosystem: npm
-  directory: '/'
+  directory: '/app/web'
   schedule:
     interval: daily
   open-pull-requests-limit: 10

@@ -1,5 +1,9 @@
 .git/
-static/
-node_modules/
+/apps/api/static/
+**/node_modules/
 *.exe
 scheduler
+**/testdata/
+**/*_test.go
+**/*.test.ts
+**/*.test.tsx
