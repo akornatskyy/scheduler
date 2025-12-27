@@ -75,8 +75,7 @@ loop:
 				continue
 			}
 
-			switch n.Channel {
-			case chTableUpdate:
+			if n.Channel == chTableUpdate {
 				fields := strings.Fields(n.Extra)
 				e.Operation = fields[0]
 				e.ObjectType = fields[1]
@@ -86,16 +85,22 @@ loop:
 				}
 			}
 		case <-time.After(1 * time.Minute):
-			s.listener.Ping()
+			if err := s.listener.Ping(); err != nil {
+				log.Printf("WARN: listener ping failed: %v", err)
+			}
 		case <-s.done:
 			break loop
 		}
 	}
-	s.close()
+	if err := s.close(); err != nil {
+		log.Printf("WARN: failed to close subscriber: %v", err)
+	}
 	log.Printf("subscriber stopped")
 }
 
 func (s *sqlSubscriber) close() error {
-	s.listener.UnlistenAll()
+	if err := s.listener.UnlistenAll(); err != nil {
+		log.Printf("WARN: failed to unlisten all: %v", err)
+	}
 	return s.listener.Close()
 }

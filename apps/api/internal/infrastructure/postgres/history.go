@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"log"
 	"time"
 
 	"github.com/akornatskyy/scheduler/internal/domain"
@@ -12,7 +13,11 @@ func (r *sqlRepository) ListJobHistory(id string) ([]*domain.JobHistory, error) 
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Printf("WARN: failed to close rows: %v", err)
+		}
+	}()
 	for rows.Next() {
 		j := &domain.JobHistory{}
 		err := rows.Scan(

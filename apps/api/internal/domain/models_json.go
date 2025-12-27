@@ -154,7 +154,7 @@ func (s *JobStatusCode) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// Strings returns a human readable representation of status
+// String returns a human readable representation of status.
 func (s JobHistoryStatus) String() string {
 	return jobHistoryStatusToString[s]
 }

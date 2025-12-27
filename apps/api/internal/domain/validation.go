@@ -156,7 +156,7 @@ func validateAction(e *errorstate.ErrorState, a *Action) {
 	validateRetryPolicy(e, a.RetryPolicy)
 }
 
-func validateHTTPRequest(e *errorstate.ErrorState, r *HttpRequest) {
+func validateHTTPRequest(e *errorstate.ErrorState, r *HTTPRequest) {
 	if r == nil {
 		addRequiredObjectError(e, "request")
 		return

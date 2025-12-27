@@ -11,8 +11,7 @@ func (s *Service) OnUpdateEvent(m *domain.UpdateEvent) error {
 	log.Printf("event: %v", m)
 	switch m.ObjectType {
 	case "collection":
-		switch m.Operation {
-		case "UPDATE":
+		if m.Operation == "UPDATE" {
 			return s.onCollectionUpdate(m.ObjectID)
 		}
 	case "job":
@@ -29,12 +28,12 @@ func (s *Service) OnUpdateEvent(m *domain.UpdateEvent) error {
 		case "connected", "reconnected":
 			for i := 1; i <= 5; i++ {
 				// might fail in case reconnected
-				if err := s.Repository.Ping(); err != nil {
-					log.Printf("ping attempt %d failed, %s", i, err)
-					time.Sleep(time.Second)
-				} else {
+				err := s.Repository.Ping()
+				if err == nil {
 					break
 				}
+				log.Printf("ping attempt %d failed, %s", i, err)
+				time.Sleep(time.Second)
 			}
 			return s.scheduleJobs()
 		}
@@ -60,7 +59,9 @@ func (s *Service) onCollectionUpdate(id string) error {
 				return err
 			}
 			if j.State == domain.JobStateEnabled {
-				s.Scheduler.Add(j)
+				if err := s.Scheduler.Add(j); err != nil {
+					log.Printf("WARN: failed to add job %s: %v", j.ID, err)
+				}
 			}
 		}
 	}
@@ -78,7 +79,9 @@ func (s *Service) onJobInsert(id string) error {
 			return err
 		}
 		if c.State == domain.CollectionStateEnabled {
-			s.Scheduler.Add(j)
+			if err := s.Scheduler.Add(j); err != nil {
+				log.Printf("WARN: failed to add job %s: %v", j.ID, err)
+			}
 		}
 	}
 	return nil
@@ -96,7 +99,9 @@ func (s *Service) onJobUpdate(id string) error {
 			return err
 		}
 		if c.State == domain.CollectionStateEnabled {
-			s.Scheduler.Add(j)
+			if err := s.Scheduler.Add(j); err != nil {
+				log.Printf("failed to add job %s: %v", j.ID, err)
+			}
 		}
 	}
 	return nil

@@ -1,0 +1,58 @@
+version: '2'
+linters:
+  enable:
+    - errcheck
+    - gocyclo
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
+    - nolintlint
+    - revive
+    - staticcheck
+    - unused
+
+  settings:
+    govet:
+      enable-all: true
+      disable:
+        - fieldalignment
+
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+
+    staticcheck:
+      checks: ['all']
+
+    revive:
+      rules:
+        - name: var-naming
+        - name: line-length-limit
+          arguments: [120]
+        - name: blank-imports
+        - name: early-return
+        - name: unnecessary-stmt
+        - name: package-comments
+          disabled: true
+
+    gocyclo:
+      min-complexity: 15
+
+    misspell:
+      locale: US
+
+  exclusions:
+    rules:
+      - linters:
+          - govet
+        text: 'shadow: declaration of "err"'
+      - path: 'test\.go'
+        linters:
+          - errcheck
+        text: 'Error return value'
+      - path: 'internal/infrastructure/http'
+        linters:
+          - revive
+        source: '^package http$'
+        text: 'var-naming: avoid package names'

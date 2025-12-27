@@ -1,3 +1,5 @@
+// Package domain defines the core domain models and types for the scheduler application,
+// including collections, jobs, variables, and their associated states and operations.
 package domain
 
 import (
@@ -65,11 +67,11 @@ type (
 
 	Action struct {
 		Type        string       `json:"type"`
-		Request     *HttpRequest `json:"request"`
+		Request     *HTTPRequest `json:"request"`
 		RetryPolicy *RetryPolicy `json:"retryPolicy,omitempty"`
 	}
 
-	HttpRequest struct {
+	HTTPRequest struct {
 		Method  string           `json:"method,omitempty"`
 		URI     string           `json:"uri"`
 		Headers []*NameValuePair `json:"headers,omitempty"`
@@ -131,6 +133,7 @@ func NewID() string {
 	if err != nil {
 		return ""
 	}
+	//nolint:gosec
 	if id[0] >= 248 { // Exclude '-' and '_'
 		id[0] -= 248
 	}

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/akornatskyy/scheduler/internal/domain"
 )
@@ -12,7 +13,11 @@ func (r *sqlRepository) ListVariables(collectionID string) ([]*domain.VariableIt
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Printf("failed to close rows: %v", err)
+		}
+	}()
 	for rows.Next() {
 		v := &domain.VariableItem{}
 		err := rows.Scan(&v.ID, &v.Name, &v.CollectionID, &v.Updated)
@@ -33,7 +38,11 @@ func (r *sqlRepository) MapVariables(collectionID string) (map[string]string, er
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Printf("failed to close rows: %v", err)
+		}
+	}()
 	for rows.Next() {
 		var name, value string
 		err := rows.Scan(&name, &value)

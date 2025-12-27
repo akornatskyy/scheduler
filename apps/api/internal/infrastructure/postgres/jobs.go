@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"encoding/json"
+	"log"
 	"time"
 
 	"github.com/akornatskyy/scheduler/internal/domain"
@@ -15,7 +16,11 @@ func (r *sqlRepository) ListJobs(collectionID string, fields []string) ([]*domai
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Printf("WARN: failed to close rows: %v", err)
+		}
+	}()
 	for rows.Next() {
 		j := &domain.JobItem{}
 		err := rows.Scan(
@@ -94,7 +99,11 @@ func (r *sqlRepository) ListLeftOverJobs() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Printf("WARN: failed to close rows: %v", err)
+		}
+	}()
 	for rows.Next() {
 		var id string
 		err := rows.Scan(&id)

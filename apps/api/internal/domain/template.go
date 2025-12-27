@@ -7,7 +7,7 @@ import (
 	"github.com/akornatskyy/goext/errorstate"
 )
 
-func (req *HttpRequest) Transpose(variables map[string]string) (*HttpRequest, error) {
+func (req *HTTPRequest) Transpose(variables map[string]string) (*HTTPRequest, error) {
 	e := &errorstate.ErrorState{
 		Domain: domain,
 	}
@@ -52,7 +52,7 @@ func (req *HttpRequest) Transpose(variables map[string]string) (*HttpRequest, er
 	if e.Errors != nil {
 		return nil, e
 	}
-	return &HttpRequest{
+	return &HTTPRequest{
 		Method:  req.Method,
 		URI:     uri,
 		Headers: headers,

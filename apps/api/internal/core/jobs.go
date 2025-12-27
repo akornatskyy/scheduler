@@ -1,3 +1,4 @@
+// Package core provides the business logic layer for the scheduler application.
 package core
 
 import (
@@ -6,16 +7,16 @@ import (
 	"github.com/akornatskyy/scheduler/internal/domain"
 )
 
-func (s *Service) ListJobs(collectionId string, fields []string) ([]*domain.JobItem, error) {
-	if collectionId != "" {
-		if err := domain.ValidateID(collectionId); err != nil {
+func (s *Service) ListJobs(collectionID string, fields []string) ([]*domain.JobItem, error) {
+	if collectionID != "" {
+		if err := domain.ValidateID(collectionID); err != nil {
 			return nil, err
 		}
 	}
 	if err := domain.ValidateJobListFields(fields); err != nil {
 		return nil, err
 	}
-	return s.Repository.ListJobs(collectionId, fields)
+	return s.Repository.ListJobs(collectionID, fields)
 }
 
 func (s *Service) CreateJob(job *domain.JobDefinition) error {
@@ -100,6 +101,8 @@ func (s *Service) resetLeftOverJobs() {
 	}
 	for _, id := range jobs {
 		log.Printf("reset job status for: %s", id)
-		s.Repository.ResetJobStatus(id)
+		if err := s.Repository.ResetJobStatus(id); err != nil {
+			log.Printf("WARN: failed to reset job status for %s: %s", id, err)
+		}
 	}
 }

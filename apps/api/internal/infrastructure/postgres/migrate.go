@@ -17,6 +17,9 @@ func migrate(db *sql.DB) error {
 	}
 
 	tx, err := db.Begin()
+	if err != nil {
+		return err
+	}
 	var s int
 	err = db.QueryRow("SELECT COALESCE(MAX(id), 0) FROM migration").Scan(&s)
 	if err != nil {
@@ -25,16 +28,22 @@ func migrate(db *sql.DB) error {
 	for i := s; i < len(migrations); i++ {
 		_, err := tx.Exec(migrations[i])
 		if err != nil {
-			tx.Rollback()
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				return fmt.Errorf("migration %d: %v (rollback failed: %v)", i, err, rollbackErr)
+			}
 			return fmt.Errorf("migration %d: %v", i, err)
 		}
 		_, err = tx.Exec("INSERT INTO migration (id) VALUES ($1)", i+1)
 		if err != nil {
-			tx.Rollback()
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				return fmt.Errorf("failed to insert migration record (rollback failed: %v)", rollbackErr)
+			}
 			return err
 		}
 	}
-	tx.Commit()
+	if err := tx.Commit(); err != nil {
+		return err
+	}
 
 	return nil
 }

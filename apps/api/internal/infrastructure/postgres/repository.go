@@ -1,3 +1,4 @@
+// Package postgres provides PostgreSQL implementation of the domain repository.
 package postgres
 
 import (

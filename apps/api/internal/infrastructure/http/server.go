@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/CAFxX/httpcompression"
 	"github.com/akornatskyy/goext/errorstate"
@@ -22,10 +23,14 @@ type Server struct {
 }
 
 func (s *Server) Start() {
-	compress, _ := httpcompression.DefaultAdapter()
+	compress, err := httpcompression.DefaultAdapter()
+	if err != nil {
+		log.Fatalf("http compression: %s", err)
+	}
 	s.srv = &http.Server{
-		Addr:    addr,
-		Handler: compress(s.Routes()),
+		Addr:              addr,
+		Handler:           compress(s.Routes()),
+		ReadHeaderTimeout: 5 * time.Second,
 	}
 
 	go func() {

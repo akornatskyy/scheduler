@@ -13,12 +13,12 @@ import (
 
 func TestRun(t *testing.T) {
 	type tc struct {
-		Req      *domain.HttpRequest
+		Req      *domain.HTTPRequest
 		Expected *http.Request
 	}
 	var testcases = []tc{
 		{
-			Req: &domain.HttpRequest{
+			Req: &domain.HTTPRequest{
 				URI: "http://127.0.0.1:8000/test",
 				Headers: []*domain.NameValuePair{
 					{

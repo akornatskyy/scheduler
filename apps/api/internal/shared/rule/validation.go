@@ -1,3 +1,4 @@
+// Package rule provides validation rules for the scheduler domain models.
 package rule
 
 import (

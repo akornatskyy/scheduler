@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -46,7 +45,7 @@ func (runner *httpRunner) Run(ctx context.Context, a *domain.Action) error {
 		log.Printf("%s %s - %s", r.Method, r.URI, err)
 		return err
 	}
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	log.Printf("%s %s - %d %d", r.Method, r.URI, resp.StatusCode, len(body))
 	if err != nil {
 		return err

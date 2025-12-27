@@ -30,10 +30,12 @@ func (s *Service) Start() {
 }
 
 func (s *Service) Stop() {
-	log.Println("cancelling all running jobs...")
+	log.Println("canceling all running jobs...")
 	s.cancel()
 	s.Scheduler.Stop()
-	s.Repository.Close()
+	if err := s.Repository.Close(); err != nil {
+		log.Printf("WARN: failed to close repository: %v", err)
+	}
 }
 
 func (s *Service) Health() error {

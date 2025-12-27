@@ -68,7 +68,9 @@ func TestValidateCollection(t *testing.T) {
 				C   *Collection            `json:"collection"`
 				Err *errorstate.ErrorState `json:"err,omitempty"`
 			}
-			iojson.ReadFile("testdata/validation/collection/"+tt+".json", &in)
+			if err := iojson.ReadFile("testdata/validation/collection/"+tt+".json", &in); err != nil {
+				t.Fatalf("failed to read test data: %v", err)
+			}
 
 			err := ValidateCollection(in.C)
 			if !sameError(err, in.Err) {
@@ -88,7 +90,9 @@ func TestValidateJobDefinition(t *testing.T) {
 				J   *JobDefinition         `json:"job"`
 				Err *errorstate.ErrorState `json:"err,omitempty"`
 			}
-			iojson.ReadFile("testdata/validation/job/"+tt+".json", &in)
+			if err := iojson.ReadFile("testdata/validation/job/"+tt+".json", &in); err != nil {
+				t.Fatalf("failed to read test data: %v", err)
+			}
 
 			err := ValidateJobDefinition(in.J)
 			if !sameError(err, in.Err) {

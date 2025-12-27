@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/akornatskyy/scheduler/internal/domain"
 )
@@ -12,7 +13,11 @@ func (r *sqlRepository) ListCollections() ([]*domain.CollectionItem, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if err := rows.Close(); err != nil {
+			log.Printf("WARN: failed to close rows: %v", err)
+		}
+	}()
 	for rows.Next() {
 		c := &domain.CollectionItem{}
 		err := rows.Scan(&c.ID, &c.Name, &c.State)

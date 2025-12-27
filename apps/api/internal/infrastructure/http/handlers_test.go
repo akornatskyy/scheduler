@@ -64,7 +64,7 @@ func TestServeHTTP(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, in := range cases {
-		name := strings.Replace(in[len("testdata/"):len(in)-len(suffix)], "\\", "/", -1)
+		name := strings.ReplaceAll(in[len("testdata/"):len(in)-len(suffix)], "\\", "/")
 		out := in[:len(in)-len(suffix)] + "-golden.json"
 		t.Run(name, func(t *testing.T) {
 			runTest(t, in, out)
@@ -72,6 +72,7 @@ func TestServeHTTP(t *testing.T) {
 	}
 }
 
+//nolint:gocyclo
 func runTest(t *testing.T, in, golden string) {
 	var i input
 	if err := iojson.ReadFile(in, &i); err != nil {
@@ -116,6 +117,7 @@ func runTest(t *testing.T, in, golden string) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		//nolint:gosec
 		if err := os.WriteFile(golden, actual, 0644); err != nil {
 			t.Fatal(err)
 		}

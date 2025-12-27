@@ -1,3 +1,4 @@
+// Package cron provides cron-based job scheduling functionality.
 package cron
 
 import (
@@ -47,7 +48,7 @@ func (s *cronSheduler) Add(j *domain.JobDefinition) error {
 	s.mu.Lock()
 	cj := s.jobs[j.ID]
 	if cj != nil {
-		if j.Updated == cj.j.Updated {
+		if j.Updated.Equal(cj.j.Updated) {
 			return nil
 		}
 		s.c.Remove(cj.id)

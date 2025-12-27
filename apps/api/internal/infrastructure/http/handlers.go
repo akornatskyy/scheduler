@@ -1,3 +1,4 @@
+// Package http provides HTTP request handlers and server infrastructure for the scheduler API.
 package http
 
 import (
@@ -113,8 +114,8 @@ func (s *Server) listVariables() http.HandlerFunc {
 		Items []*domain.VariableItem `json:"items"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		collectionId := r.URL.Query().Get("collectionId")
-		items, err := s.Service.ListVariables(collectionId)
+		collectionID := r.URL.Query().Get("collectionId")
+		items, err := s.Service.ListVariables(collectionID)
 		if err != nil {
 			writeError(w, err)
 			return
@@ -444,9 +445,11 @@ func (s *Server) health() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		if err := s.Service.Health(); err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
-			fmt.Fprintf(w, "{\"status\":\"down\",\"message\":%q}", err.Error())
+			//nolint:errcheck
+			_, _ = fmt.Fprintf(w, "{\"status\":\"down\",\"message\":%q}", err.Error())
 			return
 		}
-		fmt.Fprint(w, up)
+		//nolint:errcheck
+		_, _ = fmt.Fprint(w, up)
 	}
 }
