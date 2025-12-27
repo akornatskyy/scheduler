@@ -41,7 +41,7 @@
     "react": "^19.2.3",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.2.3",
-    "react-router-dom": "7.1.1"
+    "react-router-dom": "7.11.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
