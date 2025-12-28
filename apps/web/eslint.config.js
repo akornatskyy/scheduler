@@ -15,27 +15,13 @@ module.exports = [
       parser: tsParser,
       ecmaVersion: 'latest',
       sourceType: 'module',
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-        ...globals.es2021,
-        describe: true,
-        it: true,
-        expect: true,
-        beforeEach: true,
-        afterEach: true,
-        jest: true,
-        resolvePromise: true,
-        rejectPromise: true,
-      },
-      parserOptions: {
-        ecmaFeatures: {jsx: true},
-      },
+      globals: {...globals.browser, ...globals.node, ...globals.es2019},
+      parserOptions: {ecmaFeatures: {jsx: true}},
     },
     settings: {
       react: {
         version: 'detect',
-      }
+      },
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
