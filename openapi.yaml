@@ -1,21 +1,34 @@
-openapi: 3.0.2
-# https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.2.md
+openapi: 3.1.0
+# https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md
 servers:
   - url: 'http://localhost:8080'
+    description: Local development server
 info:
   version: 1.0.0
   title: Scheduler Service
   description: |
-    REST API for the Scheduler Service. This API allows create and manage
-    scheduled jobs.
+    REST API for the Scheduler Service. This API allows you to create and manage
+    scheduled jobs with flexible scheduling options, retry policies, and comprehensive
+    history tracking.
+
+    ## Features
+    - Create and manage job collections to organize related jobs
+    - Schedule jobs with cron-like syntax or interval-based schedules
+    - Configure retry policies with customizable retry counts and intervals
+    - Track job execution history and status
+    - Enable/disable jobs and collections dynamically
+    - Health check endpoint for service monitoring
   contact:
     name: Andriy Kornatskyy
     email: andriy.kornatskyy@live.com
   license:
     name: MIT
+    url: https://opensource.org/licenses/MIT
 tags:
   - name: collections
     description: Provides operations for creating and managing collections of scheduled jobs.
+  - name: variables
+    description: Provides operations for creating and managing collection-scoped variables.
   - name: jobs
     description: Provides operations for creating and managing scheduled jobs.
   - name: history
@@ -43,10 +56,10 @@ paths:
                   - items
               example:
                 items:
-                  - id: 65ada2f9-be3d-4960-a7f4-ea47fe3323b9
+                  - id: my-app-1
                     name: 'My App #1'
                     state: enabled
-                  - id: 7d76cb30-f581-49ca-a718-d353a1d129a8
+                  - id: my-other-app
                     name: My Other App
                     state: disabled
     post:
@@ -61,6 +74,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Collection'
+            example:
+              name: 'My New App'
+              state: enabled
       responses:
         '201':
           description: created
@@ -68,14 +84,32 @@ paths:
             application/json:
               schema:
                 type: string
+                description: ID of the created collection
+              example: 'my-new-app'
         '400':
           description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: conflict
+          description: conflict - collection name already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: unprocessable entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /collections/{id}:
     parameters:
       - $ref: '#/components/parameters/id'
@@ -96,12 +130,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Collection'
+              example:
+                id: my-app-1
+                name: 'My App #1'
+                state: enabled
+                updated: '2026-01-02T10:30:00Z'
         '304':
           description: not modified
         '400':
           description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     patch:
       summary: Updates a job collection
       operationId: UpdateCollection
@@ -116,24 +163,44 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Collection'
+            example:
+              name: 'My Updated App'
+              state: disabled
       responses:
         '204':
           description: updated
-          content:
-            application/json:
-              example:
         '400':
           description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: conflict
+          description: conflict - collection name already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '412':
-          description: precondition failed
+          description: precondition failed - ETag mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: unprocessable entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     delete:
-      description: Deletes a single job collection
+      summary: Deletes a single job collection
       operationId: DeleteCollection
       tags:
         - collections
@@ -144,12 +211,230 @@ paths:
           description: deleted
         '400':
           description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: conflict
+          description: conflict - collection contains jobs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '412':
-          description: precondition failed
+          description: precondition failed - ETag mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /variables:
+    get:
+      summary: Retrieves a list of variables
+      operationId: ListVariables
+      tags:
+        - variables
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/if-none-match'
+      responses:
+        '200':
+          description: ok
+          headers:
+            ETag:
+              $ref: '#/components/schemas/ETag'
+          content:
+            application/json:
+              schema:
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VariableItem'
+                required:
+                  - items
+              example:
+                items:
+                  - id: web-host
+                    collectionId: my-app-1
+                    name: WEB_HOST
+                    updated: '2026-01-02T10:00:00Z'
+                  - id: api-key
+                    collectionId: my-app-1
+                    name: API_KEY
+                    updated: '2026-01-02T10:00:00Z'
+    post:
+      summary: Creates a variable
+      operationId: CreateVariable
+      tags:
+        - variables
+      requestBody:
+        description: a variable to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Variable'
+            example:
+              collectionId: my-app-1
+              name: WEB_HOST
+              value: localhost:5432
+      responses:
+        '201':
+          description: created
+          content:
+            application/json:
+              schema:
+                type: string
+                description: ID of the created variable
+              example: 'db-host'
+        '400':
+          description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: collection not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: conflict - variable name already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: unprocessable entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /variables/{id}:
+    parameters:
+      - $ref: '#/components/parameters/id'
+    get:
+      summary: Retrieves a specified variable
+      operationId: RetrieveVariable
+      tags:
+        - variables
+      parameters:
+        - $ref: '#/components/parameters/if-none-match'
+      responses:
+        '200':
+          description: ok
+          headers:
+            ETag:
+              $ref: '#/components/schemas/ETag'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Variable'
+              example:
+                id: db-host
+                collectionId: my-app-1
+                name: WEB_HOST
+                value: localhost:5432
+                updated: '2026-01-02T10:00:00Z'
+        '304':
+          description: not modified
+        '400':
+          description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    patch:
+      summary: Updates a variable
+      operationId: UpdateVariable
+      tags:
+        - variables
+      parameters:
+        - $ref: '#/components/parameters/if-match'
+      requestBody:
+        description: a variable to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Variable'
+            example:
+              name: WEB_HOST
+              value: stage.example.com:8081
+      responses:
+        '204':
+          description: updated
+        '400':
+          description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: conflict - variable name already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '412':
+          description: precondition failed - ETag mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: unprocessable entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Deletes a single variable
+      operationId: DeleteVariable
+      tags:
+        - variables
+      parameters:
+        - $ref: '#/components/parameters/if-match'
+      responses:
+        '204':
+          description: variable deleted
+        '400':
+          description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '412':
+          description: precondition failed - ETag mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /jobs:
     get:
       summary: Retrieves a list of jobs
@@ -158,6 +443,7 @@ paths:
         - jobs
       parameters:
         - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/fields'
       responses:
         '200':
           description: ok
@@ -173,11 +459,11 @@ paths:
                   - items
               example:
                 items:
-                  - id: 7ce1f17e-48b1-4e73-be22-771fa764993a
+                  - id: daily-report
                     name: 'My Task #1'
                     schedule: '@every 15s'
                     state: disabled
-                  - id: 94946f60-711f-4044-b08e-ccd9ba998f88
+                  - id: hourly-cleanup
                     name: 'My Task #2'
                     schedule: '@every 1m'
                     state: enabled
@@ -193,6 +479,24 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/JobDefinition'
+            example:
+              collectionId: my-app-1
+              name: 'Send Daily Report'
+              state: enabled
+              schedule: '0 9 * * *'
+              action:
+                type: HTTP
+                request:
+                  method: POST
+                  uri: https://api.example.com/reports
+                  headers:
+                    - name: Content-Type
+                      value: application/json
+                  body: '{"report":"daily"}'
+                retryPolicy:
+                  retryCount: 3
+                  retryInterval: 10s
+                  deadline: 1m
       responses:
         '201':
           description: created
@@ -200,14 +504,32 @@ paths:
             application/json:
               schema:
                 type: string
+                description: ID of the created job
+              example: 'daily-report'
         '400':
           description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: not found
+          description: collection not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: conflict
+          description: conflict - job name already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: unprocessable entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /jobs/{id}:
     parameters:
       - $ref: '#/components/parameters/id'
@@ -232,8 +554,16 @@ paths:
           description: not modified
         '400':
           description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     patch:
       summary: Updates a job definition
       operationId: UpdateJob
@@ -253,16 +583,36 @@ paths:
           description: updated
         '400':
           description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: conflict
+          description: conflict - job name already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '412':
-          description: precondition failed
+          description: precondition failed - ETag mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: unprocessable entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     delete:
-      description: Deletes a single job definition
+      summary: Deletes a single job definition
       operationId: DeleteJob
       tags:
         - jobs
@@ -273,12 +623,28 @@ paths:
           description: job definition deleted
         '400':
           description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
           description: conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '412':
-          description: precondition failed
+          description: precondition failed - ETag mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /jobs/{id}/status:
     parameters:
       - $ref: '#/components/parameters/id'
@@ -301,35 +667,65 @@ paths:
                 $ref: '#/components/schemas/JobStatus'
         '400':
           description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     patch:
-      summary: Updates a specified job status
+      summary: Updates a specified job status (e.g., trigger manual run)
       operationId: PatchJobStatus
       tags:
         - jobs
       parameters:
         - $ref: '#/components/parameters/if-match'
       requestBody:
-        description: job to run
+        description: job status update
         required: true
         content:
           application/json:
             schema:
                 $ref: '#/components/schemas/JobStatus'
+            example:
+              running: true
       responses:
         '204':
           description: updated
         '400':
           description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
-          description: conflict
+          description: conflict - job is already running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '412':
-          description: precondition failed
+          description: precondition failed - ETag mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: unprocessable entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /jobs/{id}/history:
     parameters:
       - $ref: '#/components/parameters/id'
@@ -351,10 +747,28 @@ paths:
                       $ref: '#/components/schemas/JobHistory'
                 required:
                   - items
+              example:
+                items:
+                  - action: HTTP
+                    started: '2026-01-02T09:00:00Z'
+                    finished: '2026-01-02T09:00:05Z'
+                    status: completed
+                    retryCount: 0
+                    message: 'HTTP 200 OK'
+                  - action: HTTP
+                    started: '2026-01-02T08:00:00Z'
+                    finished: '2026-01-02T08:00:15Z'
+                    status: failed
+                    retryCount: 3
+                    message: 'HTTP 500 Internal Server Error'
         '400':
           description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     delete:
-      description: Deletes a specified job history
+      summary: Deletes a specified job history
       operationId: DeleteJobHistory
       tags:
         - history
@@ -365,10 +779,22 @@ paths:
           description: job history deleted
         '400':
           description: validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
           description: conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /health:
     get:
       summary: Queries health-related information
@@ -377,11 +803,14 @@ paths:
         - others
       responses:
         '200':
-          description: ok
+          description: ok - service is healthy
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Health'
+              example:
+                status: up
+                message: 'All systems operational'
         '503':
           description: service unavailable
           content:
@@ -390,72 +819,171 @@ paths:
                 $ref: '#/components/schemas/Health'
               example:
                 status: down
-                message: unable connect to database
+                message: 'Unable to connect to database'
 components:
   schemas:
+    ID:
+      type: string
+      description: Unique identifier (URL-safe characters only)
+      minLength: 3
+      maxLength: 36
+      pattern: '^[A-Za-z0-9][A-Za-z0-9_\-]*$'
+    Name:
+      type: string
+      description: Unique name
+      minLength: 3
+      maxLength: 64
+    State:
+      type: string
+      default: enabled
+      description: Current state (enabled or disabled)
+      enum:
+        - enabled
+        - disabled
+    Timestamp:
+      type: string
+      format: date-time
+      description: Timestamp in ISO 8601 format
+      readOnly: true
+    Duration:
+      type: string
+      description: Duration in ISO 8601 format (e.g., '5s', '1m', '2h')
+      pattern: '^\d+[smh]$'
     CollectionItem:
+      type: object
       properties:
         id:
-          type: string
+          allOf:
+            - $ref: '#/components/schemas/ID'
+            - description: Unique identifier for the collection
+              example: my-app-1
+              readOnly: true
         name:
-          type: string
-          description: unique job collection name
-          example: 'My App #1'
-          minimum: 3
-          maximum: 64
+          allOf:
+            - $ref: '#/components/schemas/Name'
+            - description: Unique job collection name
+              example: 'My App #1'
         state:
-          type: string
-          default: enabled
-          enum:
-            - enabled
-            - disabled
+          $ref: '#/components/schemas/State'
     Collection:
       allOf:
         - $ref: '#/components/schemas/CollectionItem'
-      properties:
-        updated:
-          type: string
-          format: date-time
-          readOnly: true
-      required:
-        - name
-    JobItem:
+        - type: object
+          properties:
+            updated:
+              allOf:
+                - $ref: '#/components/schemas/Timestamp'
+                - description: Timestamp of the last update
+                  example: '2026-01-02T10:30:00Z'
+          required:
+            - name
+    VariableItem:
+      type: object
       properties:
         id:
-          type: string
-          readOnly: true
+          allOf:
+            - $ref: '#/components/schemas/ID'
+            - description: Unique identifier for the variable
+              example: db-host
+              readOnly: true
         collectionId:
-          type: string
+          allOf:
+            - $ref: '#/components/schemas/ID'
+            - description: ID of the collection this variable belongs to
+              example: my-app-1
         name:
-          type: string
-          description: unique job name
-          example: 'My Task #1'
+          allOf:
+            - $ref: '#/components/schemas/Name'
+            - description: Variable name (typically uppercase with underscores)
+              example: WEB_HOST
+        updated:
+          allOf:
+            - $ref: '#/components/schemas/Timestamp'
+            - description: Timestamp of the last update
+              example: '2026-01-02T10:00:00Z'
+    Variable:
+      allOf:
+        - $ref: '#/components/schemas/VariableItem'
+        - type: object
+          properties:
+            value:
+              type: string
+              description: Variable value
+              example: localhost:5432
+              maxLength: 1024
+          required:
+            - collectionId
+            - name
+    JobItem:
+      type: object
+      properties:
+        id:
+          allOf:
+            - $ref: '#/components/schemas/ID'
+            - description: Unique identifier for the job
+              example: daily-report-job
+              readOnly: true
+        collectionId:
+          allOf:
+            - $ref: '#/components/schemas/ID'
+            - description: ID of the collection this job belongs to
+              example: my-app-1
+        name:
+          allOf:
+            - $ref: '#/components/schemas/Name'
+            - description: Unique job name
+              example: 'My Task #1'
         state:
-          type: string
-          enum:
-            - enabled
-            - disabled
+          $ref: '#/components/schemas/State'
         schedule:
           type: string
+          description: Schedule in cron format or interval notation (e.g., '@every 1h', '0 */2 * * *')
           example: '@every 1h'
+          minLength: 6
+          maxLength: 64
+        status:
+          type: string
+          description: Current job status (only included when 'fields' query parameter contains 'status')
+          readOnly: true
+          enum:
+            - ready
+            - running
+            - passing
+            - failing
+          example: ready
+        errorRate:
+          type: number
+          format: float
+          description: Job error rate as a percentage (only included when 'fields' query parameter contains 'errorRate')
+          readOnly: true
+          example: 0.25
     JobDefinition:
       allOf:
         - $ref: '#/components/schemas/JobItem'
-      properties:
-        updated:
-          type: string
-          format: date-time
-          readOnly: true
-        action:
-          $ref: '#/components/schemas/Action'
-      required:
-        - collectionId
-        - action
+        - type: object
+          properties:
+            updated:
+              allOf:
+                - $ref: '#/components/schemas/Timestamp'
+                - description: Timestamp of the last update
+                  example: '2026-01-02T10:30:00Z'
+            action:
+              $ref: '#/components/schemas/Action'
+          required:
+            - collectionId
+            - name
+            - schedule
+            - action
     Action:
+      type: object
       properties:
         type:
           type: string
           default: HTTP
+          description: Type of action to perform (must be 'HTTP')
+          minLength: 4
+          maxLength: 4
+          pattern: '^HTTP$'
           enum:
             - HTTP
         request:
@@ -463,13 +991,19 @@ components:
         retryPolicy:
           $ref: '#/components/schemas/RetryPolicy'
       required:
+        - type
         - request
         - retryPolicy
     HttpRequest:
+      type: object
       properties:
         method:
           type: string
           default: GET
+          description: HTTP method for the request
+          minLength: 3
+          maxLength: 6
+          pattern: '^(HEAD|GET|POST|PUT|PATCH|DELETE)$'
           enum:
             - HEAD
             - GET
@@ -480,134 +1014,234 @@ components:
         uri:
           type: string
           format: uri
-          example: http://example.com
+          description: Target URL for the HTTP request
+          example: https://api.example.com/webhook
+          minLength: 8
+          maxLength: 256
         headers:
           type: array
+          description: Custom HTTP headers to include in the request
           items:
             $ref: '#/components/schemas/NameValuePair'
         body:
           type: string
+          description: Request body content (typically JSON for POST/PUT/PATCH requests)
+          example: '{"message":"Hello from scheduler"}'
+          maxLength: 1024
       required:
         - uri
     NameValuePair:
+      type: object
       properties:
         name:
           type: string
-          example: X-Requested-With
+          description: Header name
+          example: Content-Type
+          minLength: 5
+          maxLength: 32
         value:
           type: string
-          example: XMLHttpRequest
+          description: Header value
+          example: application/json
+          maxLength: 256
       required:
         - name
         - value
     RetryPolicy:
+      type: object
       properties:
         retryCount:
           type: integer
           format: int32
-          description: the number of times a retry should be attempted
+          description: The number of times a retry should be attempted
           default: 3
           example: 3
           minimum: 0
           maximum: 10
         retryInterval:
-          type: string
-          description: the interval between retries, duration in ISO 8601 format
-          default: 5s
-          example: 10s
+          allOf:
+            - $ref: '#/components/schemas/Duration'
+            - description: The interval between retries
+              default: 5s
+              example: 10s
         deadline:
-          type: string
-          default: 20s
-          example: 1m
+          allOf:
+            - $ref: '#/components/schemas/Duration'
+            - description: Maximum time allowed for the entire operation including retries
+              default: 20s
+              example: 1m
     JobStatus:
+      type: object
       properties:
         running:
           type: boolean
+          description: Indicates whether the job is currently running
+          example: false
         runCount:
           type: integer
           format: int32
+          description: Total number of successful executions
           readOnly: true
           example: 157
         errorCount:
           type: integer
           format: int32
+          description: Total number of failed executions
           readOnly: true
           example: 39
         lastRun:
-          type: string
-          format: date-time
-          readOnly: true
+          allOf:
+            - $ref: '#/components/schemas/Timestamp'
+            - description: Timestamp of the last execution
+              example: '2026-01-02T09:00:00Z'
         nextRun:
-          type: string
-          format: date-time
-          readOnly: true
+          allOf:
+            - $ref: '#/components/schemas/Timestamp'
+            - description: Timestamp of the next scheduled execution
+              example: '2026-01-02T10:00:00Z'
     JobHistory:
+      type: object
       properties:
         action:
           type: string
-          description: action name
+          description: Type of action that was executed
           example: HTTP
         started:
-          type: string
-          format: date-time
+          allOf:
+            - $ref: '#/components/schemas/Timestamp'
+            - description: Timestamp when the job execution started
+              example: '2026-01-02T09:00:00Z'
         finished:
-          type: string
-          format: date-time
+          allOf:
+            - $ref: '#/components/schemas/Timestamp'
+            - description: Timestamp when the job execution finished
+              example: '2026-01-02T09:00:05Z'
         status:
           type: string
+          description: Execution outcome
           enum:
             - completed
             - failed
         retryCount:
           type: integer
           format: int32
+          description: Number of retries attempted during this execution
           example: 0
           minimum: 0
-          maximum: 3
+          maximum: 10
         message:
           type: string
-          example:
+          description: Additional information about the execution (error message if failed)
+          example: '404 Not Found'
     ETag:
       type: string
+      description: Entity tag for cache validation
       example: '"fde7bculys"'
     Health:
+      type: object
       properties:
         status:
           type: string
+          description: Overall health status of the service
           example: up
+          enum:
+            - up
+            - down
         message:
           type: string
+          description: Additional health information or error details
+          example: 'All systems operational'
       required:
         - status
+    ErrorResponse:
+      type: object
+      description: Error response structure following errorstate.ErrorState format
+      properties:
+        errors:
+          type: array
+          description: Array of error details
+          items:
+            $ref: '#/components/schemas/ErrorDetail'
+      example:
+        errors:
+          - domain: scheduler
+            type: field
+            location: name
+            reason: min length
+            message: must be at least 3 characters
+          - domain: scheduler
+            type: field
+            location: uri
+            reason: pattern
+            message: Must begin with http or https.
+    ErrorDetail:
+      type: object
+      description: Detailed error information
+      properties:
+        domain:
+          type: string
+          description: Domain identifier for the use case raising this error
+          example: scheduler
+        type:
+          type: string
+          description: Indicates how the location property should be interpreted
+          example: field
+        location:
+          type: string
+          description: The location of the error (interpretation depends on type)
+          example: name
+        reason:
+          type: string
+          description: Unique identifier for this error
+          example: min length
+        message:
+          type: string
+          description: Human readable message providing more details about the error
+          example: must be at least 3 characters
   parameters:
     id:
       in: path
       name: id
       required: true
+      description: Unique identifier (URL-safe characters only, 3-36 chars)
       schema:
-        type: string
+        $ref: '#/components/schemas/ID'
+      example: my-job-1
     collectionId:
       in: query
       name: collectionId
       required: false
+      description: Filter jobs by collection ID (URL-safe characters only, 3-36 chars)
       schema:
-        type: string
+        $ref: '#/components/schemas/ID'
+      example: my-app-1
     before:
       in: query
       name: before
       required: false
+      description: Delete history entries before this timestamp
+      schema:
+        $ref: '#/components/schemas/Timestamp'
+      example: '2026-01-01T00:00:00Z'
+    fields:
+      in: query
+      name: fields
+      required: false
+      description: Comma-separated list of additional fields to include (e.g., 'status,errorRate')
       schema:
         type: string
-        format: date-time
+      example: 'status,errorRate'
     if-match:
       in: header
       name: If-Match
       required: false
+      description: ETag value for optimistic concurrency control
       schema:
         $ref: '#/components/schemas/ETag'
     if-none-match:
       in: header
       name: If-None-Match
       required: false
+      description: ETag value for conditional requests
       schema:
         $ref: '#/components/schemas/ETag'
