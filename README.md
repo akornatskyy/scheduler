@@ -14,29 +14,29 @@ If you’re using this service, **★Star** this repository to show your interes
 
 | Collections Page | Collection Details Page |
 | --- | --- |
-| ![Screenshot of collections screen](./misc/docs/img/collections.png) | ![Screenshot of collection details screen](./misc/docs/img/collection.png) |
+| ![Screenshot of collections screen](./docs/img/collections.png) | ![Screenshot of collection details screen](./docs/img/collection.png) |
 | **Variables Page** | **Variable Details Page** |
-| ![Screenshot of variables screen](./misc/docs/img/variables.png) | ![Screenshot of variable details screen](./misc/docs/img/variable.png) |
+| ![Screenshot of variables screen](./docs/img/variables.png) | ![Screenshot of variable details screen](./docs/img/variable.png) |
 | **Jobs Page** | **Job Details Page** |
-| ![Screenshot of jobs screen](./misc/docs/img/jobs.png) | ![Screenshot of job details screen](./misc/docs/img/job.png) |
+| ![Screenshot of jobs screen](./docs/img/jobs.png) | ![Screenshot of job details screen](./docs/img/job.png) |
 | **General Error Page** | **Job History Page** |
-| ![Screenshot of general error screen](./misc/docs/img/general-error.png) | ![Screenshot of job history screen](./misc/docs/img/job-history.png) |
+| ![Screenshot of general error screen](./docs/img/general-error.png) | ![Screenshot of job history screen](./docs/img/job-history.png) |
 
 ## Service Architecture
 
 Scheduler Microservice is composed of scheduler service (HTTP API and SPA UI) that uses Postgres for persistence. The service part (HTTP, RESTful API, JSON) is written in Go, UI part is in Node.js (SPA, ES6, react, webpack). Packaged into a docker image and orchestrated by Kubernetes.
 
-![architecture](./misc/docs/img/architecture.png)
+![architecture](./docs/img/architecture.png)
 
 The service contains stateless parts (API) and stateful part (job scheduler and Postgres notification events subscriber).
 
-There is Open API service [specification](./openapi.yaml) published [online](https://akornatskyy.github.io/scheduler).
+There is Open API service [specification](./packages/api-spec/openapi.yaml) published [online](https://akornatskyy.github.io/scheduler).
 
 The stateful part scales out by subscribing to Postgres notification events and refecting corresponding changes in job scheduler. The job scheduler ensures that only one job is run at a given point of time (although each instance has a full list of enabled jobs and competes to acquire one).
 
 ### Database Schema
 
-![database schema](./misc/docs/img/db-schema.png)
+![database schema](./docs/img/db-schema.png)
 
 ## Installation
 
@@ -106,7 +106,7 @@ You can also run them separately:
 You can use automatically built Docker [image](https://hub.docker.com/r/akorn/scheduler) from Docker Hub and start service right away.
 
 ```sh
-cd misc/docker
+cd deployments/docker
 docker compose up -d
 ```
 
@@ -114,13 +114,13 @@ View output from containers with `docker compose logs -f --tail=10`.
 
 The service frontend should be available on port _8080_ of your docker machine.
 
-For more information refer to files at the [`misc/docker`](./misc/docker) directory.
+For more information refer to files at the [`deployments/docker`](./deployments/docker) directory.
 
 ### Option 3: Running on Kubernetes
 
 If you are using Minikube to run a Kubernetes cluster locally, start it via `minikube start`.
 
-Roll out service with `kubectl apply -f misc/k8s`.
+Roll out service with `kubectl apply -f deployments/k8s`.
 
 Run `kubectl get pods` to verify the pods are ready and running.
 
@@ -132,6 +132,6 @@ The service can be accessed with `minikube service scheduler`. Use `minikube das
 
 If you have deployed the application with docker compose, you can stop and remove containers with `docker compose down`.
 
-If you have deployed the application with `kubectl apply -f misc/k8s`, you can run `kubectl delete -f misc/k8s` to clean up the deployed resources.
+If you have deployed the application with `kubectl apply -f deployments/k8s`, you can run `kubectl delete -f deployments/k8s` to clean up the deployed resources.
 
 If you have deployed to minikube, stop the cluster with `minikube stop` or delete virtual machine with `minikube delete`.

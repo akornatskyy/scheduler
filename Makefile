@@ -69,8 +69,7 @@ image:
 	docker build -t akorn/scheduler \
 		--build-arg BUILD_DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
 		--build-arg VERSION=${VERSION} \
-  	-f misc/docker/Dockerfile .
+  	-f deployments/docker/Dockerfile .
 
 clean:
-	rm -f $(BINARY_NAME)
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BINARY_NAME) $(BUILD_DIR)

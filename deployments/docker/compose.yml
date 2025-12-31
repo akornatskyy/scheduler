@@ -3,37 +3,39 @@ name: scheduler
 services:
   db:
     container_name: db
-    restart: always
     image: akorn/postgres:18-scratch
+    restart: always
+    read_only: true
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    #command: postgres -c 'log_statement=all'
     ports:
-      - 5432:5432
+      - 127.0.0.1:5432:5432
+    tmpfs:
+      - /run/postgresql:rw,noexec,nosuid,size=5m
     volumes:
       - db:/var/lib/postgresql/data
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_HOST_AUTH_METHOD: trust
-      #command: postgres -c 'log_statement=all'
     networks:
       - db
+
   api:
     container_name: api
     depends_on:
       - db
+    image: akorn/scheduler
     restart: always
     read_only: true
     stop_signal: SIGINT
-    image: akorn/scheduler
-    ports:
-      - 8080:8080
     environment:
       - DSN=postgres://postgres:@db:5432/postgres?sslmode=disable
+    ports:
+      - 8080:8080
     networks:
       - api
       - db
 
 volumes:
   db:
-    driver: local
 
 networks:
   db:

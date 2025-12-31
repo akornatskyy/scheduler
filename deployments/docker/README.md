@@ -4,13 +4,13 @@ Build docker images.
 
 ```sh
 docker build -t akorn/scheduler --build-arg VERSION=${VERSION} \
-  -f misc/docker/Dockerfile .
+  -f deployments/docker/Dockerfile .
 ```
 
 ## Docker componse
 
 ```sh
-export COMPOSE_FILE=./misc/docker/compose.yml
+export COMPOSE_FILE=./deployments/docker/compose.yml
 
 docker compose up -d
 docker compose logs -f --tail=10
