@@ -1,7 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import {Footer} from './Footer';
 
-describe('footer component', () => {
+describe('Footer', () => {
   it('renders fallback version when VERSION is not set', async () => {
     delete process.env.VERSION;
 

@@ -17,14 +17,14 @@ describe('useJobHistory', () => {
 
   it('loads job, status, and history', async () => {
     jest
-      .mocked(api.retrieveJob)
+      .mocked(api.getJob)
       .mockResolvedValue({name: 'Job #1'} as JobDefinition);
-    jest.mocked(api.retrieveJobStatus).mockResolvedValue({
+    jest.mocked(api.getJobStatus).mockResolvedValue({
       runCount: 2,
       errorCount: 0,
       etag: 'W/"123"',
     } as JobStatus);
-    jest.mocked(api.listJobHistory).mockResolvedValue({
+    jest.mocked(api.getJobHistory).mockResolvedValue({
       items: Array.from({length: 10}).map(
         () => ({action: 'HTTP', status: 'ready'} as JobHistory),
       ),
@@ -34,12 +34,12 @@ describe('useJobHistory', () => {
       renderHook(() => useJobHistory('j1')),
     );
 
-    expect(api.retrieveJob).toHaveBeenCalledTimes(1);
-    expect(api.retrieveJob).toHaveBeenCalledWith('j1');
-    expect(api.retrieveJobStatus).toHaveBeenCalledTimes(1);
-    expect(api.retrieveJobStatus).toHaveBeenCalledWith('j1');
-    expect(api.listJobHistory).toHaveBeenCalledTimes(1);
-    expect(api.listJobHistory).toHaveBeenCalledWith('j1');
+    expect(api.getJob).toHaveBeenCalledTimes(1);
+    expect(api.getJob).toHaveBeenCalledWith('j1');
+    expect(api.getJobStatus).toHaveBeenCalledTimes(1);
+    expect(api.getJobStatus).toHaveBeenCalledWith('j1');
+    expect(api.getJobHistory).toHaveBeenCalledTimes(1);
+    expect(api.getJobHistory).toHaveBeenCalledWith('j1');
 
     expect(result.current.job.name).toBe('Job #1');
     expect(result.current.status.runCount).toBe(2);
@@ -47,25 +47,25 @@ describe('useJobHistory', () => {
   });
 
   it('sets errors when load fails', async () => {
-    jest.mocked(api.retrieveJob).mockRejectedValue(new Error('Unexpected'));
+    jest.mocked(api.getJob).mockRejectedValue(new Error('unexpected'));
 
     const {result} = await act(async () =>
       renderHook(() => useJobHistory('j1')),
     );
 
-    expect(result.current.errors.__ERROR__).toMatch(/Unexpected/);
+    expect(result.current.errors.__ERROR__).toMatch(/unexpected/);
   });
 
   it('navigates back to job', async () => {
     jest
-      .mocked(api.retrieveJob)
+      .mocked(api.getJob)
       .mockResolvedValue({name: 'Job #1'} as JobDefinition);
-    jest.mocked(api.retrieveJobStatus).mockResolvedValue({
+    jest.mocked(api.getJobStatus).mockResolvedValue({
       runCount: 2,
       errorCount: 0,
       etag: 'W/"123"',
     } as JobStatus);
-    jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
+    jest.mocked(api.getJobHistory).mockResolvedValue({items: []});
 
     const {result} = await act(async () =>
       renderHook(() => useJobHistory('j1')),
@@ -80,20 +80,20 @@ describe('useJobHistory', () => {
 
   it('runs job and refreshes status', async () => {
     jest
-      .mocked(api.retrieveJob)
+      .mocked(api.getJob)
       .mockResolvedValue({name: 'Job #1'} as JobDefinition);
-    jest.mocked(api.retrieveJobStatus).mockResolvedValue({
+    jest.mocked(api.getJobStatus).mockResolvedValue({
       runCount: 2,
       errorCount: 0,
       etag: 'W/"123"',
     } as JobStatus);
-    jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
+    jest.mocked(api.getJobHistory).mockResolvedValue({items: []});
 
     const {result} = await act(async () =>
       renderHook(() => useJobHistory('j1')),
     );
 
-    jest.mocked(api.retrieveJobStatus).mockResolvedValue({
+    jest.mocked(api.getJobStatus).mockResolvedValue({
       runCount: 3,
       errorCount: 0,
       etag: 'W/"456"',
@@ -103,27 +103,27 @@ describe('useJobHistory', () => {
       await result.current.run();
     });
 
-    expect(api.patchJobStatus).toHaveBeenCalledTimes(1);
-    expect(api.patchJobStatus).toHaveBeenCalledWith('j1', {
+    expect(api.updateJobStatus).toHaveBeenCalledTimes(1);
+    expect(api.updateJobStatus).toHaveBeenCalledWith('j1', {
       running: true,
       etag: 'W/"123"',
     });
 
-    expect(api.retrieveJobStatus).toHaveBeenCalledTimes(2);
+    expect(api.getJobStatus).toHaveBeenCalledTimes(2);
     expect(result.current.status.runCount).toBe(3);
   });
 
   it('sets errors when run fails', async () => {
     jest
-      .mocked(api.retrieveJob)
+      .mocked(api.getJob)
       .mockResolvedValue({name: 'Job #1'} as JobDefinition);
-    jest.mocked(api.retrieveJobStatus).mockResolvedValue({
+    jest.mocked(api.getJobStatus).mockResolvedValue({
       runCount: 2,
       errorCount: 0,
       etag: 'W/"123"',
     } as JobStatus);
-    jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
-    jest.mocked(api.patchJobStatus).mockRejectedValue(new Error('Run failed'));
+    jest.mocked(api.getJobHistory).mockResolvedValue({items: []});
+    jest.mocked(api.updateJobStatus).mockRejectedValue(new Error('Run failed'));
 
     const {result} = await act(async () =>
       renderHook(() => useJobHistory('j1')),
@@ -138,14 +138,14 @@ describe('useJobHistory', () => {
 
   it('removes job history and navigates back', async () => {
     jest
-      .mocked(api.retrieveJob)
+      .mocked(api.getJob)
       .mockResolvedValue({name: 'Job #1'} as JobDefinition);
-    jest.mocked(api.retrieveJobStatus).mockResolvedValue({
+    jest.mocked(api.getJobStatus).mockResolvedValue({
       runCount: 2,
       errorCount: 0,
       etag: 'W/"123"',
     } as JobStatus);
-    jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
+    jest.mocked(api.getJobHistory).mockResolvedValue({items: []});
 
     const {result} = await act(async () =>
       renderHook(() => useJobHistory('j1')),
@@ -162,14 +162,14 @@ describe('useJobHistory', () => {
 
   it('sets errors when remove fails', async () => {
     jest
-      .mocked(api.retrieveJob)
+      .mocked(api.getJob)
       .mockResolvedValue({name: 'Job #1'} as JobDefinition);
-    jest.mocked(api.retrieveJobStatus).mockResolvedValue({
+    jest.mocked(api.getJobStatus).mockResolvedValue({
       runCount: 2,
       errorCount: 0,
       etag: 'W/"123"',
     } as JobStatus);
-    jest.mocked(api.listJobHistory).mockResolvedValue({items: []});
+    jest.mocked(api.getJobHistory).mockResolvedValue({items: []});
     jest
       .mocked(api.deleteJobHistory)
       .mockRejectedValue(new Error('Remove failed'));

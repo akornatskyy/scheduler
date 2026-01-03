@@ -2,7 +2,7 @@ import {fireEvent, render, screen} from '@testing-library/react';
 import {JobHistory, JobStatus} from '../types';
 import {JobHistoryTable} from './JobHistoryTable';
 
-describe('job history table component', () => {
+describe('JobHistoryTable', () => {
   const props: Parameters<typeof JobHistoryTable>[0] = {
     status: {} as JobStatus,
     items: [],

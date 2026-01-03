@@ -3,7 +3,7 @@ import {MemoryRouter as Router} from 'react-router';
 import {GroupRow, ItemRow, JobTable, JobStatus} from './JobTable';
 import {CollectionItem, JobItem} from '../types';
 
-describe('jobs list component', () => {
+describe('JobTable', () => {
   it('renders empty list', () => {
     const {container} = render(<JobTable collections={[]} jobs={[]} />);
 
@@ -63,7 +63,7 @@ describe('jobs list component', () => {
   });
 });
 
-describe('job status component', () => {
+describe('JobStatus', () => {
   it.each(
     ['disabled', 'enabled']
       .map((state) =>
@@ -84,7 +84,7 @@ describe('job status component', () => {
   });
 });
 
-describe('jobs group row component', () => {
+describe('Job GroupRow', () => {
   it.each(['disabled', 'enabled'])(
     'renders collection name in state %s',
     (state) => {
@@ -105,7 +105,7 @@ describe('jobs group row component', () => {
   );
 });
 
-describe('jobs item row component', () => {
+describe('ItemRow', () => {
   it('renders job name', () => {
     const job = {name: 'My Job'} as JobItem;
 

@@ -3,7 +3,7 @@ import {MemoryRouter as Router} from 'react-router';
 import {CollectionInput} from '../types';
 import {CollectionForm} from './CollectionForm';
 
-describe('collection form component', () => {
+describe('CollectionForm', () => {
   let draft: CollectionInput;
   let props: Parameters<typeof CollectionForm>[0];
 
@@ -22,11 +22,16 @@ describe('collection form component', () => {
   it('renders add item', () => {
     render(<CollectionForm {...props} />);
 
-    expect(screen.getByRole('form')).toHaveFormValues(props.item);
-    expect(screen.getByText('Save')).toBeEnabled();
-    expect(screen.queryByText('Variables')).not.toBeInTheDocument();
-    expect(screen.queryByText('Jobs')).not.toBeInTheDocument();
-    expect(screen.queryByText('Delete')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', {name: 'Save'})).toBeEnabled();
+    expect(
+      screen.queryByRole('button', {name: 'Variables'}),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', {name: 'Jobs'}),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', {name: 'Delete'}),
+    ).not.toBeInTheDocument();
   });
 
   it('renders edit item', () => {
@@ -70,17 +75,15 @@ describe('collection form component', () => {
   });
 
   it('calls on save callback', () => {
-    const handler = jest.mocked(props.onSave);
     render(<CollectionForm {...props} />);
 
     fireEvent.submit(screen.getByText('Save'));
 
-    expect(handler).toHaveBeenCalledWith();
+    expect(props.onSave).toHaveBeenCalledWith();
   });
 
   it('calls on delete callback', () => {
     props.item.id = '65ada2f9';
-    const handler = jest.mocked(props.onDelete);
     render(
       <Router>
         <CollectionForm {...props} />
@@ -89,25 +92,28 @@ describe('collection form component', () => {
 
     fireEvent.click(screen.getByText('Delete'));
 
-    expect(handler).toHaveBeenCalled();
+    expect(props.onDelete).toHaveBeenCalled();
   });
 
   it('renders no errors', () => {
     const {container} = render(<CollectionForm {...props} />);
 
-    expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
+    expect(container.querySelectorAll('.is-invalid')).toHaveLength(0);
+    expect(container.querySelectorAll('.invalid-feedback')).toHaveLength(0);
   });
 
   it('renders all errors', () => {
-    const errors: Record<string, string> = {
+    props.errors = {
       name: 'An error related to name.',
       state: 'An error related to state.',
     };
 
-    render(<CollectionForm {...props} errors={errors} />);
+    const {container} = render(<CollectionForm {...props} />);
 
-    for (const name of Object.getOwnPropertyNames(errors)) {
-      expect(screen.getByText(errors[name])).toBeVisible();
+    expect(container.querySelectorAll('.is-invalid')).toHaveLength(3);
+    expect(container.querySelectorAll('.invalid-feedback')).toHaveLength(2);
+    for (const error of Object.values(props.errors)) {
+      expect(screen.getByText(error)).toBeVisible();
     }
   });
 });

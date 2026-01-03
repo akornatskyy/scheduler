@@ -1,24 +1,19 @@
-import {api} from '$features/collections';
 import {go} from '$shared/api';
 import {
-  HttpRequest,
   JobDefinition,
   JobHistory,
   JobInput,
   JobItem,
   JobStatus,
-  RetryPolicy,
 } from '../types';
 
-export const listCollections = api.listCollections;
-
-type ListJobsResponse = {
+type GetJobsResponse = {
   items: JobItem[];
 };
 
-export const listJobs = (
+export const getJobs = (
   collectionId?: string | null,
-): Promise<ListJobsResponse> =>
+): Promise<GetJobsResponse> =>
   go(
     'GET',
     collectionId
@@ -26,49 +21,42 @@ export const listJobs = (
       : '/jobs?fields=status,errorRate',
   );
 
-export const retrieveJob = async (id: string): Promise<JobDefinition> => {
+export const getJob = async (id: string): Promise<JobDefinition> => {
   const data = await go<JobDefinition>('GET', `/jobs/${id}`);
   const {action} = data;
-  action.request = {...defaultRequest, ...action.request};
-  action.retryPolicy = action.retryPolicy
-    ? {...defaultRetryPolicy, ...action.retryPolicy}
-    : {...defaultRetryPolicy};
+  action.request = {
+    ...{method: 'GET', uri: '', headers: [], body: ''},
+    ...action.request,
+  };
+  action.retryPolicy = {
+    ...{retryCount: 3, retryInterval: '10s', deadline: '1m'},
+    ...action.retryPolicy,
+  };
   return data;
 };
 
-export const saveJob = (j: JobInput): Promise<void> =>
-  j.id ? go('PATCH', `/jobs/${j.id}`, j) : go('POST', '/jobs', j);
+export const createJob = (j: JobInput): Promise<void> => go('POST', '/jobs', j);
+
+export const updateJob = (j: JobInput): Promise<void> =>
+  go('PATCH', `/jobs/${j.id}`, j);
 
 export const deleteJob = (id: string, etag?: string): Promise<void> =>
   go('DELETE', `/jobs/${id}`, etag);
 
-export const retrieveJobStatus = (id: string): Promise<JobStatus> =>
+export const getJobStatus = (id: string): Promise<JobStatus> =>
   go('GET', `/jobs/${id}/status`);
 
-export const patchJobStatus = (
+export const updateJobStatus = (
   id: string,
   status: Partial<JobStatus>,
 ): Promise<void> => go('PATCH', `/jobs/${id}/status`, status);
 
-export const listJobHistory = (id: string): Promise<ListJobHistoryResponse> =>
+type GetJobHistoryResponse = {
+  items: JobHistory[];
+};
+
+export const getJobHistory = (id: string): Promise<GetJobHistoryResponse> =>
   go('GET', `/jobs/${id}/history`);
 
 export const deleteJobHistory = (id: string, etag?: string): Promise<void> =>
   go('DELETE', `/jobs/${id}/history`, etag);
-
-type ListJobHistoryResponse = {
-  items: JobHistory[];
-};
-
-const defaultRequest: HttpRequest = {
-  method: 'GET',
-  uri: '',
-  headers: [],
-  body: '',
-};
-
-const defaultRetryPolicy: RetryPolicy = {
-  retryCount: 3,
-  retryInterval: '10s',
-  deadline: '1m',
-};

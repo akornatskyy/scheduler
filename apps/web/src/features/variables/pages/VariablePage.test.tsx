@@ -12,7 +12,7 @@ jest.mock('react-router', () => {
   return {...actual, useParams: () => mockUseParams()};
 });
 
-describe('variable page', () => {
+describe('VariablePage', () => {
   const base: ReturnType<typeof useVariable> = {
     collections: [],
     item: {name: '', collectionId: '', value: ''},
@@ -45,7 +45,7 @@ describe('variable page', () => {
   it('wires hook errors into layout', () => {
     jest.mocked(useVariable).mockReturnValue({
       ...base,
-      errors: {__ERROR__: 'Unexpected'},
+      errors: {__ERROR__: 'unexpected'},
     });
 
     render(
@@ -54,7 +54,7 @@ describe('variable page', () => {
       </Router>,
     );
 
-    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
+    expect(screen.getByRole('heading', {name: /unexpected/})).toBeVisible();
   });
 
   it('renders title from item name', () => {

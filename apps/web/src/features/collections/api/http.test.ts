@@ -3,16 +3,16 @@ import * as api from './http';
 describe('collections api', () => {
   afterEach(() => jest.mocked(global.fetch).mockClear());
 
-  it('list', async () => {
+  it('get collections', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
       json: () => Promise.resolve({items: []}),
     });
 
-    const d = await api.listCollections();
+    const result = await api.getCollections();
 
-    expect(d).toEqual({
+    expect(result).toEqual({
       etag: '"2hhaswzbz72p8"',
       items: [],
     });
@@ -21,16 +21,16 @@ describe('collections api', () => {
     });
   });
 
-  it('retrieve', async () => {
+  it('get collection', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
       json: () => Promise.resolve({name: 'My App #1'}),
     });
 
-    const d = await api.retrieveCollection('123');
+    const result = await api.getCollection('123');
 
-    expect(d).toEqual({
+    expect(result).toEqual({
       etag: '"2hhaswzbz72p8"',
       name: 'My App #1',
     });
@@ -39,12 +39,12 @@ describe('collections api', () => {
     });
   });
 
-  it('save (create)', async () => {
+  it('create collection', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 201,
     });
 
-    await api.saveCollection({
+    await api.createCollection({
       name: 'My App',
       state: 'enabled',
     });
@@ -58,12 +58,12 @@ describe('collections api', () => {
     });
   });
 
-  it('save (update)', async () => {
+  it('update collection', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 204,
     });
 
-    await api.saveCollection({
+    await api.updateCollection({
       id: '123',
       name: 'My App',
       state: 'enabled',
@@ -80,7 +80,7 @@ describe('collections api', () => {
     });
   });
 
-  it('delete', async () => {
+  it('delete collection', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 204,
     });

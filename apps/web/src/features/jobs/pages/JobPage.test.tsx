@@ -5,7 +5,7 @@ import {JobPage} from './JobPage';
 
 jest.mock('../hooks/useJob');
 
-describe('job page', () => {
+describe('JobPage', () => {
   const base: ReturnType<typeof useJob> = {
     collections: [],
     item: {
@@ -47,7 +47,7 @@ describe('job page', () => {
   it('wires hook errors into layout', () => {
     jest.mocked(useJob).mockReturnValue({
       ...base,
-      errors: {__ERROR__: 'Unexpected'},
+      errors: {__ERROR__: 'unexpected'},
     });
 
     render(
@@ -58,7 +58,7 @@ describe('job page', () => {
       </Router>,
     );
 
-    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
+    expect(screen.getByRole('heading', {name: /unexpected/})).toBeVisible();
   });
 
   it('renders delete button when item has id', () => {

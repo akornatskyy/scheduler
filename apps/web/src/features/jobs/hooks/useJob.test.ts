@@ -1,8 +1,10 @@
+import {api as collectionsApi} from '$features/collections';
 import {act, renderHook} from '@testing-library/react';
 import * as api from '../api';
 import {CollectionItem, JobDefinition} from '../types';
 import {useJob} from './useJob';
 
+jest.mock('$features/collections');
 jest.mock('../api');
 
 const mockNavigate = jest.fn();
@@ -35,29 +37,29 @@ describe('useJob', () => {
   beforeEach(() => jest.clearAllMocks());
 
   it('handles retrieve job errors', async () => {
-    jest.mocked(api.retrieveJob).mockRejectedValue(new Error('Unexpected'));
-    jest.mocked(api.listCollections).mockResolvedValue({
+    jest.mocked(api.getJob).mockRejectedValue(new Error('unexpected'));
+    jest.mocked(collectionsApi.getCollections).mockResolvedValue({
       items: [{id: 'c1', name: 'Collection #1', state: 'enabled'}],
     });
 
     const {result} = await act(async () => renderHook(() => useJob('j1')));
 
-    expect(api.retrieveJob).toHaveBeenCalledTimes(1);
+    expect(api.getJob).toHaveBeenCalledTimes(1);
     expect(result.current.pending).toBe(false);
-    expect(result.current.errors.__ERROR__).toMatch(/Unexpected/);
+    expect(result.current.errors.__ERROR__).toMatch(/unexpected/);
   });
 
   it('retrieves job when id is provided', async () => {
-    jest.mocked(api.retrieveJob).mockResolvedValue(job);
-    jest.mocked(api.listCollections).mockResolvedValue({
+    jest.mocked(api.getJob).mockResolvedValue(job);
+    jest.mocked(collectionsApi.getCollections).mockResolvedValue({
       items: [{id: 'c1', name: 'Collection #1', state: 'enabled'}],
     });
 
     const {result} = await act(async () => renderHook(() => useJob('j1')));
 
-    expect(api.retrieveJob).toHaveBeenCalledTimes(1);
-    expect(api.retrieveJob).toHaveBeenCalledWith('j1');
-    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.getJob).toHaveBeenCalledTimes(1);
+    expect(api.getJob).toHaveBeenCalledWith('j1');
+    expect(collectionsApi.getCollections).toHaveBeenCalledTimes(1);
 
     expect(result.current.item.id).toBe('j1');
     expect(result.current.item.name).toBe('Job #1');
@@ -65,21 +67,21 @@ describe('useJob', () => {
   });
 
   it('sets a default collectionId when creating and collections exist', async () => {
-    jest.mocked(api.listCollections).mockResolvedValue({
+    jest.mocked(collectionsApi.getCollections).mockResolvedValue({
       items: [{id: 'c1', name: 'Collection #1', state: 'enabled'}],
     });
 
     const {result} = await act(async () => renderHook(() => useJob()));
 
-    expect(api.retrieveJob).not.toHaveBeenCalled();
-    expect(api.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.getJob).not.toHaveBeenCalled();
+    expect(collectionsApi.getCollections).toHaveBeenCalledTimes(1);
     expect(result.current.item.collectionId).toBe('c1');
     expect(result.current.errors.collectionId).toBeUndefined();
     expect(result.current.pending).toBe(false);
   });
 
   it('sets collectionId error when no collections exist', async () => {
-    jest.mocked(api.listCollections).mockResolvedValue({items: []});
+    jest.mocked(collectionsApi.getCollections).mockResolvedValue({items: []});
 
     const {result} = await act(async () => renderHook(() => useJob()));
 
@@ -87,8 +89,8 @@ describe('useJob', () => {
   });
 
   it('does not override existing collectionId on item', async () => {
-    jest.mocked(api.retrieveJob).mockResolvedValue(job);
-    jest.mocked(api.listCollections).mockResolvedValue({
+    jest.mocked(api.getJob).mockResolvedValue(job);
+    jest.mocked(collectionsApi.getCollections).mockResolvedValue({
       items: collections,
     });
 
@@ -99,16 +101,16 @@ describe('useJob', () => {
   });
 
   it('handles list collections errors', async () => {
-    jest.mocked(api.listCollections).mockRejectedValue(new Error('Unexpected'));
+    jest.mocked(collectionsApi.getCollections).mockRejectedValue(new Error('unexpected'));
 
     const {result} = await act(async () => renderHook(() => useJob()));
 
-    expect(api.listCollections).toHaveBeenCalledTimes(1);
-    expect(result.current.errors.__ERROR__).toMatch(/Unexpected/);
+    expect(collectionsApi.getCollections).toHaveBeenCalledTimes(1);
+    expect(result.current.errors.__ERROR__).toMatch(/unexpected/);
   });
 
   it('updates fields', async () => {
-    jest.mocked(api.listCollections).mockResolvedValue({items: []});
+    jest.mocked(collectionsApi.getCollections).mockResolvedValue({items: []});
 
     const {result} = await act(async () => renderHook(() => useJob()));
 
@@ -117,21 +119,21 @@ describe('useJob', () => {
     expect(result.current.item.name).toBe('New name');
   });
 
-  it('saves and navigates on success', async () => {
-    jest.mocked(api.listCollections).mockResolvedValue({items: []});
-    jest.mocked(api.saveJob).mockResolvedValue();
+  it('creates and navigates on success', async () => {
+    jest.mocked(collectionsApi.getCollections).mockResolvedValue({items: []});
+    jest.mocked(api.createJob).mockResolvedValue();
 
     const {result} = await act(async () => renderHook(() => useJob()));
 
     await act(async () => result.current.save());
 
-    expect(api.saveJob).toHaveBeenCalledTimes(1);
+    expect(api.createJob).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith('/jobs');
   });
 
-  it('sets errors on save failure', async () => {
-    jest.mocked(api.listCollections).mockResolvedValue({items: []});
-    jest.mocked(api.saveJob).mockRejectedValue(new Error('Boom'));
+  it('sets errors on create failure', async () => {
+    jest.mocked(collectionsApi.getCollections).mockResolvedValue({items: []});
+    jest.mocked(api.createJob).mockRejectedValue(new Error('unexpected'));
 
     const {result} = await act(async () => renderHook(() => useJob()));
 
@@ -141,8 +143,37 @@ describe('useJob', () => {
     expect(result.current.errors).toEqual(expect.any(Object));
   });
 
+  it('updates existing job and navigates on success', async () => {
+    jest.mocked(api.getJob).mockResolvedValue(job);
+    jest.mocked(collectionsApi.getCollections).mockResolvedValue({items: collections});
+    jest.mocked(api.updateJob).mockResolvedValue();
+
+    const {result} = await act(async () => renderHook(() => useJob('j1')));
+
+    await act(async () => result.current.save());
+
+    expect(api.updateJob).toHaveBeenCalledTimes(1);
+    expect(api.updateJob).toHaveBeenCalledWith(job);
+    expect(api.createJob).not.toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledWith('/jobs');
+  });
+
+  it('sets errors on update failure', async () => {
+    jest.mocked(api.getJob).mockResolvedValue(job);
+    jest.mocked(collectionsApi.getCollections).mockResolvedValue({items: collections});
+    jest.mocked(api.updateJob).mockRejectedValue(new Error('Update failed'));
+
+    const {result} = await act(async () => renderHook(() => useJob('j1')));
+
+    await act(async () => result.current.save());
+
+    expect(api.updateJob).toHaveBeenCalledTimes(1);
+    expect(result.current.pending).toBe(false);
+    expect(result.current.errors).toEqual(expect.any(Object));
+  });
+
   it('does not remove when item has no id', async () => {
-    jest.mocked(api.listCollections).mockResolvedValue({items: []});
+    jest.mocked(collectionsApi.getCollections).mockResolvedValue({items: []});
 
     const {result} = await act(async () => renderHook(() => useJob()));
 
@@ -153,8 +184,8 @@ describe('useJob', () => {
   });
 
   it('removes and navigates with replace on success', async () => {
-    jest.mocked(api.retrieveJob).mockResolvedValue(job);
-    jest.mocked(api.listCollections).mockResolvedValue({items: []});
+    jest.mocked(api.getJob).mockResolvedValue(job);
+    jest.mocked(collectionsApi.getCollections).mockResolvedValue({items: []});
     jest.mocked(api.deleteJob).mockResolvedValue();
 
     const {result} = await act(async () => renderHook(() => useJob('j1')));
@@ -166,9 +197,9 @@ describe('useJob', () => {
   });
 
   it('sets errors on remove failure', async () => {
-    jest.mocked(api.retrieveJob).mockResolvedValue(job);
-    jest.mocked(api.listCollections).mockResolvedValue({items: []});
-    jest.mocked(api.deleteJob).mockRejectedValue(new Error('Boom'));
+    jest.mocked(api.getJob).mockResolvedValue(job);
+    jest.mocked(collectionsApi.getCollections).mockResolvedValue({items: []});
+    jest.mocked(api.deleteJob).mockRejectedValue(new Error('unexpected'));
 
     const {result} = await act(async () => renderHook(() => useJob('j1')));
 

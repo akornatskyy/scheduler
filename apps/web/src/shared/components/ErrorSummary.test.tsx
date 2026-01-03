@@ -1,7 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import {ErrorSummary} from './ErrorSummary';
 
-describe('error summary component', () => {
+describe('ErrorSummary', () => {
   it('renders provided message', () => {
     render(<ErrorSummary message="The error message." />);
 

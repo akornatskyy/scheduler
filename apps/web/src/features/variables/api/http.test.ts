@@ -4,16 +4,16 @@ import * as api from './http';
 describe('variables api', () => {
   afterEach(() => jest.mocked(global.fetch).mockClear());
 
-  it('list', async () => {
+  it('get variables', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
       json: () => Promise.resolve({items: []}),
     });
 
-    const d = await api.listVariables();
+    const result = await api.getVariables();
 
-    expect(d).toEqual({
+    expect(result).toEqual({
       etag: '"2hhaswzbz72p8"',
       items: [],
     });
@@ -22,16 +22,16 @@ describe('variables api', () => {
     });
   });
 
-  it('list by collection id', async () => {
+  it('get variables by collection id', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
       json: () => Promise.resolve({items: []}),
     });
 
-    const d = await api.listVariables('123');
+    const result = await api.getVariables('123');
 
-    expect(d).toEqual({
+    expect(result).toEqual({
       etag: '"2hhaswzbz72p8"',
       items: [],
     });
@@ -40,16 +40,16 @@ describe('variables api', () => {
     });
   });
 
-  it('retrieve', async () => {
+  it('get variable', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
       json: () => Promise.resolve({name: 'My Var'}),
     });
 
-    const d = await api.retrieveVariable('123');
+    const result = await api.getVariable('123');
 
-    expect(d).toEqual({
+    expect(result).toEqual({
       etag: '"2hhaswzbz72p8"',
       name: 'My Var',
     });
@@ -58,12 +58,12 @@ describe('variables api', () => {
     });
   });
 
-  it('save (create)', async () => {
+  it('create variable', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 201,
     });
 
-    await api.saveVariable({name: 'My Var'} as Variable);
+    await api.createVariable({name: 'My Var'} as Variable);
 
     expect(global.fetch).toHaveBeenCalledWith('/variables', {
       method: 'POST',
@@ -74,12 +74,12 @@ describe('variables api', () => {
     });
   });
 
-  it('save (update)', async () => {
+  it('update variable', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 204,
     });
 
-    await api.saveVariable({
+    await api.updateVariable({
       id: '123',
       etag: '"2hhaswzbz72p8"',
       name: 'My Var',
@@ -95,7 +95,7 @@ describe('variables api', () => {
     });
   });
 
-  it('delete', async () => {
+  it('delete variable', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 204,
     });

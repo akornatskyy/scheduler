@@ -1,26 +1,26 @@
-import {api} from '$features/collections';
 import {go} from '$shared/api';
 import {Variable, VariableInput, VariableItem} from '../types';
 
-export const listCollections = api.listCollections;
-
-type ListVariablesResponse = {
+type GetVariablesResponse = {
   items: VariableItem[];
 };
 
-export const listVariables = (
+export const getVariables = (
   collectionId?: string | null,
-): Promise<ListVariablesResponse> =>
+): Promise<GetVariablesResponse> =>
   go(
     'GET',
     collectionId ? `/variables?collectionId=${collectionId}` : '/variables',
   );
 
-export const retrieveVariable = (id: string): Promise<Variable> =>
+export const getVariable = (id: string): Promise<Variable> =>
   go('GET', `/variables/${id}`);
 
-export const saveVariable = (v: VariableInput): Promise<void> =>
-  v.id ? go('PATCH', `/variables/${v.id}`, v) : go('POST', '/variables', v);
+export const createVariable = (v: VariableInput): Promise<void> =>
+  go('POST', '/variables', v);
+
+export const updateVariable = (v: VariableInput): Promise<void> =>
+  go('PATCH', `/variables/${v.id}`, v);
 
 export const deleteVariable = (id: string, etag?: string): Promise<void> =>
   go('DELETE', `/variables/${id}`, etag);

@@ -1,3 +1,4 @@
+import {api as collectionsApi} from '$features/collections';
 import {Errors, toErrorMap} from '$shared/errors';
 import {useEffect, useState} from 'react';
 import * as api from '../api';
@@ -12,8 +13,8 @@ export function useVariables(collectionId?: string | null) {
     (async () => {
       try {
         const [{items: collections}, {items: variables}] = await Promise.all([
-          api.listCollections(),
-          api.listVariables(collectionId),
+          collectionsApi.getCollections(),
+          api.getVariables(collectionId),
         ]);
 
         setCollections(collections);

@@ -6,7 +6,7 @@ import {JobHistoryPage} from './JobHistoryPage';
 
 jest.mock('../hooks/useJobHistory');
 
-describe('job history page', () => {
+describe('JobHistoryPage', () => {
   const base: ReturnType<typeof useJobHistory> = {
     job: {name: ''},
     status: {runCount: 0, errorCount: 0},
@@ -38,7 +38,7 @@ describe('job history page', () => {
   it('wires hook errors into layout', () => {
     jest.mocked(useJobHistory).mockReturnValue({
       ...base,
-      errors: {__ERROR__: 'Unexpected'},
+      errors: {__ERROR__: 'unexpected'},
     });
 
     render(
@@ -49,7 +49,7 @@ describe('job history page', () => {
       </Router>,
     );
 
-    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
+    expect(screen.getByRole('heading', {name: /unexpected/})).toBeVisible();
   });
 
   it('renders items from hook', () => {

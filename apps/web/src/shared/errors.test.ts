@@ -1,6 +1,6 @@
 import {DomainError, toErrorMap, ValidationError} from './errors';
 
-describe('ui/shared/errors', () => {
+describe('errors', () => {
   describe('DomainError', () => {
     it('preserves message, status and sets name', () => {
       const error = new DomainError('Not found', 404);
@@ -33,10 +33,10 @@ describe('ui/shared/errors', () => {
     });
 
     it('maps DomainError to __ERROR__ message with code', () => {
-      const error = new DomainError('Boom', 418);
+      const error = new DomainError('unexpected', 418);
 
       expect(toErrorMap(error)).toEqual({
-        __ERROR__: 'Oops! Code 418: Boom',
+        __ERROR__: 'Oops! Code 418: unexpected',
       });
     });
 

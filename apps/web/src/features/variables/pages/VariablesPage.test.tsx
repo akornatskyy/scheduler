@@ -5,7 +5,7 @@ import {VariablesPage} from './VariablesPage';
 
 jest.mock('../hooks/useVariables');
 
-describe('variables page', () => {
+describe('VariablesPage', () => {
   const base: ReturnType<typeof useVariables> = {
     collections: [],
     variables: [],
@@ -31,7 +31,7 @@ describe('variables page', () => {
   it('wires hook errors into layout', () => {
     jest.mocked(useVariables).mockReturnValue({
       ...base,
-      errors: {__ERROR__: 'Unexpected'},
+      errors: {__ERROR__: 'unexpected'},
     });
 
     render(
@@ -40,7 +40,7 @@ describe('variables page', () => {
       </Router>,
     );
 
-    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
+    expect(screen.getByRole('heading', {name: /unexpected/})).toBeVisible();
   });
 
   it('renders items from hook', () => {

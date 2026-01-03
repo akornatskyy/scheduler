@@ -1,3 +1,4 @@
+import {api as collectionsApi} from '$features/collections';
 import {Errors, toErrorMap} from '$shared/errors';
 import {produce} from 'immer';
 import {useCallback, useEffect, useState} from 'react';
@@ -37,7 +38,7 @@ export function useJob(id?: string) {
     if (id) {
       (async () => {
         try {
-          const data = await api.retrieveJob(id);
+          const data = await api.getJob(id);
           setItem(data);
         } catch (error) {
           setErrors(toErrorMap(error));
@@ -52,7 +53,7 @@ export function useJob(id?: string) {
 
     (async () => {
       try {
-        const {items} = await api.listCollections();
+        const {items} = await collectionsApi.getCollections();
         setCollections(items);
         setItem((prev) => {
           if (prev.collectionId) return prev;
@@ -80,7 +81,12 @@ export function useJob(id?: string) {
     setPending(true);
 
     try {
-      await api.saveJob(item);
+      if (item.id) {
+        await api.updateJob(item);
+      } else {
+        await api.createJob(item);
+      }
+
       navigate('/jobs');
     } catch (error) {
       setErrors(toErrorMap(error));

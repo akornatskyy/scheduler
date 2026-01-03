@@ -2,7 +2,7 @@ import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
 import {Header} from './Header';
 
-describe('header component', () => {
+describe('Header', () => {
   it('renders links', () => {
     render(
       <Router>

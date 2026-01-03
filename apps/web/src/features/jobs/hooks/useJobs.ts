@@ -1,3 +1,4 @@
+import {api as collectionsApi} from '$features/collections';
 import {Errors, toErrorMap} from '$shared/errors';
 import {useEffect, useState} from 'react';
 import * as api from '../api';
@@ -12,8 +13,8 @@ export function useJobs(collectionId?: string | null) {
     const refresh = async () => {
       try {
         const [{items: collections}, {items: jobs}] = await Promise.all([
-          api.listCollections(),
-          api.listJobs(collectionId),
+          collectionsApi.getCollections(),
+          api.getJobs(collectionId),
         ]);
 
         setCollections(collections);

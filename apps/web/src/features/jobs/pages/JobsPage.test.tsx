@@ -5,7 +5,7 @@ import {JobsPage} from './JobsPage';
 
 jest.mock('../hooks/useJobs');
 
-describe('jobs page', () => {
+describe('JobsPage', () => {
   const base: ReturnType<typeof useJobs> = {
     collections: [],
     jobs: [],
@@ -31,7 +31,7 @@ describe('jobs page', () => {
   it('wires hook errors into layout', () => {
     jest.mocked(useJobs).mockReturnValue({
       ...base,
-      errors: {__ERROR__: 'Unexpected'},
+      errors: {__ERROR__: 'unexpected'},
     });
 
     render(
@@ -40,7 +40,7 @@ describe('jobs page', () => {
       </Router>,
     );
 
-    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
+    expect(screen.getByRole('heading', {name: /unexpected/})).toBeVisible();
   });
 
   it('renders collections/jobs from hook', () => {

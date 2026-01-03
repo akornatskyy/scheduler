@@ -1,6 +1,6 @@
 import {formatDate, formatRunning} from './utils';
 
-describe('job history status formatters', () => {
+describe('job utils', () => {
   it.each([
     [null, ''],
     [undefined, ''],

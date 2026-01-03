@@ -5,7 +5,7 @@ import {CollectionsPage} from './CollectionsPage';
 
 jest.mock('../hooks/useCollections');
 
-describe('collections page', () => {
+describe('CollectionsPage', () => {
   const base: ReturnType<typeof useCollections> = {
     items: [],
     errors: undefined,
@@ -18,7 +18,7 @@ describe('collections page', () => {
   it('wires hook errors into layout', () => {
     jest.mocked(useCollections).mockReturnValue({
       ...base,
-      errors: {__ERROR__: 'Unexpected'},
+      errors: {__ERROR__: 'unexpected'},
     });
 
     render(
@@ -27,7 +27,7 @@ describe('collections page', () => {
       </Router>,
     );
 
-    expect(screen.getByRole('heading', {name: /Unexpected/})).toBeVisible();
+    expect(screen.getByRole('heading', {name: /unexpected/})).toBeVisible();
   });
 
   it('renders items from hook', () => {

@@ -1,17 +1,19 @@
+import {api as collectionsApi} from '$features/collections';
 import {act, renderHook} from '@testing-library/react';
 import * as api from '../api';
 import {useVariables} from './useVariables';
 
+jest.mock('$features/collections');
 jest.mock('../api');
 
 describe('useVariables', () => {
   beforeEach(() => jest.clearAllMocks());
 
   it('loads collections and variables for given collectionId', async () => {
-    jest.mocked(api.listCollections).mockResolvedValue({
+    jest.mocked(collectionsApi.getCollections).mockResolvedValue({
       items: [{id: '65ada2f9', name: 'My App', state: 'enabled'}],
     });
-    jest.mocked(api.listVariables).mockResolvedValue({
+    jest.mocked(api.getVariables).mockResolvedValue({
       items: [
         {
           id: 'c23abe44',
@@ -26,10 +28,10 @@ describe('useVariables', () => {
       renderHook(() => useVariables('65ada2f9')),
     );
 
-    expect(api.listCollections).toHaveBeenCalledTimes(1);
-    expect(api.listCollections).toHaveBeenCalledWith();
-    expect(api.listVariables).toHaveBeenCalledTimes(1);
-    expect(api.listVariables).toHaveBeenCalledWith('65ada2f9');
+    expect(collectionsApi.getCollections).toHaveBeenCalledTimes(1);
+    expect(collectionsApi.getCollections).toHaveBeenCalledWith();
+    expect(api.getVariables).toHaveBeenCalledTimes(1);
+    expect(api.getVariables).toHaveBeenCalledWith('65ada2f9');
 
     expect(result.current.collections).toEqual([
       {id: '65ada2f9', name: 'My App', state: 'enabled'},
@@ -46,16 +48,18 @@ describe('useVariables', () => {
   });
 
   it('sets errors when fetch fails', async () => {
-    jest.mocked(api.listCollections).mockRejectedValue(new Error('Unexpected'));
-    jest.mocked(api.listVariables).mockResolvedValue({items: []});
+    jest
+      .mocked(collectionsApi.getCollections)
+      .mockRejectedValue(new Error('unexpected'));
+    jest.mocked(api.getVariables).mockResolvedValue({items: []});
 
     const {result} = await act(() => renderHook(() => useVariables()));
 
-    expect(api.listCollections).toHaveBeenCalledTimes(1);
-    expect(api.listVariables).toHaveBeenCalledTimes(1);
+    expect(collectionsApi.getCollections).toHaveBeenCalledTimes(1);
+    expect(api.getVariables).toHaveBeenCalledTimes(1);
 
     expect(result.current.collections).toEqual([]);
     expect(result.current.variables).toEqual([]);
-    expect(result.current.errors?.__ERROR__).toMatch(/Unexpected/);
+    expect(result.current.errors?.__ERROR__).toMatch(/unexpected/);
   });
 });

@@ -4,16 +4,16 @@ import * as api from './http';
 describe('jobs api', () => {
   afterEach(() => jest.mocked(global.fetch).mockClear());
 
-  it('list', async () => {
+  it('get jobs', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
       json: () => Promise.resolve({items: []}),
     });
 
-    const d = await api.listJobs();
+    const result = await api.getJobs();
 
-    expect(d).toEqual({
+    expect(result).toEqual({
       etag: '"2hhaswzbz72p8"',
       items: [],
     });
@@ -22,16 +22,16 @@ describe('jobs api', () => {
     });
   });
 
-  it('list by collection id', async () => {
+  it('get jobs by collection id', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
       json: () => Promise.resolve({items: []}),
     });
 
-    const d = await api.listJobs('123');
+    const result = await api.getJobs('123');
 
-    expect(d).toEqual({
+    expect(result).toEqual({
       etag: '"2hhaswzbz72p8"',
       items: [],
     });
@@ -43,7 +43,7 @@ describe('jobs api', () => {
     );
   });
 
-  it('retrieve', async () => {
+  it('get job', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
@@ -52,19 +52,15 @@ describe('jobs api', () => {
           name: 'My Task #1',
           action: {
             type: 'HTTP',
-            request: {
-              uri: 'http://example.com',
-            },
-            retryPolicy: {
-              retryCount: 5,
-            },
+            request: {uri: 'http://example.com'},
+            retryPolicy: {retryCount: 5},
           },
         }),
     });
 
-    const d = await api.retrieveJob('123');
+    const result = await api.getJob('123');
 
-    expect(d).toEqual({
+    expect(result).toEqual({
       etag: '"2hhaswzbz72p8"',
       name: 'My Task #1',
       action: {
@@ -75,11 +71,7 @@ describe('jobs api', () => {
           headers: [],
           body: '',
         },
-        retryPolicy: {
-          deadline: '1m',
-          retryCount: 5,
-          retryInterval: '10s',
-        },
+        retryPolicy: {deadline: '1m', retryCount: 5, retryInterval: '10s'},
       },
     });
     expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
@@ -87,7 +79,7 @@ describe('jobs api', () => {
     });
   });
 
-  it('retrieve (complement with default policy)', async () => {
+  it('get job (complement with default policy)', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 200,
       headers: {get: () => '"2hhaswzbz72p8"'},
@@ -104,9 +96,9 @@ describe('jobs api', () => {
         }),
     });
 
-    const d = await api.retrieveJob('123');
+    const result = await api.getJob('123');
 
-    expect(d).toEqual({
+    expect(result).toEqual({
       etag: '"2hhaswzbz72p8"',
       name: 'My Task #1',
       action: {
@@ -117,11 +109,7 @@ describe('jobs api', () => {
           headers: [],
           body: '',
         },
-        retryPolicy: {
-          deadline: '1m',
-          retryCount: 3,
-          retryInterval: '10s',
-        },
+        retryPolicy: {deadline: '1m', retryCount: 3, retryInterval: '10s'},
       },
     });
     expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
@@ -129,12 +117,12 @@ describe('jobs api', () => {
     });
   });
 
-  it('save (create)', async () => {
+  it('create job', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 201,
     });
 
-    await api.saveJob({name: 'My Task'} as JobInput);
+    await api.createJob({name: 'My Task'} as JobInput);
 
     expect(global.fetch).toHaveBeenCalledWith('/jobs', {
       method: 'POST',
@@ -145,12 +133,12 @@ describe('jobs api', () => {
     });
   });
 
-  it('save (update)', async () => {
+  it('update job', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 204,
     });
 
-    await api.saveJob({
+    await api.updateJob({
       id: '123',
       etag: '"2hhaswzbz72p8"',
       name: 'My Task',
@@ -166,7 +154,7 @@ describe('jobs api', () => {
     });
   });
 
-  it('delete', async () => {
+  it('delete job', async () => {
     global.fetch = jest.fn().mockResolvedValue({
       status: 204,
     });
@@ -181,78 +169,74 @@ describe('jobs api', () => {
     });
   });
 
-  describe('job status', () => {
-    it('retrieve', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        status: 200,
-        headers: {get: () => '"2hhaswzbz72p8"'},
-        json: () => Promise.resolve({running: false}),
-      });
-
-      const d = await api.retrieveJobStatus('123');
-
-      expect(d).toEqual({
-        etag: '"2hhaswzbz72p8"',
-        running: false,
-      });
-      expect(global.fetch).toHaveBeenCalledWith('/jobs/123/status', {
-        method: 'GET',
-      });
+  it('get job status', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      status: 200,
+      headers: {get: () => '"2hhaswzbz72p8"'},
+      json: () => Promise.resolve({running: false}),
     });
 
-    it('patch', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        status: 204,
-      });
+    const result = await api.getJobStatus('123');
 
-      await api.patchJobStatus('123', {
-        etag: '"2hhaswzbz72p8"',
-        running: true,
-      });
-
-      expect(global.fetch).toHaveBeenCalledWith('/jobs/123/status', {
-        method: 'PATCH',
-        headers: {
-          'content-type': 'application/json',
-          'if-match': '"2hhaswzbz72p8"',
-        },
-        body: '{"running":true}',
-      });
+    expect(result).toEqual({
+      running: false,
+      etag: '"2hhaswzbz72p8"',
+    });
+    expect(global.fetch).toHaveBeenCalledWith('/jobs/123/status', {
+      method: 'GET',
     });
   });
 
-  describe('job history', () => {
-    it('list job history', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        status: 200,
-        headers: {get: () => '"2hhaswzbz72p8"'},
-        json: () => Promise.resolve({items: []}),
-      });
-
-      const d = await api.listJobHistory('123');
-
-      expect(d).toEqual({
-        etag: '"2hhaswzbz72p8"',
-        items: [],
-      });
-      expect(global.fetch).toHaveBeenCalledWith('/jobs/123/history', {
-        method: 'GET',
-      });
+  it('update job status', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      status: 204,
     });
 
-    it('delete job history', async () => {
-      global.fetch = jest.fn().mockResolvedValue({
-        status: 204,
-      });
+    await api.updateJobStatus('123', {
+      running: true,
+      etag: '"2hhaswzbz72p8"',
+    });
 
-      await api.deleteJobHistory('123', '"2hhaswzbz72p8"');
+    expect(global.fetch).toHaveBeenCalledWith('/jobs/123/status', {
+      method: 'PATCH',
+      headers: {
+        'content-type': 'application/json',
+        'if-match': '"2hhaswzbz72p8"',
+      },
+      body: '{"running":true}',
+    });
+  });
 
-      expect(global.fetch).toHaveBeenCalledWith('/jobs/123/history', {
-        method: 'DELETE',
-        headers: {
-          'if-match': '"2hhaswzbz72p8"',
-        },
-      });
+  it('get job history', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      status: 200,
+      headers: {get: () => '"2hhaswzbz72p8"'},
+      json: () => Promise.resolve({items: []}),
+    });
+
+    const result = await api.getJobHistory('123');
+
+    expect(result).toEqual({
+      etag: '"2hhaswzbz72p8"',
+      items: [],
+    });
+    expect(global.fetch).toHaveBeenCalledWith('/jobs/123/history', {
+      method: 'GET',
+    });
+  });
+
+  it('delete job history', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      status: 204,
+    });
+
+    await api.deleteJobHistory('123', '"2hhaswzbz72p8"');
+
+    expect(global.fetch).toHaveBeenCalledWith('/jobs/123/history', {
+      method: 'DELETE',
+      headers: {
+        'if-match': '"2hhaswzbz72p8"',
+      },
     });
   });
 });

@@ -20,7 +20,7 @@ export function useCollection(id?: string) {
     if (id) {
       (async () => {
         try {
-          const data = await api.retrieveCollection(id);
+          const data = await api.getCollection(id);
           setItem(data);
         } catch (error) {
           setErrors(toErrorMap(error));
@@ -48,7 +48,12 @@ export function useCollection(id?: string) {
     setPending(true);
 
     try {
-      await api.saveCollection(item);
+      if (item.id) {
+        await api.updateCollection(item);
+      } else {
+        await api.createCollection(item);
+      }
+
       navigate('/collections');
     } catch (error) {
       setErrors(toErrorMap(error));

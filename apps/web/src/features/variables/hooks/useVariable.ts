@@ -1,3 +1,4 @@
+import {api as collectionsApi} from '$features/collections';
 import {Errors, toErrorMap} from '$shared/errors';
 import {produce} from 'immer';
 import {useCallback, useEffect, useState} from 'react';
@@ -22,7 +23,7 @@ export function useVariable(id?: string) {
     if (id) {
       (async () => {
         try {
-          const data = await api.retrieveVariable(id);
+          const data = await api.getVariable(id);
           setItem(data);
         } catch (error) {
           setErrors(toErrorMap(error));
@@ -37,7 +38,7 @@ export function useVariable(id?: string) {
 
     (async () => {
       try {
-        const {items} = await api.listCollections();
+        const {items} = await collectionsApi.getCollections();
         setCollections(items);
         setItem((prev) => {
           if (prev.collectionId) return prev;
@@ -65,7 +66,12 @@ export function useVariable(id?: string) {
     setPending(true);
 
     try {
-      await api.saveVariable(item);
+      if (item.id) {
+        await api.updateVariable(item);
+      } else {
+        await api.createVariable(item);
+      }
+
       navigate('/variables');
     } catch (error) {
       setErrors(toErrorMap(error));

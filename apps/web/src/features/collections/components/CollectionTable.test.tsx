@@ -3,7 +3,7 @@ import {MemoryRouter as Router} from 'react-router';
 import {CollectionItem} from '../types';
 import {CollectionTable} from './CollectionTable';
 
-describe('collections table component ', () => {
+describe('CollectionTable', () => {
   it('renders empty list', () => {
     const items: CollectionItem[] = [];
 

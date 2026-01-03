@@ -3,7 +3,7 @@ import {MemoryRouter as Router} from 'react-router';
 import {CollectionItem, JobInput} from '../types';
 import {JobForm} from './JobForm';
 
-describe('job form component', () => {
+describe('JobForm', () => {
   let draft: JobInput;
   const collections: CollectionItem[] = [
     {id: '65ada2f9', name: 'My App #1', state: 'disabled'},
@@ -289,7 +289,8 @@ describe('job form component', () => {
   it('renders no errors', () => {
     const {container} = render(<JobForm {...props} />);
 
-    expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
+    expect(container.querySelectorAll('.is-invalid')).toHaveLength(0);
+    expect(container.querySelectorAll('.invalid-feedback')).toHaveLength(0);
   });
 
   it('renders all errors', () => {
@@ -308,10 +309,12 @@ describe('job form component', () => {
       deadline: 'An error related to deadline.',
     };
 
-    render(<JobForm {...props} errors={errors} />);
+    const {container} = render(<JobForm {...props} errors={errors} />);
 
-    for (const name of Object.getOwnPropertyNames(errors)) {
-      expect(screen.getByText(errors[name])).toBeVisible();
+    expect(container.querySelectorAll('.is-invalid')).toHaveLength(12);
+    expect(container.querySelectorAll('.invalid-feedback')).toHaveLength(11);
+    for (const error of Object.values(props.errors)) {
+      expect(screen.getByText(error)).toBeVisible();
     }
   });
 });

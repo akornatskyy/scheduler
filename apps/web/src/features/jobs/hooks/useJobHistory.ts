@@ -20,9 +20,9 @@ export function useJobHistory(id: string) {
     (async () => {
       try {
         const [job, status, {items}] = await Promise.all([
-          api.retrieveJob(id),
-          api.retrieveJobStatus(id),
-          api.listJobHistory(id),
+          api.getJob(id),
+          api.getJobStatus(id),
+          api.getJobHistory(id),
         ]);
         setJob(job);
         setStatus(status);
@@ -37,9 +37,9 @@ export function useJobHistory(id: string) {
 
   const run = useCallback(async () => {
     try {
-      await api.patchJobStatus(id, {running: true, etag: status.etag});
+      await api.updateJobStatus(id, {running: true, etag: status.etag});
 
-      const updatedStatus = await api.retrieveJobStatus(id);
+      const updatedStatus = await api.getJobStatus(id);
       setStatus(updatedStatus);
     } catch (error) {
       setErrors(toErrorMap(error));

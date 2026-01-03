@@ -2,7 +2,7 @@ import {fireEvent, render, screen} from '@testing-library/react';
 import {VariableInput} from '../types';
 import {VariableForm} from './VariableForm';
 
-describe('variable form component', () => {
+describe('VariableForm', () => {
   let draft: VariableInput;
   let props: Parameters<typeof VariableForm>[0];
 
@@ -91,7 +91,8 @@ describe('variable form component', () => {
   it('renders no errors', () => {
     const {container} = render(<VariableForm {...props} />);
 
-    expect(container.querySelectorAll('p.invalid-feedback')).toHaveLength(0);
+    expect(container.querySelectorAll('.is-invalid')).toHaveLength(0);
+    expect(container.querySelectorAll('.invalid-feedback')).toHaveLength(0);
   });
 
   it('renders all errors', () => {
@@ -101,10 +102,12 @@ describe('variable form component', () => {
       value: 'An error related to value.',
     };
 
-    render(<VariableForm {...props} errors={errors} />);
+    const {container} = render(<VariableForm {...props} errors={errors} />);
 
-    for (const name of Object.getOwnPropertyNames(errors)) {
-      expect(screen.getByText(errors[name])).toBeVisible();
+    expect(container.querySelectorAll('.is-invalid')).toHaveLength(3);
+    expect(container.querySelectorAll('.invalid-feedback')).toHaveLength(3);
+    for (const error of Object.values(props.errors)) {
+      expect(screen.getByText(error)).toBeVisible();
     }
   });
 });

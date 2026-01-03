@@ -3,7 +3,7 @@ import {MemoryRouter as Router} from 'react-router';
 import {CollectionItem, VariableItem} from '../types';
 import {GroupRow, ItemRow, VariableTable} from './VariableTable';
 
-describe('variables list component', () => {
+describe('VariableTable', () => {
   it('renders empty list', () => {
     const collections: CollectionItem[] = [];
     const variables: VariableItem[] = [];

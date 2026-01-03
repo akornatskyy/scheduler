@@ -172,7 +172,7 @@ describe('fetch go', () => {
             errors: [
               {
                 type: 'other',
-                message: 'Unexpected',
+                message: 'unexpected',
               },
               {
                 type: 'field',
@@ -184,7 +184,7 @@ describe('fetch go', () => {
       });
 
       await expect(() => go('POST', '/', {})).rejects.toThrow(
-        new DomainError('Unexpected', 400),
+        new DomainError('unexpected', 400),
       );
 
       expect(global.fetch).toHaveBeenCalledTimes(1);

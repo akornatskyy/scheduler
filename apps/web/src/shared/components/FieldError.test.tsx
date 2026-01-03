@@ -1,7 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import {FieldError} from './FieldError';
 
-describe('field error component', () => {
+describe('FieldError', () => {
   it('handles no error', () => {
     const {container} = render(<FieldError />);
 

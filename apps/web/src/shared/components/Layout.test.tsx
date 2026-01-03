@@ -1,7 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import {Layout} from './Layout';
 
-describe('layout component', () => {
+describe('Layout', () => {
   it('renders title, errors summary and child', () => {
     render(
       <Layout title="My Title" errors={{}}>
