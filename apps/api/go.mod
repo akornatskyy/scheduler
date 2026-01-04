@@ -4,7 +4,7 @@ go 1.23
 
 require (
 	github.com/CAFxX/httpcompression v0.0.9
-	github.com/akornatskyy/goext v1.4.5
+	github.com/akornatskyy/goext v1.4.6
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/lib/pq v1.10.9
 	github.com/robfig/cron/v3 v3.0.1
