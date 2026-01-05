@@ -4,6 +4,7 @@ import {Button, Col, Form, Row} from 'react-bootstrap';
 import {CollectionItem, VariableInput} from '../types';
 
 type Props = {
+  id?: string;
   item: VariableInput;
   collections: CollectionItem[];
   pending: boolean;
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export const VariableForm = ({
+  id,
   item,
   collections,
   pending,
@@ -84,7 +86,7 @@ export const VariableForm = ({
     <Button type="submit" disabled={pending}>
       Save
     </Button>
-    {item.id && (
+    {id && (
       <Button
         onClick={onDelete}
         variant="danger"

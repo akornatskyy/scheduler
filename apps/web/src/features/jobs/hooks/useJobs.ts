@@ -13,8 +13,8 @@ export function useJobs(collectionId?: string | null) {
     const refresh = async () => {
       try {
         const [{items: collections}, {items: jobs}] = await Promise.all([
-          collectionsApi.getCollections(),
-          api.getJobs(collectionId),
+          collectionsApi.listCollections(),
+          api.listJobs({collectionId}),
         ]);
 
         setCollections(collections);

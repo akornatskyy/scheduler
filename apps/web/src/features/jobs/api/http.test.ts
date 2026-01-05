@@ -1,242 +1,119 @@
-import {JobInput} from '../types';
+import type {GetResourceResponse, ListResourceResponse} from '$shared/api';
+import {client} from '$shared/api';
+import type {
+  JobDefinition,
+  JobHistory,
+  JobInput,
+  JobItem,
+  JobStatus,
+} from '../types';
 import * as api from './http';
 
+jest.mock('$shared/api');
+
 describe('jobs api', () => {
-  afterEach(() => jest.mocked(global.fetch).mockClear());
+  const item = {id: '123'} as JobDefinition;
 
-  it('get jobs', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 200,
-      headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => Promise.resolve({items: []}),
-    });
+  beforeEach(() => jest.clearAllMocks());
 
-    const result = await api.getJobs();
+  it('listJobs() calls client.list with /jobs?fields=status,errorRate', async () => {
+    const payload: ListResourceResponse<JobItem> = {
+      items: [item],
+    };
+    jest.mocked(client).list.mockResolvedValue(payload);
 
-    expect(result).toEqual({
-      etag: '"2hhaswzbz72p8"',
-      items: [],
-    });
-    expect(global.fetch).toHaveBeenCalledWith('/jobs?fields=status,errorRate', {
-      method: 'GET',
-    });
+    const result = await api.listJobs({});
+
+    expect(result).toBe(payload);
+    expect(client.list).toHaveBeenCalledWith('/jobs?fields=status,errorRate');
   });
 
-  it('get jobs by collection id', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 200,
-      headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => Promise.resolve({items: []}),
-    });
+  it('listJobs() calls client.list with /jobs?fields=status,errorRate&collectionId when collectionId provided', async () => {
+    const payload: ListResourceResponse<JobItem> = {
+      items: [item],
+    };
+    jest.mocked(client).list.mockResolvedValue(payload);
 
-    const result = await api.getJobs('123');
+    const result = await api.listJobs({collectionId: 'c1'});
 
-    expect(result).toEqual({
-      etag: '"2hhaswzbz72p8"',
-      items: [],
-    });
-    expect(global.fetch).toHaveBeenCalledWith(
-      '/jobs?fields=status,errorRate&collectionId=123',
-      {
-        method: 'GET',
-      },
+    expect(result).toBe(payload);
+    expect(client.list).toHaveBeenCalledWith(
+      '/jobs?fields=status,errorRate&collectionId=c1',
     );
   });
 
-  it('get job', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 200,
-      headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () =>
-        Promise.resolve({
-          name: 'My Task #1',
-          action: {
-            type: 'HTTP',
-            request: {uri: 'http://example.com'},
-            retryPolicy: {retryCount: 5},
-          },
-        }),
-    });
+  it('getJob() calls client.get with /jobs/:id', async () => {
+    const payload: GetResourceResponse<JobDefinition> = [item, 'W/"1"'];
+    jest.mocked(client).get.mockResolvedValue(payload);
 
-    const result = await api.getJob('123');
+    const result = await api.getJob('j1');
 
-    expect(result).toEqual({
-      etag: '"2hhaswzbz72p8"',
-      name: 'My Task #1',
-      action: {
-        type: 'HTTP',
-        request: {
-          uri: 'http://example.com',
-          method: 'GET',
-          headers: [],
-          body: '',
-        },
-        retryPolicy: {deadline: '1m', retryCount: 5, retryInterval: '10s'},
-      },
-    });
-    expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
-      method: 'GET',
-    });
+    expect(result).toBe(payload);
+    expect(client.get).toHaveBeenCalledWith('/jobs/j1');
   });
 
-  it('get job (complement with default policy)', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 200,
-      headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () =>
-        Promise.resolve({
-          name: 'My Task #1',
-          action: {
-            type: 'HTTP',
-            request: {
-              uri: 'http://example.com',
-              method: 'HEAD',
-            },
-          },
-        }),
-    });
+  it('createJob() calls client.post with /jobs', async () => {
+    jest.mocked(client).post.mockResolvedValue('new-id');
 
-    const result = await api.getJob('123');
+    const id = await api.createJob(item);
 
-    expect(result).toEqual({
-      etag: '"2hhaswzbz72p8"',
-      name: 'My Task #1',
-      action: {
-        type: 'HTTP',
-        request: {
-          uri: 'http://example.com',
-          method: 'HEAD',
-          headers: [],
-          body: '',
-        },
-        retryPolicy: {deadline: '1m', retryCount: 3, retryInterval: '10s'},
-      },
-    });
-    expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
-      method: 'GET',
-    });
+    expect(id).toBe('new-id');
+    expect(client.post).toHaveBeenCalledWith('/jobs', item);
   });
 
-  it('create job', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 201,
-    });
+  it('updateJob() calls client.patch with /jobs/:id', async () => {
+    const input: Partial<JobInput> = {name: 'New Name'};
+    await api.updateJob('j1', input, 'W/"1"');
 
-    await api.createJob({name: 'My Task'} as JobInput);
-
-    expect(global.fetch).toHaveBeenCalledWith('/jobs', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: '{"name":"My Task"}',
-    });
+    expect(client.patch).toHaveBeenCalledWith('/jobs/j1', input, 'W/"1"');
   });
 
-  it('update job', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 204,
-    });
+  it('deleteJob() calls client.del with /jobs/:id', async () => {
+    await api.deleteJob('j1', 'W/"2"');
 
-    await api.updateJob({
-      id: '123',
-      etag: '"2hhaswzbz72p8"',
-      name: 'My Task',
-    } as JobInput);
-
-    expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
-      method: 'PATCH',
-      headers: {
-        'content-type': 'application/json',
-        'if-match': '"2hhaswzbz72p8"',
-      },
-      body: '{"name":"My Task"}',
-    });
+    expect(client.delete).toHaveBeenCalledWith('/jobs/j1', 'W/"2"');
   });
 
-  it('delete job', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 204,
-    });
+  it('getJobStatus() calls client.get with /jobs/:id/status', async () => {
+    const payload: GetResourceResponse<JobStatus> = [
+      {runCount: 4} as JobStatus,
+      'W/"1"',
+    ];
+    jest.mocked(client).get.mockResolvedValue(payload);
 
-    await api.deleteJob('123', '"2hhaswzbz72p8"');
+    const result = await api.getJobStatus('j1');
 
-    expect(global.fetch).toHaveBeenCalledWith('/jobs/123', {
-      method: 'DELETE',
-      headers: {
-        'if-match': '"2hhaswzbz72p8"',
-      },
-    });
+    expect(result).toBe(payload);
+    expect(client.get).toHaveBeenCalledWith('/jobs/j1/status');
   });
 
-  it('get job status', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 200,
-      headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => Promise.resolve({running: false}),
-    });
+  it('updateJobStatus() calls client.patch with /jobs/:id/status', async () => {
+    const statusData = {status: 'completed'} as Partial<JobStatus>;
 
-    const result = await api.getJobStatus('123');
+    await api.updateJobStatus('j1', statusData, 'W/"1"');
 
-    expect(result).toEqual({
-      running: false,
-      etag: '"2hhaswzbz72p8"',
-    });
-    expect(global.fetch).toHaveBeenCalledWith('/jobs/123/status', {
-      method: 'GET',
-    });
+    expect(client.patch).toHaveBeenCalledWith(
+      '/jobs/j1/status',
+      statusData,
+      'W/"1"',
+    );
   });
 
-  it('update job status', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 204,
-    });
+  it('listJobHistory() calls client.list with /jobs/:id/history', async () => {
+    const payload: ListResourceResponse<JobHistory> = {
+      items: [{status: 'ready'} as JobHistory],
+    };
+    jest.mocked(client).list.mockResolvedValue(payload);
 
-    await api.updateJobStatus('123', {
-      running: true,
-      etag: '"2hhaswzbz72p8"',
-    });
+    const result = await api.listJobHistory('j1');
 
-    expect(global.fetch).toHaveBeenCalledWith('/jobs/123/status', {
-      method: 'PATCH',
-      headers: {
-        'content-type': 'application/json',
-        'if-match': '"2hhaswzbz72p8"',
-      },
-      body: '{"running":true}',
-    });
+    expect(result).toBe(payload);
+    expect(client.list).toHaveBeenCalledWith('/jobs/j1/history');
   });
 
-  it('get job history', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 200,
-      headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => Promise.resolve({items: []}),
-    });
+  it('deleteJobHistory() calls client.del with /jobs/:id/history', async () => {
+    await api.deleteJobHistory('j1', 'W/"2"');
 
-    const result = await api.getJobHistory('123');
-
-    expect(result).toEqual({
-      etag: '"2hhaswzbz72p8"',
-      items: [],
-    });
-    expect(global.fetch).toHaveBeenCalledWith('/jobs/123/history', {
-      method: 'GET',
-    });
-  });
-
-  it('delete job history', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 204,
-    });
-
-    await api.deleteJobHistory('123', '"2hhaswzbz72p8"');
-
-    expect(global.fetch).toHaveBeenCalledWith('/jobs/123/history', {
-      method: 'DELETE',
-      headers: {
-        'if-match': '"2hhaswzbz72p8"',
-      },
-    });
+    expect(client.delete).toHaveBeenCalledWith('/jobs/j1/history', 'W/"2"');
   });
 });

@@ -31,7 +31,7 @@ describe('VariableForm', () => {
   });
 
   it('renders edit item', () => {
-    render(<VariableForm {...props} item={{...props.item, id: '123de331'}} />);
+    render(<VariableForm {...props} id="123de331" />);
 
     expect(screen.getByRole('form')).toHaveFormValues(props.item);
     expect(screen.getByText('Save')).toBeVisible();
@@ -79,7 +79,7 @@ describe('VariableForm', () => {
   });
 
   it('calls on delete callback', () => {
-    props.item.id = '65ada2f9';
+    props.id = '65ada2f9';
     const handler = jest.mocked(props.onDelete);
     render(<VariableForm {...props} />);
 

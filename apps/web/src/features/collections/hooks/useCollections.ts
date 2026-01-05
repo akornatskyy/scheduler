@@ -10,7 +10,7 @@ export function useCollections() {
   useEffect(() => {
     (async () => {
       try {
-        const {items} = await api.getCollections();
+        const {items} = await api.listCollections();
         setItems(items);
       } catch (error) {
         setErrors(toErrorMap(error));

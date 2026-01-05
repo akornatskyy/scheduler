@@ -9,13 +9,10 @@ export type VariableItem = {
 
 export type Variable = VariableItem & {
   value: string;
-  etag?: string;
 };
 
 export type VariableInput = {
-  id?: string;
-  collectionId: string;
   name: string;
+  collectionId: string;
   value: string;
-  etag?: string;
 };

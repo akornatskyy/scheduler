@@ -1,97 +1,64 @@
+import {
+  client,
+  type GetResourceResponse,
+  type ListResourceResponse,
+} from '$shared/api';
+import type {Collection, CollectionInput, CollectionItem} from '../types';
 import * as api from './http';
 
+jest.mock('$shared/api');
+
 describe('collections api', () => {
-  afterEach(() => jest.mocked(global.fetch).mockClear());
+  const item = {id: '123'} as Collection;
 
-  it('get collections', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 200,
-      headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => Promise.resolve({items: []}),
-    });
+  beforeEach(() => jest.clearAllMocks());
 
-    const result = await api.getCollections();
+  it('listCollections() calls client.list with /collections', async () => {
+    const payload: ListResourceResponse<CollectionItem> = {
+      items: [item],
+    };
+    jest.mocked(client).list.mockResolvedValue(payload);
 
-    expect(result).toEqual({
-      etag: '"2hhaswzbz72p8"',
-      items: [],
-    });
-    expect(global.fetch).toHaveBeenCalledWith('/collections', {
-      method: 'GET',
-    });
+    const result = await api.listCollections();
+
+    expect(result).toBe(payload);
+    expect(client.list).toHaveBeenCalledWith('/collections');
   });
 
-  it('get collection', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 200,
-      headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => Promise.resolve({name: 'My App #1'}),
-    });
+  it('getCollection() calls client.get with /collections/:id', async () => {
+    const payload: GetResourceResponse<Collection> = [item, 'W/"1"'];
+    jest.mocked(client).get.mockResolvedValue(payload);
 
-    const result = await api.getCollection('123');
+    const result = await api.getCollection('c1');
 
-    expect(result).toEqual({
-      etag: '"2hhaswzbz72p8"',
-      name: 'My App #1',
-    });
-    expect(global.fetch).toHaveBeenCalledWith('/collections/123', {
-      method: 'GET',
-    });
+    expect(result).toBe(payload);
+    expect(client.get).toHaveBeenCalledWith('/collections/c1');
   });
 
-  it('create collection', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 201,
-    });
+  it('createCollection() calls client.post with /collections', async () => {
+    jest.mocked(client).post.mockResolvedValue('new-id');
 
-    await api.createCollection({
-      name: 'My App',
-      state: 'enabled',
-    });
+    const id = await api.createCollection(item);
 
-    expect(global.fetch).toHaveBeenCalledWith('/collections', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: '{"name":"My App","state":"enabled"}',
-    });
+    expect(id).toBe('new-id');
+    expect(client.post).toHaveBeenCalledWith('/collections', item);
   });
 
-  it('update collection', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 204,
-    });
+  it('updateCollection() calls client.patch with /collections/:id', async () => {
+    const input: Partial<CollectionInput> = {name: 'New Name'};
 
-    await api.updateCollection({
-      id: '123',
-      name: 'My App',
-      state: 'enabled',
-      etag: '"2hhaswzbz72p8"',
-    });
+    await api.updateCollection('c1', input, 'W/"1"');
 
-    expect(global.fetch).toHaveBeenCalledWith('/collections/123', {
-      method: 'PATCH',
-      headers: {
-        'content-type': 'application/json',
-        'if-match': '"2hhaswzbz72p8"',
-      },
-      body: '{"name":"My App","state":"enabled"}',
-    });
+    expect(client.patch).toHaveBeenCalledWith(
+      '/collections/c1',
+      input,
+      'W/"1"',
+    );
   });
 
-  it('delete collection', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 204,
-    });
+  it('deleteCollection() calls client.delete with /collections/:id', async () => {
+    await api.deleteCollection('c1', 'W/"2"');
 
-    await api.deleteCollection('123', '"2hhaswzbz72p8"');
-
-    expect(global.fetch).toHaveBeenCalledWith('/collections/123', {
-      method: 'DELETE',
-      headers: {
-        'if-match': '"2hhaswzbz72p8"',
-      },
-    });
+    expect(client.delete).toHaveBeenCalledWith('/collections/c1', 'W/"2"');
   });
 });

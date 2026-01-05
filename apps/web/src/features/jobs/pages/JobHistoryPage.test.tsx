@@ -1,10 +1,17 @@
 import {render, screen} from '@testing-library/react';
-import {Route, MemoryRouter as Router, Routes} from 'react-router';
+import {MemoryRouter as Router} from 'react-router';
 import {useJobHistory} from '../hooks/useJobHistory';
 import {JobHistory} from '../types';
 import {JobHistoryPage} from './JobHistoryPage';
 
 jest.mock('../hooks/useJobHistory');
+
+const mockUseParams = jest.fn();
+
+jest.mock('react-router', () => {
+  const actual = jest.requireActual('react-router');
+  return {...actual, useParams: () => mockUseParams()};
+});
 
 describe('JobHistoryPage', () => {
   const base: ReturnType<typeof useJobHistory> = {
@@ -23,16 +30,15 @@ describe('JobHistoryPage', () => {
   });
 
   it('passes route id into hook', () => {
+    mockUseParams.mockReturnValue({id: '7ce1f17e'});
     render(
-      <Router initialEntries={['/jobs/j1/history']}>
-        <Routes>
-          <Route path="/jobs/:id/history" element={<JobHistoryPage />} />
-        </Routes>
+      <Router>
+        <JobHistoryPage />
       </Router>,
     );
 
     expect(useJobHistory).toHaveBeenCalledTimes(1);
-    expect(useJobHistory).toHaveBeenCalledWith('j1');
+    expect(useJobHistory).toHaveBeenCalledWith('7ce1f17e');
   });
 
   it('wires hook errors into layout', () => {
@@ -43,9 +49,7 @@ describe('JobHistoryPage', () => {
 
     render(
       <Router initialEntries={['/jobs/j1/history']}>
-        <Routes>
-          <Route path="/jobs/:id/history" element={<JobHistoryPage />} />
-        </Routes>
+        <JobHistoryPage />
       </Router>,
     );
 
@@ -61,9 +65,7 @@ describe('JobHistoryPage', () => {
 
     render(
       <Router initialEntries={['/jobs/j1/history']}>
-        <Routes>
-          <Route path="/jobs/:id/history" element={<JobHistoryPage />} />
-        </Routes>
+        <JobHistoryPage />
       </Router>,
     );
 

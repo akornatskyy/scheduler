@@ -1,6 +1,7 @@
 import {ValidationError} from '$shared/errors';
 import {act, renderHook} from '@testing-library/react';
 import * as api from '../api';
+import {Collection} from '../types';
 import {useCollection} from './useCollection';
 
 jest.mock('../api');
@@ -16,6 +17,15 @@ jest.mock('react-router', () => {
 });
 
 describe('useCollection', () => {
+  const id = '65ada2f9';
+  const item: Collection = {
+    id,
+    name: 'My App #1',
+    state: 'enabled',
+    updated: '2025-12-29T22:00:58.348',
+  };
+  const etag = 'W/"etag"';
+
   beforeEach(() => jest.clearAllMocks());
 
   it('initializes add mode when no id is provided', async () => {
@@ -28,37 +38,24 @@ describe('useCollection', () => {
   });
 
   it('loads item when id is provided', async () => {
-    jest.mocked(api.getCollection).mockResolvedValue({
-      id: '65ada2f9',
-      name: 'My App #1',
-      state: 'disabled',
-      updated: '2025-12-29T22:00:58.348',
-      etag: '"abc"',
-    });
+    jest.mocked(api.getCollection).mockResolvedValue([item, etag]);
 
-    const {result} = await act(async () =>
-      renderHook(() => useCollection('65ada2f9')),
-    );
+    const {result} = await act(async () => renderHook(() => useCollection(id)));
 
     expect(api.getCollection).toHaveBeenCalledTimes(1);
-    expect(api.getCollection).toHaveBeenCalledWith('65ada2f9');
+    expect(api.getCollection).toHaveBeenCalledWith(id);
     expect(result.current.pending).toBe(false);
-    expect(result.current.item).toMatchObject({
-      id: '65ada2f9',
+    expect(result.current.item).toEqual({
       name: 'My App #1',
-      state: 'disabled',
-      etag: '"abc"',
+      state: 'enabled',
     });
+    expect(result.current.errors).toEqual({});
   });
 
   it('sets errors when load fails', async () => {
-    jest
-      .mocked(api.getCollection)
-      .mockRejectedValue(new Error('unexpected'));
+    jest.mocked(api.getCollection).mockRejectedValue(new Error('unexpected'));
 
-    const {result} = await act(async () =>
-      renderHook(() => useCollection('65ada2f9')),
-    );
+    const {result} = await act(async () => renderHook(() => useCollection(id)));
 
     expect(api.getCollection).toHaveBeenCalledTimes(1);
     expect(result.current.pending).toBe(false);
@@ -74,13 +71,10 @@ describe('useCollection', () => {
   });
 
   it('creates and navigates to list page', async () => {
-    jest.mocked(api.createCollection).mockResolvedValue();
-
     const {result} = await act(async () => renderHook(() => useCollection()));
 
     await act(() => result.current.save());
 
-    expect(api.createCollection).toHaveBeenCalledTimes(1);
     expect(api.createCollection).toHaveBeenCalledWith({
       name: '',
       state: 'enabled',
@@ -102,50 +96,33 @@ describe('useCollection', () => {
 
     await act(() => result.current.save());
 
-    expect(api.createCollection).toHaveBeenCalledTimes(1);
     expect(mockNavigate).not.toHaveBeenCalled();
     expect(result.current.pending).toBe(false);
     expect(result.current.errors).toMatchObject(errors);
   });
 
   it('updates and navigates to list page', async () => {
-    jest.mocked(api.getCollection).mockResolvedValue({
-      id: '65ada2f9',
-      name: 'My App #1',
-      state: 'enabled',
-      updated: '2025-12-29T22:00:58.348',
-      etag: '"abc"',
-    });
+    jest.mocked(api.getCollection).mockResolvedValue([item, etag]);
     jest.mocked(api.updateCollection).mockResolvedValue();
 
-    const {result} = await act(async () =>
-      renderHook(() => useCollection('65ada2f9')),
-    );
+    const {result} = await act(async () => renderHook(() => useCollection(id)));
 
     act(() => result.current.mutate((draft) => (draft.name = 'Updated name')));
 
     await act(() => result.current.save());
 
     expect(api.updateCollection).toHaveBeenCalledTimes(1);
-    expect(api.updateCollection).toHaveBeenCalledWith({
-      id: '65ada2f9',
-      name: 'Updated name',
-      state: 'enabled',
-      updated: '2025-12-29T22:00:58.348',
-      etag: '"abc"',
-    });
+    expect(api.updateCollection).toHaveBeenCalledWith(
+      id,
+      {name: 'Updated name', state: 'enabled'},
+      etag,
+    );
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith('/collections');
   });
 
   it('sets errors when update fails and clears pending', async () => {
-    jest.mocked(api.getCollection).mockResolvedValue({
-      id: '65ada2f9',
-      name: 'My App #1',
-      state: 'enabled',
-      updated: '2025-12-29T22:00:58.348',
-      etag: '"abc"',
-    });
+    jest.mocked(api.getCollection).mockResolvedValue([item, etag]);
     const errors = {
       __ERROR__: 'The error text.',
       name: 'The field error message.',
@@ -154,9 +131,7 @@ describe('useCollection', () => {
       .mocked(api.updateCollection)
       .mockRejectedValue(new ValidationError(errors));
 
-    const {result} = await act(async () =>
-      renderHook(() => useCollection('65ada2f9')),
-    );
+    const {result} = await act(async () => renderHook(() => useCollection(id)));
 
     await act(() => result.current.save());
 
@@ -167,23 +142,15 @@ describe('useCollection', () => {
   });
 
   it('removes item and navigates to list page with replace', async () => {
-    jest.mocked(api.getCollection).mockResolvedValue({
-      id: '65ada2f9',
-      name: 'My App #1',
-      state: 'enabled',
-      updated: '2025-12-29T22:00:58.348',
-      etag: '"etag"',
-    });
+    jest.mocked(api.getCollection).mockResolvedValue([item, etag]);
     jest.mocked(api.deleteCollection).mockResolvedValue();
 
-    const {result} = await act(async () =>
-      renderHook(() => useCollection('65ada2f9')),
-    );
+    const {result} = await act(async () => renderHook(() => useCollection(id)));
 
     await act(() => result.current.remove());
 
     expect(api.deleteCollection).toHaveBeenCalledTimes(1);
-    expect(api.deleteCollection).toHaveBeenCalledWith('65ada2f9', '"etag"');
+    expect(api.deleteCollection).toHaveBeenCalledWith(id, etag);
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith('/collections', {replace: true});
   });
@@ -198,20 +165,12 @@ describe('useCollection', () => {
   });
 
   it('sets errors when remove fails and clears pending', async () => {
-    jest.mocked(api.getCollection).mockResolvedValue({
-      id: '65ada2f9',
-      name: 'My App #1',
-      state: 'enabled',
-      updated: '2025-12-29T22:00:58.348',
-      etag: '"etag"',
-    });
+    jest.mocked(api.getCollection).mockResolvedValue([item, etag]);
     jest
       .mocked(api.deleteCollection)
       .mockRejectedValue(new Error('The error text.'));
 
-    const {result} = await act(async () =>
-      renderHook(() => useCollection('65ada2f9')),
-    );
+    const {result} = await act(async () => renderHook(() => useCollection(id)));
 
     await act(() => result.current.remove());
 

@@ -1,9 +1,9 @@
 import {Errors, toErrorMap} from '$shared/errors';
 import {produce} from 'immer';
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router';
 import * as api from '../api';
-import {CollectionInput} from '../types';
+import {Collection, CollectionInput} from '../types';
 
 const INITIAL: CollectionInput = {
   name: '',
@@ -12,6 +12,7 @@ const INITIAL: CollectionInput = {
 
 export function useCollection(id?: string) {
   const navigate = useNavigate();
+  const etagRef = useRef<string>(undefined);
   const [item, setItem] = useState<CollectionInput>(INITIAL);
   const [pending, setPending] = useState<boolean>(true);
   const [errors, setErrors] = useState<Errors>({});
@@ -20,8 +21,9 @@ export function useCollection(id?: string) {
     if (id) {
       (async () => {
         try {
-          const data = await api.getCollection(id);
-          setItem(data);
+          const [data, etag] = await api.getCollection(id);
+          setItem(toInput(data));
+          etagRef.current = etag;
         } catch (error) {
           setErrors(toErrorMap(error));
         } finally {
@@ -48,8 +50,8 @@ export function useCollection(id?: string) {
     setPending(true);
 
     try {
-      if (item.id) {
-        await api.updateCollection(item);
+      if (id) {
+        await api.updateCollection(id, item, etagRef.current);
       } else {
         await api.createCollection(item);
       }
@@ -59,28 +61,26 @@ export function useCollection(id?: string) {
       setErrors(toErrorMap(error));
       setPending(false);
     }
-  }, [item, navigate]);
+  }, [item, id, navigate]);
 
   const remove = useCallback(async () => {
-    if (!item.id) return;
+    if (!id) return;
 
     setPending(true);
 
     try {
-      await api.deleteCollection(item.id, item.etag);
+      await api.deleteCollection(id, etagRef.current);
       navigate('/collections', {replace: true});
     } catch (error) {
       setErrors(toErrorMap(error));
       setPending(false);
     }
-  }, [item.id, item.etag, navigate]);
+  }, [id, navigate]);
 
-  return {
-    item,
-    pending,
-    errors,
-    mutate,
-    save,
-    remove,
-  };
+  return {item, pending, errors, mutate, save, remove};
 }
+
+const toInput = (data: Collection): CollectionInput => {
+  const {name, state} = data;
+  return {name, state};
+};

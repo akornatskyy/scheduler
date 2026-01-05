@@ -1,5 +1,5 @@
-import {go} from '$shared/api';
-import {
+import {client} from '$shared/api';
+import type {
   JobDefinition,
   JobHistory,
   JobInput,
@@ -7,56 +7,38 @@ import {
   JobStatus,
 } from '../types';
 
-type GetJobsResponse = {
-  items: JobItem[];
+type ListJobsParams = {
+  collectionId?: string | null;
 };
 
-export const getJobs = (
-  collectionId?: string | null,
-): Promise<GetJobsResponse> =>
-  go(
-    'GET',
-    collectionId
-      ? `/jobs?fields=status,errorRate&collectionId=${collectionId}`
+export const listJobs = (params: ListJobsParams) =>
+  client.list<JobItem>(
+    params.collectionId
+      ? `/jobs?fields=status,errorRate&collectionId=${params.collectionId}`
       : '/jobs?fields=status,errorRate',
   );
 
-export const getJob = async (id: string): Promise<JobDefinition> => {
-  const data = await go<JobDefinition>('GET', `/jobs/${id}`);
-  const {action} = data;
-  action.request = {
-    ...{method: 'GET', uri: '', headers: [], body: ''},
-    ...action.request,
-  };
-  action.retryPolicy = {
-    ...{retryCount: 3, retryInterval: '10s', deadline: '1m'},
-    ...action.retryPolicy,
-  };
-  return data;
-};
+export const getJob = (id: string) => client.get<JobDefinition>(`/jobs/${id}`);
 
-export const createJob = (j: JobInput): Promise<void> => go('POST', '/jobs', j);
+export const createJob = (data: JobInput) => client.post('/jobs', data);
 
-export const updateJob = (j: JobInput): Promise<void> =>
-  go('PATCH', `/jobs/${j.id}`, j);
+export const updateJob = (id: string, data: Partial<JobInput>, etag?: string) =>
+  client.patch(`/jobs/${id}`, data, etag);
 
-export const deleteJob = (id: string, etag?: string): Promise<void> =>
-  go('DELETE', `/jobs/${id}`, etag);
+export const deleteJob = (id: string, etag?: string) =>
+  client.delete(`/jobs/${id}`, etag);
 
-export const getJobStatus = (id: string): Promise<JobStatus> =>
-  go('GET', `/jobs/${id}/status`);
+export const getJobStatus = async (id: string) =>
+  client.get<JobStatus>(`/jobs/${id}/status`);
 
 export const updateJobStatus = (
   id: string,
-  status: Partial<JobStatus>,
-): Promise<void> => go('PATCH', `/jobs/${id}/status`, status);
+  data: Partial<JobStatus>,
+  etag?: string,
+) => client.patch(`/jobs/${id}/status`, data, etag);
 
-type GetJobHistoryResponse = {
-  items: JobHistory[];
-};
+export const listJobHistory = (id: string) =>
+  client.list<JobHistory>(`/jobs/${id}/history`);
 
-export const getJobHistory = (id: string): Promise<GetJobHistoryResponse> =>
-  go('GET', `/jobs/${id}/history`);
-
-export const deleteJobHistory = (id: string, etag?: string): Promise<void> =>
-  go('DELETE', `/jobs/${id}/history`, etag);
+export const deleteJobHistory = (id: string, etag?: string) =>
+  client.delete(`/jobs/${id}/history`, etag);

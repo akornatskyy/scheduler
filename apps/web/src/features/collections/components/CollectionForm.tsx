@@ -5,6 +5,7 @@ import {Link} from 'react-router';
 import {CollectionInput} from '../types';
 
 type Props = {
+  id?: string;
   item: CollectionInput;
   pending: boolean;
   errors: Errors;
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export const CollectionForm = ({
+  id,
   item,
   pending,
   errors,
@@ -74,16 +76,16 @@ export const CollectionForm = ({
     <Button type="submit" disabled={pending}>
       Save
     </Button>
-    {item.id && (
+    {id && (
       <>
         <Link
-          to={`/variables?collectionId=${item.id}`}
+          to={`/variables?collectionId=${id}`}
           className="btn btn-outline-secondary mx-2"
         >
           Variables
         </Link>
         <Link
-          to={`/jobs?collectionId=${item.id}`}
+          to={`/jobs?collectionId=${id}`}
           className="btn btn-outline-secondary"
         >
           Jobs

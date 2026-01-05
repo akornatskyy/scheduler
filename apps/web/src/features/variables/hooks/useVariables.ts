@@ -13,8 +13,8 @@ export function useVariables(collectionId?: string | null) {
     (async () => {
       try {
         const [{items: collections}, {items: variables}] = await Promise.all([
-          collectionsApi.getCollections(),
-          api.getVariables(collectionId),
+          collectionsApi.listCollections(),
+          api.listVariables({collectionId}),
         ]);
 
         setCollections(collections);

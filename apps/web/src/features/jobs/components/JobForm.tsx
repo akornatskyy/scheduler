@@ -12,6 +12,7 @@ import {
 } from '../types';
 
 type Props = {
+  id?: string;
   item: JobInput;
   collections: CollectionItem[];
   pending: boolean;
@@ -24,6 +25,7 @@ type Props = {
 const httpMethodsWithBody = ['POST', 'PUT', 'PATCH'];
 
 export const JobForm = ({
+  id,
   item,
   collections,
   pending,
@@ -211,10 +213,10 @@ export const JobForm = ({
       <Button type="submit" disabled={pending}>
         Save
       </Button>
-      {item.id && (
+      {id && (
         <>
           <Link
-            to={`/jobs/${item.id}/history`}
+            to={`/jobs/${id}/history`}
             className="btn btn-outline-secondary ms-2"
           >
             History

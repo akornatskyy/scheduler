@@ -15,10 +15,10 @@ describe('useJobs', () => {
   afterEach(() => jest.useRealTimers());
 
   it('updates state with fetched collections/jobs', async () => {
-    jest.mocked(collectionsApi.getCollections).mockResolvedValue({
+    jest.mocked(collectionsApi.listCollections).mockResolvedValue({
       items: [{id: 'c1', name: 'Collection #1', state: 'enabled'}],
     });
-    jest.mocked(api.getJobs).mockResolvedValue({
+    jest.mocked(api.listJobs).mockResolvedValue({
       items: [
         {
           id: 'j1',
@@ -33,10 +33,9 @@ describe('useJobs', () => {
 
     const {result} = await act(async () => renderHook(() => useJobs('c1')));
 
-    expect(collectionsApi.getCollections).toHaveBeenCalledTimes(1);
-    expect(api.getJobs).toHaveBeenCalledTimes(1);
-    expect(api.getJobs).toHaveBeenCalledWith('c1');
-
+    expect(collectionsApi.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listJobs).toHaveBeenCalledTimes(1);
+    expect(api.listJobs).toHaveBeenCalledWith({collectionId: 'c1'});
     expect(result.current.collections).toEqual([
       {id: 'c1', name: 'Collection #1', state: 'enabled'},
     ]);
@@ -55,37 +54,37 @@ describe('useJobs', () => {
 
   it('sets errors when refresh fails', async () => {
     jest
-      .mocked(collectionsApi.getCollections)
+      .mocked(collectionsApi.listCollections)
       .mockRejectedValue(new Error('unexpected'));
 
     const {result} = await act(async () => renderHook(() => useJobs()));
 
-    expect(collectionsApi.getCollections).toHaveBeenCalledTimes(1);
+    expect(collectionsApi.listCollections).toHaveBeenCalledTimes(1);
     expect(result.current.collections).toEqual([]);
     expect(result.current.jobs).toEqual([]);
     expect(result.current.errors?.__ERROR__).toMatch(/unexpected/);
   });
 
   it('re-fetches on interval', async () => {
-    jest.mocked(collectionsApi.getCollections).mockResolvedValue({items: []});
-    jest.mocked(api.getJobs).mockResolvedValue({items: []});
+    jest.mocked(collectionsApi.listCollections).mockResolvedValue({items: []});
+    jest.mocked(api.listJobs).mockResolvedValue({items: []});
 
     await act(async () => renderHook(() => useJobs('c1')));
 
-    expect(collectionsApi.getCollections).toHaveBeenCalledTimes(1);
-    expect(api.getJobs).toHaveBeenCalledTimes(1);
+    expect(collectionsApi.listCollections).toHaveBeenCalledTimes(1);
+    expect(api.listJobs).toHaveBeenCalledTimes(1);
 
     await act(async () => {
       jest.advanceTimersByTime(10000);
     });
 
-    expect(collectionsApi.getCollections).toHaveBeenCalledTimes(2);
-    expect(api.getJobs).toHaveBeenCalledTimes(2);
+    expect(collectionsApi.listCollections).toHaveBeenCalledTimes(2);
+    expect(api.listJobs).toHaveBeenCalledTimes(2);
   });
 
   it('re-fetches when collectionId changes', async () => {
-    jest.mocked(collectionsApi.getCollections).mockResolvedValue({items: []});
-    jest.mocked(api.getJobs).mockResolvedValue({items: []});
+    jest.mocked(collectionsApi.listCollections).mockResolvedValue({items: []});
+    jest.mocked(api.listJobs).mockResolvedValue({items: []});
 
     const {rerender} = await act(async () =>
       renderHook(({collectionId}) => useJobs(collectionId), {
@@ -93,10 +92,10 @@ describe('useJobs', () => {
       }),
     );
 
-    expect(api.getJobs).toHaveBeenCalledWith('c1');
+    expect(api.listJobs).toHaveBeenCalledWith({collectionId: 'c1'});
 
     await act(async () => rerender({collectionId: 'c2'}));
 
-    expect(api.getJobs).toHaveBeenLastCalledWith('c2');
+    expect(api.listJobs).toHaveBeenLastCalledWith({collectionId: 'c2'});
   });
 });

@@ -5,11 +5,8 @@ import {GroupRow, ItemRow, VariableTable} from './VariableTable';
 
 describe('VariableTable', () => {
   it('renders empty list', () => {
-    const collections: CollectionItem[] = [];
-    const variables: VariableItem[] = [];
-
     const {container} = render(
-      <VariableTable collections={collections} variables={variables} />,
+      <VariableTable collections={[]} variables={[]} />,
     );
 
     expect(container.querySelector('tbody')).toBeEmptyDOMElement();
@@ -17,32 +14,20 @@ describe('VariableTable', () => {
 
   it('renders items', () => {
     const collections: CollectionItem[] = [
-      {
-        id: '65ada2f9',
-        name: 'My App #1',
-        state: 'enabled',
-      },
-      {
-        id: '340de3dd',
-        name: 'My App #2',
-        state: 'disabled',
-      },
-      {
-        id: '4502ad33',
-        name: 'My App #3',
-        state: 'enabled',
-      },
+      {id: 'c1', name: 'My App #1', state: 'enabled'},
+      {id: 'c2', name: 'My App #2', state: 'disabled'},
+      {id: 'c3', name: 'My App #3', state: 'enabled'},
     ];
     const variables: VariableItem[] = [
       {
-        id: 'ce3457aa',
-        collectionId: '65ada2f9',
+        id: 'v1',
+        collectionId: 'c1',
         name: 'My Var #1',
         updated: '2025-12-15T19:16:44.057',
       },
       {
-        id: '562da233',
-        collectionId: '340de3dd',
+        id: 'v2',
+        collectionId: 'c2',
         name: 'My Var #2',
         updated: '2025-11-18T14:10:21.178',
       },
@@ -54,12 +39,15 @@ describe('VariableTable', () => {
       </Router>,
     );
 
+    expect(screen.getByText('My App #1')).toBeVisible();
+    expect(screen.getByText('My App #2')).toBeVisible();
+    expect(screen.queryByText('My App #3')).not.toBeInTheDocument();
     expect(screen.getByText('My Var #1')).toBeVisible();
     expect(screen.getByText('My Var #2')).toBeVisible();
   });
 });
 
-describe('variables group row component', () => {
+describe('GroupRow', () => {
   it('renders collection name', () => {
     const c: CollectionItem = {id: '123', name: 'My App #1', state: 'enabled'};
 
@@ -77,7 +65,7 @@ describe('variables group row component', () => {
   });
 });
 
-describe('variables item row component', () => {
+describe('ItemRow', () => {
   it('renders variable name', () => {
     const v: VariableItem = {
       id: '123',

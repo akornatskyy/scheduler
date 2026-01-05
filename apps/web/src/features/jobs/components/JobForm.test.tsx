@@ -14,7 +14,6 @@ describe('JobForm', () => {
   beforeEach(() => {
     props = {
       item: {
-        id: '',
         collectionId: '',
         name: '',
         state: 'enabled',
@@ -46,7 +45,7 @@ describe('JobForm', () => {
   it('renders edit item', () => {
     render(
       <Router>
-        <JobForm {...props} item={{...props.item, id: '123de331'}} />
+        <JobForm {...props} id="123de331" />
       </Router>,
     );
 
@@ -56,7 +55,7 @@ describe('JobForm', () => {
   });
 
   it('renders add item without Router', () => {
-    render(<JobForm {...props} item={{...props.item, id: ''}} />);
+    render(<JobForm {...props} />);
 
     expect(screen.getByText('Save')).toBeEnabled();
     expect(screen.queryByText('History')).not.toBeInTheDocument();
@@ -219,8 +218,8 @@ describe('JobForm', () => {
   });
 
   it('renders edit item', () => {
+    props.id = '7ce1f17e';
     props.item = {
-      id: '7ce1f17e',
       name: 'My Task #1',
       state: 'disabled',
       collectionId: '7d76cb30',
@@ -273,7 +272,7 @@ describe('JobForm', () => {
   });
 
   it('calls on delete callback', () => {
-    props.item.id = '65ada2f9';
+    props.id = '65ada2f9';
     const handler = jest.mocked(props.onDelete);
     render(
       <Router>

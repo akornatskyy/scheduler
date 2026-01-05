@@ -14,20 +14,17 @@ export type JobItem = {
   errorRate?: number;
 };
 
+export type JobDefinition = JobItem & {
+  updated: string;
+  action: Action;
+};
+
 export type JobInput = {
-  id?: string;
   name: string;
   collectionId: string;
   state: JobState;
   schedule: string;
   action: Action;
-  etag?: string;
-};
-
-export type JobDefinition = JobItem & {
-  updated: string;
-  action: Action;
-  etag?: string;
 };
 
 export type Action = {
@@ -66,5 +63,4 @@ export type JobStatus = {
   errorCount: number;
   lastRun?: string;
   nextRun?: string;
-  etag?: string;
 };

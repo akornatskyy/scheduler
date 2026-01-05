@@ -37,7 +37,7 @@ describe('CollectionForm', () => {
   it('renders edit item', () => {
     render(
       <Router>
-        <CollectionForm {...props} item={{...props.item, id: '65ada2f9'}} />
+        <CollectionForm {...props} id="65ada2f9" />
       </Router>,
     );
 
@@ -83,7 +83,7 @@ describe('CollectionForm', () => {
   });
 
   it('calls on delete callback', () => {
-    props.item.id = '65ada2f9';
+    props.id = '65ada2f9';
     render(
       <Router>
         <CollectionForm {...props} />

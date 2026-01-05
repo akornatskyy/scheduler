@@ -11,6 +11,7 @@ export function JobPage() {
   return (
     <Layout title={`Job ${item.name}`} errors={errors}>
       <JobForm
+        id={id}
         item={item}
         collections={collections}
         pending={pending}

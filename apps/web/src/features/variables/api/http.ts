@@ -1,26 +1,28 @@
-import {go} from '$shared/api';
-import {Variable, VariableInput, VariableItem} from '../types';
+import {client} from '$shared/api';
+import type {Variable, VariableInput, VariableItem} from '../types';
 
-type GetVariablesResponse = {
-  items: VariableItem[];
+type ListVariablesParams = {
+  collectionId?: string | null;
 };
 
-export const getVariables = (
-  collectionId?: string | null,
-): Promise<GetVariablesResponse> =>
-  go(
-    'GET',
-    collectionId ? `/variables?collectionId=${collectionId}` : '/variables',
+export const listVariables = (params: ListVariablesParams) =>
+  client.list<VariableItem>(
+    params.collectionId
+      ? `/variables?collectionId=${params.collectionId}`
+      : '/variables',
   );
 
-export const getVariable = (id: string): Promise<Variable> =>
-  go('GET', `/variables/${id}`);
+export const getVariable = (id: string) =>
+  client.get<Variable>(`/variables/${id}`);
 
-export const createVariable = (v: VariableInput): Promise<void> =>
-  go('POST', '/variables', v);
+export const createVariable = (data: VariableInput) =>
+  client.post('/variables', data);
 
-export const updateVariable = (v: VariableInput): Promise<void> =>
-  go('PATCH', `/variables/${v.id}`, v);
+export const updateVariable = (
+  id: string,
+  data: Partial<VariableInput>,
+  etag?: string,
+) => client.patch(`/variables/${id}`, data, etag);
 
-export const deleteVariable = (id: string, etag?: string): Promise<void> =>
-  go('DELETE', `/variables/${id}`, etag);
+export const deleteVariable = (id: string, etag?: string) =>
+  client.delete(`/variables/${id}`, etag);

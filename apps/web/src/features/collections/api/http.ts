@@ -1,21 +1,20 @@
-import {go} from '$shared/api';
+import {client} from '$shared/api';
 import {Collection, CollectionInput, CollectionItem} from '../types';
 
-type GetCollectionsResponse = {
-  items: CollectionItem[];
-};
+export const listCollections = () =>
+  client.list<CollectionItem>('/collections');
 
-export const getCollections = (): Promise<GetCollectionsResponse> =>
-  go('GET', '/collections');
+export const getCollection = (id: string) =>
+  client.get<Collection>(`/collections/${id}`);
 
-export const getCollection = (id: string): Promise<Collection> =>
-  go('GET', `/collections/${id}`);
+export const createCollection = (data: CollectionInput) =>
+  client.post('/collections', data);
 
-export const createCollection = (c: CollectionInput): Promise<void> =>
-  go('POST', '/collections', c);
+export const updateCollection = (
+  id: string,
+  data: Partial<CollectionInput>,
+  etag?: string,
+) => client.patch(`/collections/${id}`, data, etag);
 
-export const updateCollection = (c: CollectionInput): Promise<void> =>
-  go('PATCH', `/collections/${c.id}`, c);
-
-export const deleteCollection = (id: string, etag?: string): Promise<void> =>
-  go('DELETE', `/collections/${id}`, etag);
+export const deleteCollection = (id: string, etag?: string) =>
+  client.delete(`/collections/${id}`, etag);

@@ -12,6 +12,7 @@ export function VariablePage() {
   return (
     <Layout title={`Variable ${item.name}`} errors={errors}>
       <VariableForm
+        id={id}
         item={item}
         collections={collections}
         pending={pending}

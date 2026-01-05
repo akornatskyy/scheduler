@@ -1,112 +1,70 @@
-import {Variable} from '../types';
+import type {GetResourceResponse, ListResourceResponse} from '$shared/api';
+import {client} from '$shared/api';
+import type {Variable, VariableInput, VariableItem} from '../types';
 import * as api from './http';
 
+jest.mock('$shared/api');
+
 describe('variables api', () => {
-  afterEach(() => jest.mocked(global.fetch).mockClear());
+  const item = {id: '123'} as Variable;
 
-  it('get variables', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 200,
-      headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => Promise.resolve({items: []}),
-    });
+  beforeEach(() => jest.clearAllMocks());
 
-    const result = await api.getVariables();
+  it('listVariables() calls client.list with /variables', async () => {
+    const payload: ListResourceResponse<VariableItem> = {
+      items: [item],
+    };
+    jest.mocked(client).list.mockResolvedValue(payload);
 
-    expect(result).toEqual({
-      etag: '"2hhaswzbz72p8"',
-      items: [],
-    });
-    expect(global.fetch).toHaveBeenCalledWith('/variables', {
-      method: 'GET',
-    });
+    const result = await api.listVariables({});
+
+    expect(result).toBe(payload);
+    expect(client.list).toHaveBeenCalledWith('/variables');
   });
 
-  it('get variables by collection id', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 200,
-      headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => Promise.resolve({items: []}),
-    });
+  it('listVariables() calls client.list with /variables?collectionId=:id when collectionId is provided', async () => {
+    const payload: ListResourceResponse<VariableItem> = {
+      items: [item],
+    };
+    jest.mocked(client).list.mockResolvedValue(payload);
 
-    const result = await api.getVariables('123');
+    const result = await api.listVariables({collectionId: 'c1'});
 
-    expect(result).toEqual({
-      etag: '"2hhaswzbz72p8"',
-      items: [],
-    });
-    expect(global.fetch).toHaveBeenCalledWith('/variables?collectionId=123', {
-      method: 'GET',
-    });
+    expect(result).toBe(payload);
+    expect(client.list).toHaveBeenCalledWith('/variables?collectionId=c1');
   });
 
-  it('get variable', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 200,
-      headers: {get: () => '"2hhaswzbz72p8"'},
-      json: () => Promise.resolve({name: 'My Var'}),
-    });
+  it('getVariable() calls client.get with /variables/:id', async () => {
+    const payload: GetResourceResponse<Variable> = [item, 'W/"1"'];
+    jest.mocked(client).get.mockResolvedValue(payload);
 
-    const result = await api.getVariable('123');
+    const result = await api.getVariable('v1');
 
-    expect(result).toEqual({
-      etag: '"2hhaswzbz72p8"',
-      name: 'My Var',
-    });
-    expect(global.fetch).toHaveBeenCalledWith('/variables/123', {
-      method: 'GET',
-    });
+    expect(result).toBe(payload);
+    expect(client.get).toHaveBeenCalledWith('/variables/v1');
   });
 
-  it('create variable', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 201,
-    });
+  it('createVariable() calls client.post with /variables', async () => {
+    const input: VariableInput = {name: 'var1'} as VariableInput;
+    jest.mocked(client).post.mockResolvedValue('new-id');
 
-    await api.createVariable({name: 'My Var'} as Variable);
+    const id = await api.createVariable(input);
 
-    expect(global.fetch).toHaveBeenCalledWith('/variables', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: '{"name":"My Var"}',
-    });
+    expect(id).toBe('new-id');
+    expect(client.post).toHaveBeenCalledWith('/variables', input);
   });
 
-  it('update variable', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 204,
-    });
+  it('updateVariable() calls client.patch with /variables/:id', async () => {
+    const input: Partial<VariableInput> = {name: 'New Name'};
 
-    await api.updateVariable({
-      id: '123',
-      etag: '"2hhaswzbz72p8"',
-      name: 'My Var',
-    } as Variable);
+    await api.updateVariable('v1', input, 'W/"1"');
 
-    expect(global.fetch).toHaveBeenCalledWith('/variables/123', {
-      method: 'PATCH',
-      headers: {
-        'content-type': 'application/json',
-        'if-match': '"2hhaswzbz72p8"',
-      },
-      body: '{"name":"My Var"}',
-    });
+    expect(client.patch).toHaveBeenCalledWith('/variables/v1', input, 'W/"1"');
   });
 
-  it('delete variable', async () => {
-    global.fetch = jest.fn().mockResolvedValue({
-      status: 204,
-    });
+  it('deleteVariable() calls client.del with /variables/:id', async () => {
+    await api.deleteVariable('v1', 'W/"2"');
 
-    await api.deleteVariable('123', '"2hhaswzbz72p8"');
-
-    expect(global.fetch).toHaveBeenCalledWith('/variables/123', {
-      method: 'DELETE',
-      headers: {
-        'if-match': '"2hhaswzbz72p8"',
-      },
-    });
+    expect(client.delete).toHaveBeenCalledWith('/variables/v1', 'W/"2"');
   });
 });

@@ -38,6 +38,7 @@ describe('CollectionPage', () => {
 
     expect(useCollection).toHaveBeenCalledTimes(1);
     expect(useCollection).toHaveBeenCalledWith('65ada2f9');
+    expect(screen.getByRole('button', {name: 'Delete'})).toBeVisible();
   });
 
   it('wires hook errors into layout', () => {

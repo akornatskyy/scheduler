@@ -6,10 +6,13 @@ const groupBy = <T extends Record<string, unknown>>(
   items: T[],
   key: KeyOf<T>,
 ): Record<GroupByKey, T[]> =>
-  items.reduce((result, value) => {
-    (result[value[key] as GroupByKey] ??= []).push(value);
-    return result;
-  }, {} as Record<GroupByKey, T[]>);
+  items.reduce(
+    (result, value) => {
+      (result[value[key] as GroupByKey] ??= []).push(value);
+      return result;
+    },
+    {} as Record<GroupByKey, T[]>,
+  );
 
 type Props<G, I> = {
   groups: G[];

@@ -10,6 +10,7 @@ export function CollectionPage() {
   return (
     <Layout title={`Collection ${item.name}`} errors={errors}>
       <CollectionForm
+        id={id}
         item={item}
         pending={pending}
         errors={errors}

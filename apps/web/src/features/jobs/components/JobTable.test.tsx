@@ -1,7 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import {GroupRow, ItemRow, JobTable, JobStatus} from './JobTable';
 import {CollectionItem, JobItem} from '../types';
+import {GroupRow, ItemRow, JobStatus, JobTable} from './JobTable';
 
 describe('JobTable', () => {
   it('renders empty list', () => {
@@ -12,26 +12,14 @@ describe('JobTable', () => {
 
   it('renders items', () => {
     const collections: CollectionItem[] = [
-      {
-        id: '65ada2f9',
-        name: 'My App #1',
-        state: 'enabled',
-      },
-      {
-        id: '340de3dd',
-        name: 'My App #2',
-        state: 'disabled',
-      },
-      {
-        id: '4502ad33',
-        name: 'My App #3',
-        state: 'enabled',
-      },
+      {id: 'c1', name: 'My App #1', state: 'enabled'},
+      {id: 'c2', name: 'My App #2', state: 'disabled'},
+      {id: 'c3', name: 'My App #3', state: 'enabled'},
     ];
     const jobs: JobItem[] = [
       {
-        id: '7ce1f17e',
-        collectionId: '65ada2f9',
+        id: 'j1',
+        collectionId: 'c1',
         name: 'My Task #1',
         schedule: '@every 15s',
         state: 'disabled',
@@ -39,8 +27,8 @@ describe('JobTable', () => {
         errorRate: 0.2,
       },
       {
-        id: '8d9302ad',
-        collectionId: '340de3dd',
+        id: 'j2',
+        collectionId: 'c2',
         name: 'My Task #2',
         schedule: '@every 30m',
         state: 'enabled',
@@ -84,11 +72,11 @@ describe('JobStatus', () => {
   });
 });
 
-describe('Job GroupRow', () => {
+describe('GroupRow', () => {
   it.each(['disabled', 'enabled'])(
     'renders collection name in state %s',
     (state) => {
-      const collection = {name: 'My App #1', state} as CollectionItem;
+      const collection = {id: 'c1', name: 'My App #1', state} as CollectionItem;
 
       render(
         <Router>
@@ -107,7 +95,7 @@ describe('Job GroupRow', () => {
 
 describe('ItemRow', () => {
   it('renders job name', () => {
-    const job = {name: 'My Job'} as JobItem;
+    const job = {id: 'j1', name: 'My Job'} as JobItem;
 
     render(
       <Router>
