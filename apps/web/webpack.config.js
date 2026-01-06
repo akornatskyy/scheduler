@@ -39,6 +39,10 @@ module.exports = (env, argv) => {
       clean: true,
     },
     plugins: plugins,
+    performance: {
+      maxEntrypointSize: 360 * 1024,
+      maxAssetSize: 330 * 1024,
+    },
     optimization: {
       splitChunks: {
         cacheGroups: {
