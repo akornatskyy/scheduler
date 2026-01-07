@@ -1,0 +1,1 @@
+export {diffPartial} from './diff';

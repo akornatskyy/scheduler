@@ -1,4 +1,5 @@
 import {api as collectionsApi} from '$features/collections';
+import {ValidationError} from '$shared/errors';
 import {act, renderHook} from '@testing-library/react';
 import * as api from '../api';
 import {CollectionItem, JobDefinition} from '../types';
@@ -152,53 +153,49 @@ describe('useJob', () => {
     expect(result.current.errors).toEqual(expect.any(Object));
   });
 
-  it('updates existing job and navigates on success', async () => {
+  it('updates and navigates to list page', async () => {
     jest.mocked(api.getJob).mockResolvedValue([item, etag]);
     jest
       .mocked(collectionsApi.listCollections)
       .mockResolvedValue({items: collections});
     jest.mocked(api.updateJob).mockResolvedValue();
-
     const {result} = await act(async () => renderHook(() => useJob(id)));
+    act(() => result.current.mutate((draft) => (draft.name = 'Updated name')));
 
     await act(async () => result.current.save());
 
     expect(api.updateJob).toHaveBeenCalledTimes(1);
     expect(api.updateJob).toHaveBeenCalledWith(
       id,
-      {
-        name: 'Job #1',
-        state: 'enabled',
-        schedule: '* * * * *',
-        collectionId: 'c2',
-        action: {
-          type: 'HTTP',
-          request: {method: 'GET', uri: '', headers: [], body: ''},
-          retryPolicy: {retryCount: 3, retryInterval: '10s', deadline: '1m'},
-        },
-      },
+      {name: 'Updated name'},
       etag,
     );
     expect(api.createJob).not.toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith('/jobs');
   });
 
-  it('sets errors on update failure', async () => {
+  it('sets errors when update fails and clears pending', async () => {
     jest.mocked(api.getJob).mockResolvedValue([item, etag]);
-    jest
-      .mocked(collectionsApi.listCollections)
-      .mockResolvedValue({items: collections});
-    jest.mocked(api.updateJob).mockRejectedValue(new Error('Update failed'));
+    jest.mocked(collectionsApi.listCollections).mockResolvedValue({
+      items: collections,
+    });
+    const errors = {
+      __ERROR__: 'The error text.',
+      name: 'The field error message.',
+    };
+    jest.mocked(api.updateJob).mockRejectedValue(new ValidationError(errors));
     const {result} = await act(async () => renderHook(() => useJob(id)));
+    act(() => result.current.mutate((draft) => (draft.state = 'disabled')));
 
-    await act(async () => result.current.save());
+    await act(() => result.current.save());
 
     expect(api.updateJob).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).not.toHaveBeenCalled();
     expect(result.current.pending).toBe(false);
-    expect(result.current.errors).toEqual(expect.any(Object));
+    expect(result.current.errors).toMatchObject(errors);
   });
 
-  it('does not remove when item has no id', async () => {
+  it('does nothing when remove is called in add mode', async () => {
     jest.mocked(collectionsApi.listCollections).mockResolvedValue({items: []});
     const {result} = await act(async () => renderHook(() => useJob()));
 
@@ -208,7 +205,7 @@ describe('useJob', () => {
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
-  it('removes and navigates with replace on success', async () => {
+  it('removes item and navigates to list page with replace', async () => {
     jest.mocked(api.getJob).mockResolvedValue([item, etag]);
     jest.mocked(collectionsApi.listCollections).mockResolvedValue({items: []});
     jest.mocked(api.deleteJob).mockResolvedValue();
@@ -220,7 +217,7 @@ describe('useJob', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/jobs', {replace: true});
   });
 
-  it('sets errors on remove failure', async () => {
+  it('sets errors when remove fails and clears pending', async () => {
     jest.mocked(api.getJob).mockResolvedValue([item, etag]);
     jest.mocked(collectionsApi.listCollections).mockResolvedValue({items: []});
     jest.mocked(api.deleteJob).mockRejectedValue(new Error('unexpected'));
@@ -229,7 +226,9 @@ describe('useJob', () => {
 
     await act(async () => result.current.remove());
 
+    expect(api.deleteJob).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).not.toHaveBeenCalled();
     expect(result.current.pending).toBe(false);
-    expect(result.current.errors).toEqual(expect.any(Object));
+    expect(result.current.errors.__ERROR__).toMatch(/unexpected/);
   });
 });

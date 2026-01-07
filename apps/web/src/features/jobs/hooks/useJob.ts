@@ -1,5 +1,6 @@
 import {api as collectionsApi} from '$features/collections';
 import {Errors, toErrorMap} from '$shared/errors';
+import {diffPartial} from '$shared/utils';
 import {produce} from 'immer';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router';
@@ -26,6 +27,7 @@ const INITIAL: JobInput = {
 
 export function useJob(id?: string) {
   const navigate = useNavigate();
+  const intialRef = useRef(INITIAL);
   const etagRef = useRef<string>(undefined);
   const [item, setItem] = useState<JobInput>(INITIAL);
   const [collections, setCollections] = useState<CollectionItem[]>([]);
@@ -37,7 +39,9 @@ export function useJob(id?: string) {
       (async () => {
         try {
           const [data, etag] = await api.getJob(id);
-          setItem(toInput(data));
+          const input = toInput(data);
+          setItem(input);
+          intialRef.current = input;
           etagRef.current = etag;
         } catch (error) {
           setErrors(toErrorMap(error));
@@ -81,7 +85,10 @@ export function useJob(id?: string) {
 
     try {
       if (id) {
-        await api.updateJob(id, item, etagRef.current);
+        const delta = diffPartial(intialRef.current, item);
+        if (delta) {
+          await api.updateJob(id, delta, etagRef.current);
+        }
       } else {
         await api.createJob(item);
       }

@@ -19,17 +19,17 @@ jest.mock('react-router', () => {
 });
 
 describe('useVariable', () => {
-  const id = '123de331';
+  const id = 'v1';
   const item: Variable = {
     id,
-    collectionId: '65ada2f9',
+    collectionId: 'c1',
     name: 'My Var #1',
     value: 'Some Value',
     updated: '2025-12-29T22:00:58.348',
   };
   const etag = 'W/"etag"';
   const collections: CollectionItem[] = [
-    {id: '65ada2f9', name: 'My App #1', state: 'enabled'},
+    {id: 'c1', name: 'My App #1', state: 'enabled'},
   ];
 
   beforeEach(() => jest.clearAllMocks());
@@ -47,7 +47,7 @@ describe('useVariable', () => {
     expect(result.current.pending).toBe(false);
     expect(result.current.item).toEqual({
       name: '',
-      collectionId: '65ada2f9',
+      collectionId: 'c1',
       value: '',
     });
     expect(result.current.collections).toEqual(collections);
@@ -77,7 +77,7 @@ describe('useVariable', () => {
     expect(result.current.pending).toBe(false);
     expect(result.current.item).toEqual({
       name: 'My Var #1',
-      collectionId: '65ada2f9',
+      collectionId: 'c1',
       value: 'Some Value',
     });
   });
@@ -128,7 +128,7 @@ describe('useVariable', () => {
     expect(api.createVariable).toHaveBeenCalledTimes(1);
     expect(api.createVariable).toHaveBeenCalledWith({
       name: '',
-      collectionId: '65ada2f9',
+      collectionId: 'c1',
       value: '',
     });
     expect(mockNavigate).toHaveBeenCalledTimes(1);
@@ -156,19 +156,20 @@ describe('useVariable', () => {
     expect(result.current.errors).toMatchObject(errors);
   });
 
-  it('updates existing variable and navigates to list page', async () => {
+  it('updates and navigates to list page', async () => {
     jest.mocked(api.getVariable).mockResolvedValue([item, etag]);
     jest.mocked(collectionsApi.listCollections).mockResolvedValue({
       items: collections,
     });
     jest.mocked(api.updateVariable).mockResolvedValue();
     const {result} = await act(async () => renderHook(() => useVariable(id)));
+    act(() => result.current.mutate((draft) => (draft.name = 'Updated name')));
 
     await act(() => result.current.save());
 
     expect(api.updateVariable).toHaveBeenCalledWith(
       id,
-      {name: 'My Var #1', collectionId: '65ada2f9', value: 'Some Value'},
+      {name: 'Updated name'},
       etag,
     );
     expect(api.createVariable).not.toHaveBeenCalled();
@@ -188,6 +189,7 @@ describe('useVariable', () => {
       .mocked(api.updateVariable)
       .mockRejectedValue(new ValidationError(errors));
     const {result} = await act(async () => renderHook(() => useVariable(id)));
+    act(() => result.current.mutate((draft) => (draft.value = '')));
 
     await act(() => result.current.save());
 
@@ -226,9 +228,7 @@ describe('useVariable', () => {
     jest.mocked(collectionsApi.listCollections).mockResolvedValue({
       items: collections,
     });
-    jest
-      .mocked(api.deleteVariable)
-      .mockRejectedValue(new Error('The error text.'));
+    jest.mocked(api.deleteVariable).mockRejectedValue(new Error('unexpected'));
     const {result} = await act(async () => renderHook(() => useVariable(id)));
 
     await act(() => result.current.remove());
@@ -236,6 +236,6 @@ describe('useVariable', () => {
     expect(api.deleteVariable).toHaveBeenCalledTimes(1);
     expect(mockNavigate).not.toHaveBeenCalled();
     expect(result.current.pending).toBe(false);
-    expect(result.current.errors.__ERROR__).toMatch(/The error text/);
+    expect(result.current.errors.__ERROR__).toMatch(/unexpected/);
   });
 });

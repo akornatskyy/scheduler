@@ -1,5 +1,6 @@
 import {api as collectionsApi} from '$features/collections';
 import {Errors, toErrorMap} from '$shared/errors';
+import {diffPartial} from '$shared/utils';
 import {produce} from 'immer';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router';
@@ -14,6 +15,7 @@ const INITIAL: VariableInput = {
 
 export function useVariable(id?: string) {
   const navigate = useNavigate();
+  const intialRef = useRef(INITIAL);
   const etagRef = useRef<string>(undefined);
   const [item, setItem] = useState<VariableInput>(INITIAL);
   const [collections, setCollections] = useState<CollectionItem[]>([]);
@@ -25,7 +27,9 @@ export function useVariable(id?: string) {
       (async () => {
         try {
           const [data, etag] = await api.getVariable(id);
-          setItem(toInput(data));
+          const input = toInput(data);
+          setItem(input);
+          intialRef.current = input;
           etagRef.current = etag;
         } catch (error) {
           setErrors(toErrorMap(error));
@@ -69,7 +73,10 @@ export function useVariable(id?: string) {
 
     try {
       if (id) {
-        await api.updateVariable(id, item, etagRef.current);
+        const delta = diffPartial(intialRef.current, item);
+        if (delta) {
+          await api.updateVariable(id, delta, etagRef.current);
+        }
       } else {
         await api.createVariable(item);
       }
