@@ -19,7 +19,6 @@ export function useVariable(id?: string) {
   const etagRef = useRef<string>(undefined);
   const [item, setItem] = useState<VariableInput>(INITIAL);
   const [collections, setCollections] = useState<CollectionItem[]>([]);
-  const [pending, setPending] = useState<boolean>(true);
   const [errors, setErrors] = useState<Errors>({});
 
   useEffect(() => {
@@ -33,13 +32,8 @@ export function useVariable(id?: string) {
           etagRef.current = etag;
         } catch (error) {
           setErrors(toErrorMap(error));
-        } finally {
-          setPending(false);
         }
       })();
-    } else {
-      setItem(INITIAL);
-      setPending(false);
     }
 
     (async () => {
@@ -69,8 +63,6 @@ export function useVariable(id?: string) {
   );
 
   const save = useCallback(async () => {
-    setPending(true);
-
     try {
       if (id) {
         const delta = diffPartial(intialRef.current, item);
@@ -84,25 +76,21 @@ export function useVariable(id?: string) {
       navigate('/variables');
     } catch (error) {
       setErrors(toErrorMap(error));
-      setPending(false);
     }
   }, [item, id, navigate]);
 
   const remove = useCallback(async () => {
     if (!id) return;
 
-    setPending(true);
-
     try {
       await api.deleteVariable(id, etagRef.current);
       navigate('/variables', {replace: true});
     } catch (error) {
       setErrors(toErrorMap(error));
-      setPending(false);
     }
   }, [id, navigate]);
 
-  return {collections, item, pending, errors, mutate, save, remove};
+  return {collections, item, errors, mutate, save, remove};
 }
 
 const toInput = (data: Variable): VariableInput => {

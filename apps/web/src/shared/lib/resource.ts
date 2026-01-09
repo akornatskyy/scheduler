@@ -1,6 +1,7 @@
 export type ApiResourceOptions = {
   baseURL: string;
   // headers?: Record<string, string>;
+  fetcher?: typeof fetch;
   createErrorFromResponse: (response: Response) => Promise<Error>;
 };
 
@@ -49,7 +50,8 @@ export class ApiResource {
     options: FetchOptions = {},
   ): Promise<Response> {
     const url = new URL(path, this.options.baseURL);
-    const response = await fetch(url, options);
+    const execute = this.options.fetcher ?? fetch;
+    const response = await execute(url, options);
     if (!response.ok) {
       const error = await this.options.createErrorFromResponse(response);
       throw error;

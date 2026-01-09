@@ -1,8 +1,5 @@
-import {
-  client,
-  type GetResourceResponse,
-  type ListResourceResponse,
-} from '$shared/api';
+import {client} from '$shared/api';
+import {type GetResourceResponse, type ListResourceResponse} from '$shared/lib';
 import type {Collection, CollectionInput, CollectionItem} from '../types';
 import * as api from './http';
 

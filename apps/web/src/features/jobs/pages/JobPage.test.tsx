@@ -1,16 +1,19 @@
+import {useSignal} from '$shared/hooks';
 import {render, screen} from '@testing-library/react';
-import {MemoryRouter as Router} from 'react-router';
+import {MemoryRouter as Router, useParams} from 'react-router';
 import {useJob} from '../hooks/useJob';
 import {JobPage} from './JobPage';
 
 jest.mock('../hooks/useJob');
 
-const mockUseParams = jest.fn();
-
 jest.mock('react-router', () => {
   const actual = jest.requireActual('react-router');
-  return {...actual, useParams: () => mockUseParams()};
+  return {...actual, useParams: jest.fn()};
 });
+
+jest.mock('$shared/hooks', () => ({
+  useSignal: jest.fn(),
+}));
 
 describe('JobPage', () => {
   const base: ReturnType<typeof useJob> = {
@@ -26,7 +29,6 @@ describe('JobPage', () => {
         retryPolicy: {retryCount: 3, retryInterval: '10s', deadline: '1m'},
       },
     },
-    pending: false,
     errors: {},
     mutate: jest.fn(),
     save: jest.fn(),
@@ -35,12 +37,13 @@ describe('JobPage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockUseParams.mockReturnValue({});
+    jest.mocked(useParams).mockReturnValue({});
+    jest.mocked(useSignal).mockReturnValue(false);
     jest.mocked(useJob).mockReturnValue(base);
   });
 
   it('passes route id into hook', () => {
-    mockUseParams.mockReturnValue({id: '7ce1f17e'});
+    jest.mocked(useParams).mockReturnValue({id: '7ce1f17e'});
 
     render(
       <Router>
@@ -50,6 +53,7 @@ describe('JobPage', () => {
 
     expect(useJob).toHaveBeenCalledTimes(1);
     expect(useJob).toHaveBeenCalledWith('7ce1f17e');
+    expect(screen.getByRole('button', {name: 'Save'})).toBeEnabled();
     expect(screen.getByRole('button', {name: 'Delete'})).toBeVisible();
   });
 
@@ -81,5 +85,17 @@ describe('JobPage', () => {
     );
 
     expect(screen.getByRole('heading', {name: 'Job Test #1'})).toBeVisible();
+  });
+
+  it('passes pending state to form', () => {
+    jest.mocked(useSignal).mockReturnValue(true);
+
+    render(
+      <Router>
+        <JobPage />
+      </Router>,
+    );
+
+    expect(screen.getByRole('button', {name: 'Save'})).toBeDisabled();
   });
 });

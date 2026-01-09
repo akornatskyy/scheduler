@@ -44,7 +44,6 @@ describe('useVariable', () => {
     expect(api.getVariable).not.toHaveBeenCalled();
     expect(collectionsApi.listCollections).toHaveBeenCalledTimes(1);
 
-    expect(result.current.pending).toBe(false);
     expect(result.current.item).toEqual({
       name: '',
       collectionId: 'c1',
@@ -58,7 +57,6 @@ describe('useVariable', () => {
 
     const {result} = await act(async () => renderHook(() => useVariable()));
 
-    expect(result.current.pending).toBe(false);
     expect(result.current.errors.collectionId).toMatch(
       /no collection available/i,
     );
@@ -74,7 +72,6 @@ describe('useVariable', () => {
 
     expect(api.getVariable).toHaveBeenCalledTimes(1);
     expect(api.getVariable).toHaveBeenCalledWith(id);
-    expect(result.current.pending).toBe(false);
     expect(result.current.item).toEqual({
       name: 'My Var #1',
       collectionId: 'c1',
@@ -91,7 +88,6 @@ describe('useVariable', () => {
     const {result} = await act(async () => renderHook(() => useVariable(id)));
 
     expect(api.getVariable).toHaveBeenCalledTimes(1);
-    expect(result.current.pending).toBe(false);
     expect(result.current.errors.__ERROR__).toMatch(/unexpected/);
   });
 
@@ -152,7 +148,6 @@ describe('useVariable', () => {
     await act(() => result.current.save());
 
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(result.current.pending).toBe(false);
     expect(result.current.errors).toMatchObject(errors);
   });
 
@@ -195,7 +190,6 @@ describe('useVariable', () => {
 
     expect(api.updateVariable).toHaveBeenCalledTimes(1);
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(result.current.pending).toBe(false);
     expect(result.current.errors).toMatchObject(errors);
   });
 
@@ -235,7 +229,6 @@ describe('useVariable', () => {
 
     expect(api.deleteVariable).toHaveBeenCalledTimes(1);
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(result.current.pending).toBe(false);
     expect(result.current.errors.__ERROR__).toMatch(/unexpected/);
   });
 });

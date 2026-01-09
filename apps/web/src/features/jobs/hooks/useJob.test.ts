@@ -48,7 +48,6 @@ describe('useJob', () => {
     const {result} = await act(async () => renderHook(() => useJob(id)));
 
     expect(api.getJob).toHaveBeenCalledTimes(1);
-    expect(result.current.pending).toBe(false);
     expect(result.current.errors.__ERROR__).toMatch(/unexpected/);
   });
 
@@ -63,7 +62,6 @@ describe('useJob', () => {
     expect(api.getJob).toHaveBeenCalledTimes(1);
     expect(api.getJob).toHaveBeenCalledWith(id);
     expect(collectionsApi.listCollections).toHaveBeenCalledTimes(1);
-    expect(result.current.pending).toBe(false);
     expect(result.current.item).toEqual({
       name: 'Job #1',
       state: 'enabled',
@@ -88,7 +86,6 @@ describe('useJob', () => {
     expect(collectionsApi.listCollections).toHaveBeenCalledTimes(1);
     expect(result.current.item.collectionId).toBe('c1');
     expect(result.current.errors.collectionId).toBeUndefined();
-    expect(result.current.pending).toBe(false);
   });
 
   it('sets collectionId error when no collections exist', async () => {
@@ -144,12 +141,10 @@ describe('useJob', () => {
   it('sets errors on create failure', async () => {
     jest.mocked(collectionsApi.listCollections).mockResolvedValue({items: []});
     jest.mocked(api.createJob).mockRejectedValue(new Error('unexpected'));
-
     const {result} = await act(async () => renderHook(() => useJob()));
 
     await act(async () => result.current.save());
 
-    expect(result.current.pending).toBe(false);
     expect(result.current.errors).toEqual(expect.any(Object));
   });
 
@@ -191,7 +186,6 @@ describe('useJob', () => {
 
     expect(api.updateJob).toHaveBeenCalledTimes(1);
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(result.current.pending).toBe(false);
     expect(result.current.errors).toMatchObject(errors);
   });
 
@@ -228,7 +222,6 @@ describe('useJob', () => {
 
     expect(api.deleteJob).toHaveBeenCalledTimes(1);
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(result.current.pending).toBe(false);
     expect(result.current.errors.__ERROR__).toMatch(/unexpected/);
   });
 });

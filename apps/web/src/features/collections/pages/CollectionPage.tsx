@@ -1,11 +1,14 @@
 import {Layout} from '$shared/components';
+import {useSignal} from '$shared/hooks';
+import {$isPending} from '$shared/signals';
 import {useParams} from 'react-router';
 import {CollectionForm} from '../components/CollectionForm';
 import {useCollection} from '../hooks/useCollection';
 
 export function CollectionPage() {
   const {id} = useParams<{id: string}>();
-  const {item, pending, errors, mutate, save, remove} = useCollection(id);
+  const {item, errors, mutate, save, remove} = useCollection(id);
+  const pending = useSignal($isPending);
 
   return (
     <Layout title={`Collection ${item.name}`} errors={errors}>

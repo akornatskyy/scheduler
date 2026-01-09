@@ -32,7 +32,6 @@ describe('useCollection', () => {
     const {result} = await act(async () => renderHook(() => useCollection()));
 
     expect(api.getCollection).toHaveBeenCalledTimes(0);
-    expect(result.current.pending).toBe(false);
     expect(result.current.item).toEqual({name: '', state: 'enabled'});
     expect(result.current.errors).toEqual({});
   });
@@ -44,7 +43,6 @@ describe('useCollection', () => {
 
     expect(api.getCollection).toHaveBeenCalledTimes(1);
     expect(api.getCollection).toHaveBeenCalledWith(id);
-    expect(result.current.pending).toBe(false);
     expect(result.current.item).toEqual({
       name: 'My App #1',
       state: 'enabled',
@@ -58,7 +56,6 @@ describe('useCollection', () => {
     const {result} = await act(async () => renderHook(() => useCollection(id)));
 
     expect(api.getCollection).toHaveBeenCalledTimes(1);
-    expect(result.current.pending).toBe(false);
     expect(result.current.errors.__ERROR__).toMatch(/unexpected/);
   });
 
@@ -97,7 +94,6 @@ describe('useCollection', () => {
     await act(() => result.current.save());
 
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(result.current.pending).toBe(false);
     expect(result.current.errors).toMatchObject(errors);
   });
 
@@ -135,7 +131,6 @@ describe('useCollection', () => {
 
     expect(api.updateCollection).toHaveBeenCalledTimes(1);
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(result.current.pending).toBe(false);
     expect(result.current.errors).toMatchObject(errors);
   });
 
@@ -174,7 +169,6 @@ describe('useCollection', () => {
 
     expect(api.deleteCollection).toHaveBeenCalledTimes(1);
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(result.current.pending).toBe(false);
     expect(result.current.errors.__ERROR__).toMatch(/unexpected/);
   });
 });

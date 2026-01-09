@@ -16,28 +16,21 @@ export function useCollection(id?: string) {
   const intialRef = useRef(INITIAL);
   const etagRef = useRef<string>(undefined);
   const [item, setItem] = useState<CollectionInput>(INITIAL);
-  const [pending, setPending] = useState<boolean>(true);
   const [errors, setErrors] = useState<Errors>({});
 
   useEffect(() => {
-    if (id) {
-      (async () => {
-        try {
-          const [data, etag] = await api.getCollection(id);
-          const input = toInput(data);
-          setItem(input);
-          intialRef.current = input;
-          etagRef.current = etag;
-        } catch (error) {
-          setErrors(toErrorMap(error));
-        } finally {
-          setPending(false);
-        }
-      })();
-      return;
-    }
-
-    setPending(false);
+    if (!id) return;
+    (async () => {
+      try {
+        const [data, etag] = await api.getCollection(id);
+        const input = toInput(data);
+        setItem(input);
+        intialRef.current = input;
+        etagRef.current = etag;
+      } catch (error) {
+        setErrors(toErrorMap(error));
+      }
+    })();
   }, [id]);
 
   const mutate = useCallback(
@@ -51,8 +44,6 @@ export function useCollection(id?: string) {
   );
 
   const save = useCallback(async () => {
-    setPending(true);
-
     try {
       if (id) {
         const delta = diffPartial(intialRef.current, item);
@@ -66,25 +57,21 @@ export function useCollection(id?: string) {
       navigate('/collections');
     } catch (error) {
       setErrors(toErrorMap(error));
-      setPending(false);
     }
   }, [item, id, navigate]);
 
   const remove = useCallback(async () => {
     if (!id) return;
 
-    setPending(true);
-
     try {
       await api.deleteCollection(id, etagRef.current);
       navigate('/collections', {replace: true});
     } catch (error) {
       setErrors(toErrorMap(error));
-      setPending(false);
     }
   }, [id, navigate]);
 
-  return {item, pending, errors, mutate, save, remove};
+  return {item, errors, mutate, save, remove};
 }
 
 const toInput = (data: Collection): CollectionInput => {

@@ -5,13 +5,7 @@ import {produce} from 'immer';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router';
 import * as api from '../api';
-import {
-  CollectionItem,
-  HttpRequest,
-  JobDefinition,
-  JobInput,
-  RetryPolicy,
-} from '../types';
+import {CollectionItem, JobDefinition, JobInput} from '../types';
 
 const INITIAL: JobInput = {
   name: '',
@@ -31,7 +25,6 @@ export function useJob(id?: string) {
   const etagRef = useRef<string>(undefined);
   const [item, setItem] = useState<JobInput>(INITIAL);
   const [collections, setCollections] = useState<CollectionItem[]>([]);
-  const [pending, setPending] = useState(true);
   const [errors, setErrors] = useState<Errors>({});
 
   useEffect(() => {
@@ -45,13 +38,8 @@ export function useJob(id?: string) {
           etagRef.current = etag;
         } catch (error) {
           setErrors(toErrorMap(error));
-        } finally {
-          setPending(false);
         }
       })();
-    } else {
-      setItem(INITIAL);
-      setPending(false);
     }
 
     (async () => {
@@ -81,8 +69,6 @@ export function useJob(id?: string) {
   );
 
   const save = useCallback(async () => {
-    setPending(true);
-
     try {
       if (id) {
         const delta = diffPartial(intialRef.current, item);
@@ -96,25 +82,21 @@ export function useJob(id?: string) {
       navigate('/jobs');
     } catch (error) {
       setErrors(toErrorMap(error));
-      setPending(false);
     }
   }, [item, id, navigate]);
 
   const remove = useCallback(async () => {
     if (!id) return;
 
-    setPending(true);
-
     try {
       await api.deleteJob(id, etagRef.current);
       navigate('/jobs', {replace: true});
     } catch (error) {
       setErrors(toErrorMap(error));
-      setPending(false);
     }
   }, [id, navigate]);
 
-  return {collections, item, pending, errors, mutate, save, remove};
+  return {collections, item, errors, mutate, save, remove};
 }
 
 const toInput = (data: JobDefinition): JobInput => {
@@ -126,21 +108,14 @@ const toInput = (data: JobDefinition): JobInput => {
     schedule,
     action: {
       type: 'HTTP',
-      request: {...DefaultRequest, ...action.request},
-      retryPolicy: {...DefaultRetryPolicy, ...action.retryPolicy},
+      request: {
+        ...{method: 'GET', uri: '', headers: [], body: ''},
+        ...action.request,
+      },
+      retryPolicy: {
+        ...{retryCount: 3, retryInterval: '10s', deadline: '1m'},
+        ...action.retryPolicy,
+      },
     },
   };
-};
-
-const DefaultRequest: HttpRequest = {
-  method: 'GET',
-  uri: '',
-  headers: [],
-  body: '',
-};
-
-const DefaultRetryPolicy: RetryPolicy = {
-  retryCount: 3,
-  retryInterval: '10s',
-  deadline: '1m',
 };
