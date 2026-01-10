@@ -1,5 +1,8 @@
 import {client} from '$shared/api';
-import type {GetResourceResponse, ListResourceResponse} from '$shared/lib';
+import type {
+  GetResourceResponse,
+  ListResourceResponse,
+} from '$shared/lib/resource';
 import type {
   JobDefinition,
   JobHistory,

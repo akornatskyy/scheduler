@@ -1,4 +1,4 @@
-import {signal} from '$shared/lib';
+import {signal} from '$shared/lib/signals';
 import {act, renderHook} from '@testing-library/react';
 import {useSignal} from './useSignal';
 

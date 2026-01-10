@@ -45,7 +45,14 @@ module.exports = [
       ],
       'no-restricted-imports': [
         'error',
-        {patterns: ['$features/*/*', '$shared/*/*', 'react-bootstrap/*']},
+        {
+          patterns: [
+            '$features/*/*',
+            '$shared/*/*',
+            '!$shared/lib/*',
+            'react-bootstrap/*',
+          ],
+        },
       ],
 
       ...prettierConfig.rules,

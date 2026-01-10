@@ -1,4 +1,4 @@
-import {ApiResource} from '$shared/lib';
+import {ApiResource} from '$shared/lib/resource';
 import {trackPending} from '$shared/utils';
 import {createErrorFromResponse} from './errors';
 
