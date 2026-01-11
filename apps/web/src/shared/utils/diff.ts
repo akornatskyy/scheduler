@@ -42,7 +42,7 @@ export const diffPartial = <T>(prev: T, next: T): Partial<T> | undefined => {
   return Object.keys(out).length > 0 ? (out as Partial<T>) : undefined;
 };
 
-const deepEqual = (a: unknown, b: unknown): boolean => {
+export const deepEqual = (a: unknown, b: unknown): boolean => {
   if (Object.is(a, b)) return true;
 
   if (Array.isArray(a) || Array.isArray(b)) {

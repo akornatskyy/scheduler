@@ -22,14 +22,14 @@ describe('useVariable', () => {
   const id = 'v1';
   const item: Variable = {
     id,
-    collectionId: 'c1',
+    collectionId: 'c01',
     name: 'My Var #1',
     value: 'Some Value',
     updated: '2025-12-29T22:00:58.348',
   };
   const etag = 'W/"etag"';
   const collections: CollectionItem[] = [
-    {id: 'c1', name: 'My App #1', state: 'enabled'},
+    {id: 'c01', name: 'My App #1', state: 'enabled'},
   ];
 
   beforeEach(() => jest.clearAllMocks());
@@ -46,7 +46,7 @@ describe('useVariable', () => {
 
     expect(result.current.item).toEqual({
       name: '',
-      collectionId: 'c1',
+      collectionId: 'c01',
       value: '',
     });
     expect(result.current.collections).toEqual(collections);
@@ -74,12 +74,12 @@ describe('useVariable', () => {
     expect(api.getVariable).toHaveBeenCalledWith(id);
     expect(result.current.item).toEqual({
       name: 'My Var #1',
-      collectionId: 'c1',
+      collectionId: 'c01',
       value: 'Some Value',
     });
   });
 
-  it('sets errors when getVariable fails and clears pending', async () => {
+  it('sets errors when getVariable fails', async () => {
     jest.mocked(api.getVariable).mockRejectedValue(new Error('unexpected'));
     jest.mocked(collectionsApi.listCollections).mockResolvedValue({
       items: collections,
@@ -113,7 +113,7 @@ describe('useVariable', () => {
     expect(result.current.item.name).toEqual('New name');
   });
 
-  it('creates and navigates to list page', async () => {
+  it('sets errors when check fails', async () => {
     jest.mocked(collectionsApi.listCollections).mockResolvedValue({
       items: collections,
     });
@@ -121,20 +121,34 @@ describe('useVariable', () => {
 
     await act(() => result.current.save());
 
+    expect(api.createVariable).not.toHaveBeenCalled();
+    expect(api.updateVariable).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(result.current.errors).toEqual({
+      name: 'Required field cannot be left blank.',
+    });
+  });
+
+  it('creates and navigates to list page', async () => {
+    jest.mocked(collectionsApi.listCollections).mockResolvedValue({
+      items: collections,
+    });
+    const {result} = await act(async () => renderHook(() => useVariable()));
+    act(() => result.current.mutate((draft) => (draft.name = 'My Var #2')));
+
+    await act(() => result.current.save());
+
     expect(api.createVariable).toHaveBeenCalledTimes(1);
     expect(api.createVariable).toHaveBeenCalledWith({
-      name: '',
-      collectionId: 'c1',
+      name: 'My Var #2',
+      collectionId: 'c01',
       value: '',
     });
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith('/variables');
   });
 
-  it('sets errors when create fails and clears pending', async () => {
-    jest.mocked(collectionsApi.listCollections).mockResolvedValue({
-      items: collections,
-    });
+  it('sets errors when create fails', async () => {
     const errors = {
       __ERROR__: 'The error text.',
       name: 'The field error message.',
@@ -144,6 +158,7 @@ describe('useVariable', () => {
       .mockRejectedValue(new ValidationError(errors));
 
     const {result} = await act(async () => renderHook(() => useVariable()));
+    act(() => result.current.mutate((draft) => (draft.name = 'Valid Name')));
 
     await act(() => result.current.save());
 
@@ -171,7 +186,7 @@ describe('useVariable', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/variables');
   });
 
-  it('sets errors when update fails and clears pending', async () => {
+  it('sets errors when update fails', async () => {
     jest.mocked(api.getVariable).mockResolvedValue([item, etag]);
     jest.mocked(collectionsApi.listCollections).mockResolvedValue({
       items: collections,
@@ -217,7 +232,7 @@ describe('useVariable', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/variables', {replace: true});
   });
 
-  it('sets errors when remove fails and clears pending', async () => {
+  it('sets errors when remove fails', async () => {
     jest.mocked(api.getVariable).mockResolvedValue([item, etag]);
     jest.mocked(collectionsApi.listCollections).mockResolvedValue({
       items: collections,

@@ -4,6 +4,7 @@ import {produce} from 'immer';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router';
 import * as api from '../api';
+import {checkCollectionInput} from '../checks';
 import {Collection, CollectionInput} from '../types';
 
 const INITIAL: CollectionInput = {
@@ -44,6 +45,8 @@ export function useCollection(id?: string) {
   );
 
   const save = useCallback(async () => {
+    if (!checkCollectionInput(item, setErrors)) return;
+
     try {
       if (id) {
         const delta = diffPartial(intialRef.current, item);

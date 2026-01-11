@@ -5,6 +5,7 @@ import {produce} from 'immer';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router';
 import * as api from '../api';
+import {checkJobInput} from '../checks';
 import {CollectionItem, JobDefinition, JobInput} from '../types';
 
 const INITIAL: JobInput = {
@@ -69,6 +70,8 @@ export function useJob(id?: string) {
   );
 
   const save = useCallback(async () => {
+    if (!checkJobInput(item, setErrors)) return;
+
     try {
       if (id) {
         const delta = diffPartial(intialRef.current, item);

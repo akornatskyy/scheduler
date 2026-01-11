@@ -5,6 +5,7 @@ import {produce} from 'immer';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router';
 import * as api from '../api';
+import {checkVariableInput} from '../checks';
 import {CollectionItem, Variable, VariableInput} from '../types';
 
 const INITIAL: VariableInput = {
@@ -63,6 +64,8 @@ export function useVariable(id?: string) {
   );
 
   const save = useCallback(async () => {
+    if (!checkVariableInput(item, setErrors)) return;
+
     try {
       if (id) {
         const delta = diffPartial(intialRef.current, item);

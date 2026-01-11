@@ -67,20 +67,34 @@ describe('useCollection', () => {
     expect(result.current.item.name).toEqual('New name');
   });
 
-  it('creates and navigates to list page', async () => {
+  it('sets errors when check fails', async () => {
     const {result} = await act(async () => renderHook(() => useCollection()));
 
     await act(() => result.current.save());
 
+    expect(api.createCollection).not.toHaveBeenCalled();
+    expect(api.updateCollection).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(result.current.errors).toEqual({
+      name: 'Required field cannot be left blank.',
+    });
+  });
+
+  it('creates and navigates to list page', async () => {
+    const {result} = await act(async () => renderHook(() => useCollection()));
+    act(() => result.current.mutate((draft) => (draft.name = 'My App #2')));
+
+    await act(() => result.current.save());
+
     expect(api.createCollection).toHaveBeenCalledWith({
-      name: '',
+      name: 'My App #2',
       state: 'enabled',
     });
     expect(mockNavigate).toHaveBeenCalledTimes(1);
     expect(mockNavigate).toHaveBeenCalledWith('/collections');
   });
 
-  it('sets errors when create fails and clears pending', async () => {
+  it('sets errors when create fails', async () => {
     const errors = {
       __ERROR__: 'The error text.',
       name: 'The field error message.',
@@ -90,6 +104,7 @@ describe('useCollection', () => {
       .mockRejectedValue(new ValidationError(errors));
 
     const {result} = await act(async () => renderHook(() => useCollection()));
+    act(() => result.current.mutate((draft) => (draft.name = 'Valid Name')));
 
     await act(() => result.current.save());
 
@@ -115,7 +130,7 @@ describe('useCollection', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/collections');
   });
 
-  it('sets errors when update fails and clears pending', async () => {
+  it('sets errors when update fails', async () => {
     jest.mocked(api.getCollection).mockResolvedValue([item, etag]);
     const errors = {
       __ERROR__: 'The error text.',
@@ -157,7 +172,7 @@ describe('useCollection', () => {
     expect(mockNavigate).toHaveBeenCalledTimes(0);
   });
 
-  it('sets errors when remove fails and clears pending', async () => {
+  it('sets errors when remove fails', async () => {
     jest.mocked(api.getCollection).mockResolvedValue([item, etag]);
     jest
       .mocked(api.deleteCollection)
