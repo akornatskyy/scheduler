@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	idPattern = "^[A-Za-z0-9][A-Za-z0-9_\\-]*$"
+	idPattern = "^[A-Za-z0-9][A-Za-z0-9_-]*$"
 	idMessage = "Required to match URL safe characters only."
 )
 
@@ -38,5 +38,5 @@ var (
 	VariableValue = validator.String("value").
 			Max(1024).Build()
 	RetryCount = validator.Number("retryCount").
-			Max(10).Build()
+			Min(0).Max(10).Build()
 )
