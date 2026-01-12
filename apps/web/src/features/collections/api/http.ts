@@ -1,5 +1,5 @@
 import {client} from '$shared/api';
-import {Collection, CollectionInput, CollectionItem} from '../types';
+import type {Collection, CollectionInput, CollectionItem} from '../types';
 
 export const listCollections = () =>
   client.list<CollectionItem>('/collections');

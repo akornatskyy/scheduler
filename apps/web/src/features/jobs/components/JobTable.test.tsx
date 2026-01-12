@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import {CollectionItem, JobItem} from '../types';
+import type {CollectionItem, JobItem} from '../types';
 import {GroupRow, ItemRow, JobStatus, JobTable} from './JobTable';
 
 describe('JobTable', () => {

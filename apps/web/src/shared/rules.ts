@@ -1,4 +1,4 @@
-import {Rule} from 'check-compiler';
+import type {Rule} from 'check-compiler';
 
 export const idRule: Rule<string> = {
   type: 'string',

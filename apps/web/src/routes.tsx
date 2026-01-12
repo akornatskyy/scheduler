@@ -1,4 +1,4 @@
-import {Navigate, RouteObject} from 'react-router';
+import {Navigate, type RouteObject} from 'react-router';
 import {CollectionPage, CollectionsPage} from './features/collections';
 import {JobHistoryPage, JobPage, JobsPage} from './features/jobs';
 import {VariablePage, VariablesPage} from './features/variables';

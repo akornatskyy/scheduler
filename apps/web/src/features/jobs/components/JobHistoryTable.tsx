@@ -1,5 +1,5 @@
 import {Button, Col, Row, Table} from 'react-bootstrap';
-import {JobHistory, JobStatus} from '../types';
+import type {JobHistory, JobStatus} from '../types';
 import {formatDate, formatRunning} from './utils';
 
 type Props = {

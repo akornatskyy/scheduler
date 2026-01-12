@@ -1,6 +1,6 @@
 import {fireEvent, render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import {CollectionInput} from '../types';
+import type {CollectionInput} from '../types';
 import {CollectionForm} from './CollectionForm';
 
 describe('CollectionForm', () => {

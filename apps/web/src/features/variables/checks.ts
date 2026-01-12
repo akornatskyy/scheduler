@@ -1,6 +1,6 @@
 import {idRule, nameRule} from '$shared/rules';
 import {makeCheck} from '$shared/utils';
-import {VariableInput} from './types';
+import type {VariableInput} from './types';
 
 export const checkVariableInput = makeCheck<VariableInput>({
   type: 'object',

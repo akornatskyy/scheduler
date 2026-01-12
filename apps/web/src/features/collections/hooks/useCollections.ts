@@ -1,7 +1,7 @@
-import {Errors, toErrorMap} from '$shared/errors';
+import {type Errors, toErrorMap} from '$shared/errors';
 import {useEffect, useState} from 'react';
 import * as api from '../api';
-import {CollectionItem} from '../types';
+import type {CollectionItem} from '../types';
 
 export function useCollections() {
   const [items, setItems] = useState<CollectionItem[]>([]);

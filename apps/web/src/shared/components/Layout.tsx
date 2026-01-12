@@ -1,4 +1,4 @@
-import {Errors} from '$shared/errors';
+import type {Errors} from '$shared/errors';
 import React from 'react';
 import {ErrorSummary} from './ErrorSummary';
 

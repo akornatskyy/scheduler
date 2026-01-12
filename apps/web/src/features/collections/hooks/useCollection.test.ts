@@ -1,7 +1,7 @@
 import {ValidationError} from '$shared/errors';
 import {act, renderHook} from '@testing-library/react';
 import * as api from '../api';
-import {Collection} from '../types';
+import type {Collection} from '../types';
 import {useCollection} from './useCollection';
 
 jest.mock('../api');

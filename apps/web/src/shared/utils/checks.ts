@@ -1,5 +1,5 @@
-import {Errors} from '$shared/errors';
-import {compile, Rule, Violation} from 'check-compiler';
+import type {Errors} from '$shared/errors';
+import {compile, type Rule, type Violation} from 'check-compiler';
 import {deepEqual} from './diff';
 
 export function makeCheck<T>(rule: Rule<T>) {

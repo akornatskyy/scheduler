@@ -1,12 +1,12 @@
 import {api as collectionsApi} from '$features/collections';
-import {Errors, toErrorMap} from '$shared/errors';
+import {type Errors, toErrorMap} from '$shared/errors';
 import {diffPartial} from '$shared/utils';
 import {produce} from 'immer';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router';
 import * as api from '../api';
 import {checkJobInput} from '../checks';
-import {CollectionItem, JobDefinition, JobInput} from '../types';
+import type {CollectionItem, JobDefinition, JobInput} from '../types';
 
 const INITIAL: JobInput = {
   name: '',

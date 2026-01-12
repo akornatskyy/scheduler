@@ -1,9 +1,9 @@
-import {FieldError, Mutate, Tip} from '$shared/components';
-import {Errors} from '$shared/errors';
-import React, {ChangeEvent} from 'react';
+import {FieldError, type Mutate, Tip} from '$shared/components';
+import type {Errors} from '$shared/errors';
+import React, {type ChangeEvent} from 'react';
 import {Button, Col, Form, Row} from 'react-bootstrap';
 import {Link} from 'react-router';
-import {
+import type {
   CollectionItem,
   HttpRequest,
   HttpRequestHeader,

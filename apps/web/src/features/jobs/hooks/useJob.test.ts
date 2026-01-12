@@ -2,7 +2,7 @@ import {api as collectionsApi} from '$features/collections';
 import {ValidationError} from '$shared/errors';
 import {act, renderHook} from '@testing-library/react';
 import * as api from '../api';
-import {CollectionItem, JobDefinition} from '../types';
+import type {CollectionItem, JobDefinition} from '../types';
 import {useJob} from './useJob';
 
 jest.mock('$features/collections');

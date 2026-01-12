@@ -1,5 +1,5 @@
 import {fireEvent, render, screen} from '@testing-library/react';
-import {JobHistory, JobStatus} from '../types';
+import type {JobHistory, JobStatus} from '../types';
 import {JobHistoryTable} from './JobHistoryTable';
 
 describe('JobHistoryTable', () => {

@@ -1,5 +1,5 @@
 import {fireEvent, render, screen} from '@testing-library/react';
-import {VariableInput} from '../types';
+import type {VariableInput} from '../types';
 import {VariableForm} from './VariableForm';
 
 describe('VariableForm', () => {

@@ -1,6 +1,6 @@
 import {Table} from 'react-bootstrap';
 import {Link} from 'react-router';
-import {CollectionItem} from '../types';
+import type {CollectionItem} from '../types';
 
 type Props = {
   items: CollectionItem[];

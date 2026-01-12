@@ -1,6 +1,6 @@
 import {nameRule} from '$shared/rules';
 import {makeCheck} from '$shared/utils';
-import {CollectionInput} from './types';
+import type {CollectionInput} from './types';
 
 export const checkCollectionInput = makeCheck<CollectionInput>({
   type: 'object',

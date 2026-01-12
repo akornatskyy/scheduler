@@ -1,7 +1,10 @@
-import {CollectionItem, api as collectionsApi} from '$features/collections';
+import {
+  type CollectionItem,
+  api as collectionsApi,
+} from '$features/collections';
 import {act, renderHook} from '@testing-library/react';
 import * as api from '../api';
-import {VariableItem} from '../types';
+import type {VariableItem} from '../types';
 import {useVariables} from './useVariables';
 
 jest.mock('$features/collections');

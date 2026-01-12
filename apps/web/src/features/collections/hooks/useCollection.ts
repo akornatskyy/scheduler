@@ -1,11 +1,11 @@
-import {Errors, toErrorMap} from '$shared/errors';
+import {type Errors, toErrorMap} from '$shared/errors';
 import {diffPartial} from '$shared/utils';
 import {produce} from 'immer';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router';
 import * as api from '../api';
 import {checkCollectionInput} from '../checks';
-import {Collection, CollectionInput} from '../types';
+import type {Collection, CollectionInput} from '../types';
 
 const INITIAL: CollectionInput = {
   name: '',

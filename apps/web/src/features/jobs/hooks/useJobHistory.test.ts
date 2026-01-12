@@ -1,6 +1,6 @@
 import {act, renderHook} from '@testing-library/react';
 import * as api from '../api';
-import {JobDefinition, JobHistory, JobStatus} from '../types';
+import type {JobDefinition, JobHistory, JobStatus} from '../types';
 import {useJobHistory} from './useJobHistory';
 
 jest.mock('../api');

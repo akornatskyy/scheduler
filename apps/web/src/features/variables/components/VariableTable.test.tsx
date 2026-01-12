@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import {CollectionItem, VariableItem} from '../types';
+import type {CollectionItem, VariableItem} from '../types';
 import {GroupRow, ItemRow, VariableTable} from './VariableTable';
 
 describe('VariableTable', () => {

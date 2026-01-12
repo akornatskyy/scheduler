@@ -1,7 +1,7 @@
 import {GroupByList} from '$shared/components';
 import {Table} from 'react-bootstrap';
 import {Link} from 'react-router';
-import {CollectionItem, JobItem} from '../types';
+import type {CollectionItem, JobItem} from '../types';
 
 type JobListProps = {
   jobs: JobItem[];

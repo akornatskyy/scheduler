@@ -1,8 +1,8 @@
-import {FieldError, Mutate, Tip} from '$shared/components';
-import {Errors} from '$shared/errors';
+import {FieldError, type Mutate, Tip} from '$shared/components';
+import type {Errors} from '$shared/errors';
 import {Button, Form} from 'react-bootstrap';
 import {Link} from 'react-router';
-import {CollectionInput} from '../types';
+import type {CollectionInput} from '../types';
 
 type Props = {
   id?: string;

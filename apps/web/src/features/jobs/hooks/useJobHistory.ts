@@ -1,8 +1,8 @@
-import {Errors, toErrorMap} from '$shared/errors';
+import {type Errors, toErrorMap} from '$shared/errors';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router';
 import * as api from '../api';
-import {JobDefinition, JobHistory, JobStatus} from '../types';
+import type {JobDefinition, JobHistory, JobStatus} from '../types';
 
 const INITIAL: JobStatus = {
   runCount: 0,

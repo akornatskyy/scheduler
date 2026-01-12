@@ -1,7 +1,7 @@
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
 import {useJobHistory} from '../hooks/useJobHistory';
-import {JobHistory} from '../types';
+import type {JobHistory} from '../types';
 import {JobHistoryPage} from './JobHistoryPage';
 
 jest.mock('../hooks/useJobHistory');

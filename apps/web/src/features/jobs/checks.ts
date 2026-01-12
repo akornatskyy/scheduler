@@ -1,8 +1,8 @@
-import {Errors} from '$shared/errors';
+import type {Errors} from '$shared/errors';
 import {idRule, nameRule} from '$shared/rules';
 import {deepEqual, toErrors} from '$shared/utils';
-import {compile, Rule, Violation} from 'check-compiler';
-import {
+import {compile, type Rule, type Violation} from 'check-compiler';
+import type {
   Action,
   HttpRequest,
   HttpRequestHeader,

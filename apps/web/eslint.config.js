@@ -37,6 +37,13 @@ module.exports = [
       ...reactHooksPlugin.configs.recommended.rules,
       ...reactRefreshPlugin.configs.recommended.rules,
 
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          fixStyle: 'inline-type-imports',
+        },
+      ],
+      '@typescript-eslint/no-import-type-side-effects': 'error',
       'no-undef': 'off',
       'no-console': ['error', {allow: ['warn', 'error']}],
       '@typescript-eslint/no-unused-vars': [

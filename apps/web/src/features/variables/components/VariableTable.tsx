@@ -1,7 +1,7 @@
 import {GroupByList} from '$shared/components';
 import {Table} from 'react-bootstrap';
 import {Link} from 'react-router';
-import {CollectionItem, VariableItem} from '../types';
+import type {CollectionItem, VariableItem} from '../types';
 
 type VariableListProps = {
   collections: CollectionItem[];

@@ -1,6 +1,6 @@
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import {CollectionItem} from '../types';
+import type {CollectionItem} from '../types';
 import {CollectionTable} from './CollectionTable';
 
 describe('CollectionTable', () => {
