@@ -1,19 +1,18 @@
+import {JobForm, useJob} from '$features/jobs';
 import {Layout} from '$shared/components';
 import {useSignal} from '$shared/hooks';
 import {$isPending} from '$shared/signals';
 import {useParams} from 'react-router';
-import {VariableForm} from '../components/VariableForm';
-import {useVariable} from '../hooks/useVariable';
 
-export function VariablePage() {
+export function JobPage() {
   const {id} = useParams<{id: string}>();
 
-  const {item, collections, errors, mutate, save, remove} = useVariable(id);
+  const {collections, item, errors, mutate, save, remove} = useJob(id);
   const pending = useSignal($isPending);
 
   return (
-    <Layout title={`Variable ${item.name}`} errors={errors}>
-      <VariableForm
+    <Layout title={`Job ${item.name}`} errors={errors}>
+      <JobForm
         id={id}
         item={item}
         collections={collections}

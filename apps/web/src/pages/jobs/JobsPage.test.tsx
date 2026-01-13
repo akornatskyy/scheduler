@@ -1,9 +1,12 @@
+import {useJobs} from '$features/jobs';
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import {useJobs} from '../hooks/useJobs';
 import {JobsPage} from './JobsPage';
 
-jest.mock('../hooks/useJobs');
+jest.mock('$features/jobs', () => {
+  const actual = jest.requireActual('$features/jobs');
+  return {...actual, useJobs: jest.fn()};
+});
 
 describe('JobsPage', () => {
   const base: ReturnType<typeof useJobs> = {

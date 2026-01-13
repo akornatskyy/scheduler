@@ -1,20 +1,21 @@
+import {useVariable, VariableForm} from '$features/variables';
 import {Layout} from '$shared/components';
 import {useSignal} from '$shared/hooks';
 import {$isPending} from '$shared/signals';
 import {useParams} from 'react-router';
-import {CollectionForm} from '../components/CollectionForm';
-import {useCollection} from '../hooks/useCollection';
 
-export function CollectionPage() {
+export function VariablePage() {
   const {id} = useParams<{id: string}>();
-  const {item, errors, mutate, save, remove} = useCollection(id);
+
+  const {item, collections, errors, mutate, save, remove} = useVariable(id);
   const pending = useSignal($isPending);
 
   return (
-    <Layout title={`Collection ${item.name}`} errors={errors}>
-      <CollectionForm
+    <Layout title={`Variable ${item.name}`} errors={errors}>
+      <VariableForm
         id={id}
         item={item}
+        collections={collections}
         pending={pending}
         errors={errors}
         mutate={mutate}

@@ -1,7 +1,6 @@
+import {JobHistoryTable, useJobHistory} from '$features/jobs';
 import {Layout} from '$shared/components';
 import {useParams} from 'react-router';
-import {JobHistoryTable} from '../components/JobHistoryTable';
-import {useJobHistory} from '../hooks/useJobHistory';
 
 export function JobHistoryPage() {
   const {id} = useParams<{id: string}>();

@@ -1,7 +1,7 @@
 import {Navigate, type RouteObject} from 'react-router';
-import {CollectionPage, CollectionsPage} from './features/collections';
-import {JobHistoryPage, JobPage, JobsPage} from './features/jobs';
-import {VariablePage, VariablesPage} from './features/variables';
+import {CollectionPage, CollectionsPage} from './pages/collections';
+import {JobHistoryPage, JobPage, JobsPage} from './pages/jobs';
+import {VariablePage, VariablesPage} from './pages/variables';
 import {Shell} from './shared/components';
 
 export const routes: RouteObject[] = [

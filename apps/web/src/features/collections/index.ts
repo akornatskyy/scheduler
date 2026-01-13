@@ -1,5 +1,7 @@
-export {CollectionPage} from './pages/CollectionPage';
-export {CollectionsPage} from './pages/CollectionsPage';
+export {CollectionForm} from './components/CollectionForm';
+export {CollectionTable} from './components/CollectionTable';
+export {useCollection} from './hooks/useCollection';
+export {useCollections} from './hooks/useCollections';
 export type {CollectionItem} from './types';
 import {listCollections} from './api';
 export const api = {listCollections};

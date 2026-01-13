@@ -1,8 +1,7 @@
+import {useVariables, VariableTable} from '$features/variables';
 import {Layout} from '$shared/components';
 import {useMemo} from 'react';
 import {Link, useLocation} from 'react-router';
-import {VariableTable} from '../components/VariableTable';
-import {useVariables} from '../hooks/useVariables';
 
 export function VariablesPage() {
   const location = useLocation();

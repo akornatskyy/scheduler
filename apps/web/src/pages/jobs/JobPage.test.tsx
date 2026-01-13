@@ -1,10 +1,8 @@
+import {useJob} from '$features/jobs';
 import {useSignal} from '$shared/hooks';
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router, useParams} from 'react-router';
-import {useVariable} from '../hooks/useVariable';
-import {VariablePage} from './VariablePage';
-
-jest.mock('../hooks/useVariable');
+import {JobPage} from './JobPage';
 
 jest.mock('react-router', () => {
   const actual = jest.requireActual('react-router');
@@ -15,10 +13,25 @@ jest.mock('$shared/hooks', () => ({
   useSignal: jest.fn(),
 }));
 
-describe('VariablePage', () => {
-  const base: ReturnType<typeof useVariable> = {
+jest.mock('$features/jobs', () => {
+  const actual = jest.requireActual('$features/jobs');
+  return {...actual, useJob: jest.fn()};
+});
+
+describe('JobPage', () => {
+  const base: ReturnType<typeof useJob> = {
     collections: [],
-    item: {name: '', collectionId: '', value: ''},
+    item: {
+      name: '',
+      state: 'enabled',
+      schedule: '',
+      collectionId: '',
+      action: {
+        type: 'HTTP',
+        request: {method: 'GET', uri: '', headers: [], body: ''},
+        retryPolicy: {retryCount: 3, retryInterval: '10s', deadline: '1m'},
+      },
+    },
     errors: {},
     mutate: jest.fn(),
     save: jest.fn(),
@@ -29,33 +42,33 @@ describe('VariablePage', () => {
     jest.clearAllMocks();
     jest.mocked(useParams).mockReturnValue({});
     jest.mocked(useSignal).mockReturnValue(false);
-    jest.mocked(useVariable).mockReturnValue(base);
+    jest.mocked(useJob).mockReturnValue(base);
   });
 
-  it('passes id from route params into hook', () => {
-    jest.mocked(useParams).mockReturnValue({id: '123de331'});
+  it('passes route id into hook', () => {
+    jest.mocked(useParams).mockReturnValue({id: '7ce1f17e'});
 
     render(
       <Router>
-        <VariablePage />
+        <JobPage />
       </Router>,
     );
 
-    expect(useVariable).toHaveBeenCalledTimes(1);
-    expect(useVariable).toHaveBeenCalledWith('123de331');
+    expect(useJob).toHaveBeenCalledTimes(1);
+    expect(useJob).toHaveBeenCalledWith('7ce1f17e');
     expect(screen.getByRole('button', {name: 'Save'})).toBeEnabled();
     expect(screen.getByRole('button', {name: 'Delete'})).toBeVisible();
   });
 
   it('wires hook errors into layout', () => {
-    jest.mocked(useVariable).mockReturnValue({
+    jest.mocked(useJob).mockReturnValue({
       ...base,
       errors: {__ERROR__: 'unexpected'},
     });
 
     render(
-      <Router>
-        <VariablePage />
+      <Router initialEntries={['/jobs/add']}>
+        <JobPage />
       </Router>,
     );
 
@@ -63,20 +76,18 @@ describe('VariablePage', () => {
   });
 
   it('renders title from item name', () => {
-    jest.mocked(useVariable).mockReturnValue({
+    jest.mocked(useJob).mockReturnValue({
       ...base,
-      item: {name: 'My Var #1', collectionId: '65ada2f9', value: ''},
+      item: {...base.item, name: 'Test #1'},
     });
 
     render(
-      <Router>
-        <VariablePage />
+      <Router initialEntries={['/jobs/add']}>
+        <JobPage />
       </Router>,
     );
 
-    expect(
-      screen.getByRole('heading', {name: 'Variable My Var #1'}),
-    ).toBeVisible();
+    expect(screen.getByRole('heading', {name: 'Job Test #1'})).toBeVisible();
   });
 
   it('passes pending state to form', () => {
@@ -84,7 +95,7 @@ describe('VariablePage', () => {
 
     render(
       <Router>
-        <VariablePage />
+        <JobPage />
       </Router>,
     );
 

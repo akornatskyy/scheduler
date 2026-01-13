@@ -1,16 +1,16 @@
+import {useJobHistory, type JobHistory} from '$features/jobs';
 import {render, screen} from '@testing-library/react';
-import {MemoryRouter as Router} from 'react-router';
-import {useJobHistory} from '../hooks/useJobHistory';
-import type {JobHistory} from '../types';
+import {MemoryRouter as Router, useParams} from 'react-router';
 import {JobHistoryPage} from './JobHistoryPage';
-
-jest.mock('../hooks/useJobHistory');
-
-const mockUseParams = jest.fn();
 
 jest.mock('react-router', () => {
   const actual = jest.requireActual('react-router');
-  return {...actual, useParams: () => mockUseParams()};
+  return {...actual, useParams: jest.fn()};
+});
+
+jest.mock('$features/jobs', () => {
+  const actual = jest.requireActual('$features/jobs');
+  return {...actual, useJobHistory: jest.fn()};
 });
 
 describe('JobHistoryPage', () => {
@@ -30,7 +30,7 @@ describe('JobHistoryPage', () => {
   });
 
   it('passes route id into hook', () => {
-    mockUseParams.mockReturnValue({id: '7ce1f17e'});
+    jest.mocked(useParams).mockReturnValue({id: '7ce1f17e'});
     render(
       <Router>
         <JobHistoryPage />

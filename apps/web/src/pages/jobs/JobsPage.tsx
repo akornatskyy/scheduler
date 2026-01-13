@@ -1,8 +1,7 @@
+import {JobTable, useJobs} from '$features/jobs';
 import {Layout} from '$shared/components';
 import {useMemo} from 'react';
 import {Link, useLocation} from 'react-router';
-import {JobTable} from '../components/JobTable';
-import {useJobs} from '../hooks/useJobs';
 
 export function JobsPage() {
   const location = useLocation();

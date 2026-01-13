@@ -1,9 +1,12 @@
+import {useCollections} from '$features/collections';
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import {useCollections} from '../hooks/useCollections';
 import {CollectionsPage} from './CollectionsPage';
 
-jest.mock('../hooks/useCollections');
+jest.mock('$features/collections', () => {
+  const actual = jest.requireActual('$features/collections');
+  return {...actual, useCollections: jest.fn()};
+});
 
 describe('CollectionsPage', () => {
   const base: ReturnType<typeof useCollections> = {

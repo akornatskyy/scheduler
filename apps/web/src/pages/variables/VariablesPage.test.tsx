@@ -1,9 +1,12 @@
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import {useVariables} from '../hooks/useVariables';
+import {useVariables} from '$features/variables';
 import {VariablesPage} from './VariablesPage';
 
-jest.mock('../hooks/useVariables');
+jest.mock('$features/variables', () => {
+  const actual = jest.requireActual('$features/variables');
+  return {...actual, useVariables: jest.fn()};
+});
 
 describe('VariablesPage', () => {
   const base: ReturnType<typeof useVariables> = {

@@ -1,10 +1,8 @@
+import {useCollection} from '$features/collections';
 import {useSignal} from '$shared/hooks';
 import {render, screen} from '@testing-library/react';
 import {MemoryRouter as Router, useParams} from 'react-router';
-import {useCollection} from '../hooks/useCollection';
 import {CollectionPage} from './CollectionPage';
-
-jest.mock('../hooks/useCollection');
 
 jest.mock('react-router', () => {
   const actual = jest.requireActual('react-router');
@@ -14,6 +12,11 @@ jest.mock('react-router', () => {
 jest.mock('$shared/hooks', () => ({
   useSignal: jest.fn(),
 }));
+
+jest.mock('$features/collections', () => {
+  const actual = jest.requireActual('$features/collections');
+  return {...actual, useCollection: jest.fn()};
+});
 
 describe('CollectionPage', () => {
   const base: ReturnType<typeof useCollection> = {
