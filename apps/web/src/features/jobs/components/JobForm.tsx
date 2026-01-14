@@ -1,10 +1,10 @@
+import type {CollectionItem} from '$features/collections';
 import {FieldError, type Mutate, Tip} from '$shared/components';
 import type {Errors} from '$shared/errors';
 import React, {type ChangeEvent} from 'react';
 import {Button, Col, Form, Row} from 'react-bootstrap';
 import {Link} from 'react-router';
 import type {
-  CollectionItem,
   HttpRequest,
   HttpRequestHeader,
   JobInput,

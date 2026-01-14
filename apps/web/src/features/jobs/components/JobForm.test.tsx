@@ -1,6 +1,7 @@
+import type {CollectionItem} from '$features/collections';
 import {fireEvent, render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import type {CollectionItem, JobInput} from '../types';
+import type {JobInput} from '../types';
 import {JobForm} from './JobForm';
 
 describe('JobForm', () => {

@@ -26,7 +26,7 @@ describe('JobHistoryTable', () => {
         action: 'HTTP',
         started: '2019-09-18T06:26:13Z',
         finished: '2019-09-18T06:27:02Z',
-        status: 'failing',
+        status: 'failed',
         retryCount: 3,
         message: '404 Not Found',
       },
@@ -34,7 +34,7 @@ describe('JobHistoryTable', () => {
         action: 'HTTP',
         started: '2019-09-18T06:25:56Z',
         finished: '2019-09-18T06:25:56Z',
-        status: 'passing',
+        status: 'completed',
       },
     ];
 
@@ -50,8 +50,8 @@ describe('JobHistoryTable', () => {
       ),
     ).toBeVisible();
     expect(screen.getByText('N/A')).toBeVisible();
-    expect(screen.getByText('failing')).toBeVisible();
-    expect(screen.getByText('passing')).toBeVisible();
+    expect(screen.getByText('failed')).toBeVisible();
+    expect(screen.getByText('completed')).toBeVisible();
 
     expect(screen.getByText('Back')).toBeEnabled();
     expect(screen.getByText('Run')).toBeEnabled();

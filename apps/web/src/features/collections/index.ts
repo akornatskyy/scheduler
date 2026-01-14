@@ -4,4 +4,4 @@ export {useCollection} from './hooks/useCollection';
 export {useCollections} from './hooks/useCollections';
 export type {CollectionItem} from './types';
 import {listCollections} from './api';
-export const api = {listCollections};
+export const collectionsApi = {listCollections};

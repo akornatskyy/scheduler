@@ -104,7 +104,7 @@ describe('jobs api', () => {
 
   it('listJobHistory() calls client.list with /jobs/:id/history', async () => {
     const payload: ListResourceResponse<JobHistory> = {
-      items: [{status: 'ready'} as JobHistory],
+      items: [{status: 'completed'} as JobHistory],
     };
     jest.mocked(client).list.mockResolvedValue(payload);
 

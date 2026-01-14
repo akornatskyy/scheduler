@@ -22,11 +22,11 @@ export const JobHistoryTable = ({
       <Col>
         <label>Status</label>
       </Col>
-      <Col>{formatRunning(status.running)}</Col>
+      <Col aria-label="status">{formatRunning(status.running)}</Col>
       <Col>
         <label>Run / Error Count</label>
       </Col>
-      <Col>
+      <Col aria-label="run error count">
         {status.runCount} / {status.errorCount}
       </Col>
     </Row>
@@ -34,11 +34,11 @@ export const JobHistoryTable = ({
       <Col>
         <label>Last Run</label>
       </Col>
-      <Col>{formatDate(status.lastRun)}</Col>
+      <Col aria-label="last run">{formatDate(status.lastRun)}</Col>
       <Col>
         <label>Next Run</label>
       </Col>
-      <Col>{formatDate(status.nextRun)}</Col>
+      <Col aria-label="next run">{formatDate(status.nextRun)}</Col>
     </Row>
     <Table striped hover>
       <thead>

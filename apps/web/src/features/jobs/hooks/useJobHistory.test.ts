@@ -28,7 +28,7 @@ describe('useJobHistory', () => {
     jest.mocked(api.getJobStatus).mockResolvedValue([status, etag]);
     jest.mocked(api.listJobHistory).mockResolvedValue({
       items: Array.from({length: 10}).map(
-        () => ({action: 'HTTP', status: 'ready'}) as JobHistory,
+        () => ({action: 'HTTP', status: 'completed'}) as JobHistory,
       ),
     });
 

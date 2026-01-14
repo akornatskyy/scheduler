@@ -1,7 +1,4 @@
-import {
-  type CollectionItem,
-  api as collectionsApi,
-} from '$features/collections';
+import {type CollectionItem, collectionsApi} from '$features/collections';
 import {ValidationError} from '$shared/errors';
 import {act, renderHook} from '@testing-library/react';
 import * as api from '../api';

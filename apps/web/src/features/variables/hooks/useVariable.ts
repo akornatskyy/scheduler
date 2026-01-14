@@ -1,4 +1,4 @@
-import {api as collectionsApi} from '$features/collections';
+import {collectionsApi} from '$features/collections';
 import {type Errors, toErrorMap} from '$shared/errors';
 import {diffPartial} from '$shared/utils';
 import {produce} from 'immer';

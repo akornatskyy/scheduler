@@ -1,8 +1,6 @@
-export type {CollectionItem} from '$features/collections';
-
 export type JobState = 'enabled' | 'disabled';
 
-export type JobHistoryStatus = 'ready' | 'running' | 'passing' | 'failing';
+export type JobItemStatus = 'ready' | 'running' | 'passing' | 'failing';
 
 export type JobItem = {
   id: string;
@@ -10,7 +8,7 @@ export type JobItem = {
   name: string;
   schedule: string;
   state: JobState;
-  status: JobHistoryStatus;
+  status: JobItemStatus;
   errorRate?: number;
 };
 
@@ -47,6 +45,8 @@ export type RetryPolicy = {
   retryInterval: string;
   deadline: string;
 };
+
+export type JobHistoryStatus = 'completed' | 'failed';
 
 export type JobHistory = {
   action: 'HTTP';

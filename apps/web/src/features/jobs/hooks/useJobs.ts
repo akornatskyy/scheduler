@@ -1,8 +1,8 @@
-import {api as collectionsApi} from '$features/collections';
+import {type CollectionItem, collectionsApi} from '$features/collections';
 import {type Errors, toErrorMap} from '$shared/errors';
 import {useEffect, useState} from 'react';
 import * as api from '../api';
-import type {CollectionItem, JobItem} from '../types';
+import type {JobItem} from '../types';
 
 export function useJobs(collectionId?: string | null) {
   const [collections, setCollections] = useState<CollectionItem[]>([]);

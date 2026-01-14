@@ -1,4 +1,4 @@
-import {api as collectionsApi} from '$features/collections';
+import {collectionsApi} from '$features/collections';
 import {act, renderHook} from '@testing-library/react';
 import * as api from '../api';
 import {useJobs} from './useJobs';
