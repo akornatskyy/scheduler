@@ -1,5 +1,6 @@
 const js = require('@eslint/js');
 const globals = require('globals');
+const playwright = require('eslint-plugin-playwright');
 const tsParser = require('@typescript-eslint/parser');
 const tsPlugin = require('@typescript-eslint/eslint-plugin');
 const reactPlugin = require('eslint-plugin-react');
@@ -61,6 +62,40 @@ module.exports = [
           ],
         },
       ],
+
+      ...prettierConfig.rules,
+    },
+  },
+  {
+    files: ['e2e/**/*.ts'],
+    languageOptions: {
+      parser: tsParser,
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      // globals: {...globals.browser, ...globals.node, ...globals.es2019},
+    },
+
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      "playwright": playwright,
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+      ...tsPlugin.configs.recommended.rules,
+      ...playwright.configs['flat/recommended'].rules,
+
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          fixStyle: 'inline-type-imports',
+        },
+      ],
+      '@typescript-eslint/no-import-type-side-effects': 'error',
+      'no-undef': 'off',
+      'no-console': ['error', {allow: ['warn', 'error']}],
+      'playwright/expect-expect': 'off',
+      'playwright/no-conditional-in-test': 'off',
+      'playwright/no-conditional-expect': 'off',
 
       ...prettierConfig.rules,
     },

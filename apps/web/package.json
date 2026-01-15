@@ -6,7 +6,8 @@
     "start": "webpack serve",
     "lint": "eslint . --max-warnings 0",
     "build": "tsc && webpack",
-    "test": "jest"
+    "test": "jest",
+    "e2e": "npx playwright test"
   },
   "repository": {
     "type": "git",
@@ -30,24 +31,26 @@
     "react": "^19.2.3",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.2.3",
-    "react-router": "7.12.0"
+    "react-router": "7.13.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
+    "@playwright/test": "^1.58.0",
     "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.1",
+    "@testing-library/react": "^16.3.2",
     "@types/jest": "^30.0.0",
-    "@types/react": "^19.2.8",
+    "@types/react": "^19.2.9",
     "@types/react-dom": "^19.2.3",
-    "@typescript-eslint/eslint-plugin": "^8.53.0",
-    "@typescript-eslint/parser": "^8.53.0",
+    "@typescript-eslint/eslint-plugin": "^8.53.1",
+    "@typescript-eslint/parser": "^8.53.1",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-playwright": "^2.5.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.26",
-    "globals": "^17.0.0",
-    "html-webpack-plugin": "^5.6.5",
+    "globals": "^17.1.0",
+    "html-webpack-plugin": "^5.6.6",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "terser-webpack-plugin": "^5.3.16",

@@ -1,5 +1,6 @@
 .PHONY: install install-api install-web api web dev dev-api dev-web test \
-	test-api test-web lint lint-api lint-web build build-api build-web clean
+	test-api test-web lint lint-api lint-web build build-api build-web image \
+	e2e clean
 
 ifeq ($(OS),Windows_NT)
   BINARY_EXT := .exe
@@ -71,5 +72,8 @@ image:
 		--build-arg VERSION=${VERSION} \
   	-f deployments/docker/Dockerfile .
 
+e2e:
+	cd $(WEB_DIR) && playwright test
+
 clean:
-	rm -rf $(BINARY_NAME) $(BUILD_DIR)
+	rm -rf $(BINARY_NAME) $(BUILD_DIR) $(API_DIR)/coverage
