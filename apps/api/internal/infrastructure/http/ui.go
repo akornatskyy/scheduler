@@ -29,9 +29,7 @@ func serveJavascript() httprouter.Handle {
 		req.URL.Path = p.ByName("filepath")
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("Cache-Control", "max-age=31536000, immutable")
-		if strings.HasSuffix(req.URL.Path, ".map") {
-			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		} else {
+		if strings.HasSuffix(req.URL.Path, ".js") {
 			w.Header().Set("Content-Type", "application/javascript; charset=UTF-8")
 		}
 		fileServer.ServeHTTP(w, req)
