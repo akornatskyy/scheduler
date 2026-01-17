@@ -27,7 +27,8 @@ jobs:
       - id: vars
         if: ${{ github.ref_type == 'tag' }}
         run: |
-          echo ::set-output name=tag::$(echo ${{ github.ref_name }} | sed s/v//)
+          echo "tag=$(echo ${{ github.ref_name }} | sed s/v//)" \
+            >> $GITHUB_OUTPUT
       - run: |
           echo "VERSION=$(git describe --tags --dirty --always | sed s/v//)" \
             >> $GITHUB_ENV
