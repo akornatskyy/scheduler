@@ -15,8 +15,6 @@ services:
       - /run/postgresql:rw,noexec,nosuid,size=5m
     volumes:
       - db:/var/lib/postgresql/data
-    networks:
-      - db
 
   api:
     container_name: api
@@ -30,13 +28,6 @@ services:
       - DSN=postgres://postgres:@db:5432/postgres?sslmode=disable
     ports:
       - 8080:8080
-    networks:
-      - api
-      - db
 
 volumes:
   db:
-
-networks:
-  db:
-  api:
