@@ -1,11 +1,11 @@
 const js = require('@eslint/js');
 const globals = require('globals');
-const playwright = require('eslint-plugin-playwright');
+const playwrightPlugin = require('eslint-plugin-playwright');
 const tsParser = require('@typescript-eslint/parser');
 const tsPlugin = require('@typescript-eslint/eslint-plugin');
 const reactPlugin = require('eslint-plugin-react');
 const reactHooksPlugin = require('eslint-plugin-react-hooks');
-const reactRefreshPlugin = require('eslint-plugin-react-refresh');
+const {reactRefresh} = require('eslint-plugin-react-refresh');
 const prettierConfig = require('eslint-config-prettier');
 
 /** @type {import('eslint').Linter.Config[]} */
@@ -28,7 +28,7 @@ module.exports = [
       '@typescript-eslint': tsPlugin,
       react: reactPlugin,
       'react-hooks': reactHooksPlugin,
-      'react-refresh': reactRefreshPlugin,
+      'react-refresh': reactRefresh.plugin,
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -36,7 +36,7 @@ module.exports = [
       ...reactPlugin.configs['jsx-runtime'].rules,
       ...tsPlugin.configs.recommended.rules,
       ...reactHooksPlugin.configs.recommended.rules,
-      ...reactRefreshPlugin.configs.recommended.rules,
+      ...reactRefresh.configs.recommended.rules,
 
       '@typescript-eslint/consistent-type-imports': [
         'error',
@@ -72,17 +72,16 @@ module.exports = [
       parser: tsParser,
       ecmaVersion: 'latest',
       sourceType: 'module',
-      // globals: {...globals.browser, ...globals.node, ...globals.es2019},
     },
 
     plugins: {
       '@typescript-eslint': tsPlugin,
-      "playwright": playwright,
+      playwright: playwrightPlugin,
     },
     rules: {
       ...js.configs.recommended.rules,
       ...tsPlugin.configs.recommended.rules,
-      ...playwright.configs['flat/recommended'].rules,
+      ...playwrightPlugin.configs['flat/recommended'].rules,
 
       '@typescript-eslint/consistent-type-imports': [
         'error',
