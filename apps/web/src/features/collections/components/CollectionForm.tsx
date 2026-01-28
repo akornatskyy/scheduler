@@ -1,4 +1,4 @@
-import {FieldError, type Mutate, Tip} from '$shared/components';
+import {FieldError, Tip} from '$shared/components';
 import type {Errors} from '$shared/errors';
 import {Button, Form} from 'react-bootstrap';
 import {Link} from 'react-router';
@@ -9,7 +9,7 @@ type Props = {
   item: CollectionInput;
   pending: boolean;
   errors: Errors;
-  mutate: Mutate<CollectionInput>;
+  mutate: (updates: Partial<CollectionInput>) => void;
   onSave: () => void;
   onDelete: () => void;
 };
@@ -40,7 +40,7 @@ export const CollectionForm = ({
         type="text"
         value={item.name}
         isInvalid={!!errors.name}
-        onChange={(e) => mutate((d) => (d.name = e.target.value))}
+        onChange={(e) => mutate({name: e.target.value})}
       />
       <FieldError message={errors.name} />
     </Form.Group>
@@ -54,7 +54,7 @@ export const CollectionForm = ({
         value="enabled"
         checked={item.state === 'enabled'}
         isInvalid={!!errors.state}
-        onChange={() => mutate((d) => (d.state = 'enabled'))}
+        onChange={() => mutate({state: 'enabled'})}
       />
       <Form.Check
         id="stateDisabled"
@@ -65,7 +65,7 @@ export const CollectionForm = ({
         value="disabled"
         checked={item.state === 'disabled'}
         isInvalid={!!errors.state}
-        onChange={() => mutate((d) => (d.state = 'disabled'))}
+        onChange={() => mutate({state: 'disabled'})}
       />
       <FieldError message={errors.state} />
     </Form.Group>

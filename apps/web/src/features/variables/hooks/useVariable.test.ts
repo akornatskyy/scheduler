@@ -108,7 +108,7 @@ describe('useVariable', () => {
     });
     const {result} = await act(async () => renderHook(() => useVariable()));
 
-    act(() => result.current.mutate((draft) => (draft.name = 'New name')));
+    act(() => result.current.mutate(({name: 'New name'})));
 
     expect(result.current.item.name).toEqual('New name');
   });
@@ -134,7 +134,7 @@ describe('useVariable', () => {
       items: collections,
     });
     const {result} = await act(async () => renderHook(() => useVariable()));
-    act(() => result.current.mutate((draft) => (draft.name = 'My Var #2')));
+    act(() => result.current.mutate({name: 'My Var #2'}));
 
     await act(() => result.current.save());
 
@@ -158,7 +158,7 @@ describe('useVariable', () => {
       .mockRejectedValue(new ValidationError(errors));
 
     const {result} = await act(async () => renderHook(() => useVariable()));
-    act(() => result.current.mutate((draft) => (draft.name = 'Valid Name')));
+    act(() => result.current.mutate({name: 'Valid Name'}));
 
     await act(() => result.current.save());
 
@@ -173,7 +173,7 @@ describe('useVariable', () => {
     });
     jest.mocked(api.updateVariable).mockResolvedValue();
     const {result} = await act(async () => renderHook(() => useVariable(id)));
-    act(() => result.current.mutate((draft) => (draft.name = 'Updated name')));
+    act(() => result.current.mutate({name: 'Updated name'}));
 
     await act(() => result.current.save());
 
@@ -199,7 +199,7 @@ describe('useVariable', () => {
       .mocked(api.updateVariable)
       .mockRejectedValue(new ValidationError(errors));
     const {result} = await act(async () => renderHook(() => useVariable(id)));
-    act(() => result.current.mutate((draft) => (draft.value = '')));
+    act(() => result.current.mutate({value: ''}));
 
     await act(() => result.current.save());
 

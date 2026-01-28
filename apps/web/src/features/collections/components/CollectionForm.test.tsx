@@ -1,10 +1,8 @@
 import {fireEvent, render, screen} from '@testing-library/react';
 import {MemoryRouter as Router} from 'react-router';
-import type {CollectionInput} from '../types';
 import {CollectionForm} from './CollectionForm';
 
 describe('CollectionForm', () => {
-  let draft: CollectionInput;
   let props: Parameters<typeof CollectionForm>[0];
 
   beforeEach(() => {
@@ -12,11 +10,10 @@ describe('CollectionForm', () => {
       item: {name: 'My App', state: 'disabled'},
       pending: false,
       errors: {},
-      mutate: jest.fn((recipe) => recipe(draft)),
+      mutate: jest.fn(),
       onSave: jest.fn(),
       onDelete: jest.fn(),
     };
-    draft = JSON.parse(JSON.stringify(props.item));
   });
 
   it('renders add item', () => {
@@ -58,12 +55,12 @@ describe('CollectionForm', () => {
       },
     });
     expect(mutate).toHaveBeenCalledTimes(1);
-    expect(draft.name).toEqual('My Other App');
+    expect(mutate).toHaveBeenCalledWith({name: 'My Other App'});
 
     mutate.mockClear();
     fireEvent.click(screen.getByLabelText('Enabled'));
     expect(mutate).toHaveBeenCalledTimes(1);
-    expect(draft.state).toBe('enabled');
+    expect(mutate).toHaveBeenCalledWith({state: 'enabled'});
 
     props.item.state = 'enabled';
     rerender(<CollectionForm {...props} />);
@@ -71,7 +68,7 @@ describe('CollectionForm', () => {
     mutate.mockClear();
     fireEvent.click(screen.getByLabelText('Disabled'));
     expect(mutate).toHaveBeenCalledTimes(1);
-    expect(draft.state).toBe('disabled');
+    expect(mutate).toHaveBeenCalledWith({state: 'disabled'});
   });
 
   it('calls on save callback', () => {

@@ -62,7 +62,7 @@ describe('useCollection', () => {
   it('updates fields', async () => {
     const {result} = await act(async () => renderHook(() => useCollection()));
 
-    act(() => result.current.mutate((draft) => (draft.name = 'New name')));
+    act(() => result.current.mutate({name: 'New name'}));
 
     expect(result.current.item.name).toEqual('New name');
   });
@@ -82,7 +82,7 @@ describe('useCollection', () => {
 
   it('creates and navigates to list page', async () => {
     const {result} = await act(async () => renderHook(() => useCollection()));
-    act(() => result.current.mutate((draft) => (draft.name = 'My App #2')));
+    act(() => result.current.mutate({name: 'My App #2'}));
 
     await act(() => result.current.save());
 
@@ -104,7 +104,7 @@ describe('useCollection', () => {
       .mockRejectedValue(new ValidationError(errors));
 
     const {result} = await act(async () => renderHook(() => useCollection()));
-    act(() => result.current.mutate((draft) => (draft.name = 'Valid Name')));
+    act(() => result.current.mutate({name: 'Valid Name'}));
 
     await act(() => result.current.save());
 
@@ -116,7 +116,7 @@ describe('useCollection', () => {
     jest.mocked(api.getCollection).mockResolvedValue([item, etag]);
     jest.mocked(api.updateCollection).mockResolvedValue();
     const {result} = await act(async () => renderHook(() => useCollection(id)));
-    act(() => result.current.mutate((draft) => (draft.name = 'Updated name')));
+    act(() => result.current.mutate({name: 'Updated name'}));
 
     await act(() => result.current.save());
 
@@ -140,7 +140,7 @@ describe('useCollection', () => {
       .mocked(api.updateCollection)
       .mockRejectedValue(new ValidationError(errors));
     const {result} = await act(async () => renderHook(() => useCollection(id)));
-    act(() => result.current.mutate((draft) => (draft.state = 'disabled')));
+    act(() => result.current.mutate({state: 'disabled'}));
 
     await act(() => result.current.save());
 

@@ -1,7 +1,6 @@
 import {collectionsApi} from '$features/collections';
 import {type Errors, toErrorMap} from '$shared/errors';
 import {diffPartial} from '$shared/utils';
-import {produce} from 'immer';
 import {useCallback, useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router';
 import * as api from '../api';
@@ -54,12 +53,8 @@ export function useVariable(id?: string) {
   }, [id]);
 
   const mutate = useCallback(
-    (recipe: (input: VariableInput) => void) =>
-      setItem(
-        produce((draft) => {
-          recipe(draft);
-        }),
-      ),
+    (updates: Partial<VariableInput>) =>
+      setItem((prev) => ({...prev, ...updates})),
     [],
   );
 

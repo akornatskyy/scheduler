@@ -1,4 +1,4 @@
-import {FieldError, type Mutate, Tip} from '$shared/components';
+import {FieldError, Tip} from '$shared/components';
 import type {Errors} from '$shared/errors';
 import {Button, Col, Form, Row} from 'react-bootstrap';
 import type {CollectionItem, VariableInput} from '../types';
@@ -9,7 +9,7 @@ type Props = {
   collections: CollectionItem[];
   pending: boolean;
   errors: Errors;
-  mutate: Mutate<VariableInput>;
+  mutate: (updates: Partial<VariableInput>) => void;
   onSave: () => void;
   onDelete: () => void;
 };
@@ -42,7 +42,7 @@ export const VariableForm = ({
           type="text"
           value={item.name}
           isInvalid={!!errors.name}
-          onChange={(e) => mutate((d) => (d.name = e.target.value))}
+          onChange={(e) => mutate({name: e.target.value})}
         />
         <FieldError message={errors.name} />
       </Form.Group>
@@ -54,7 +54,7 @@ export const VariableForm = ({
           as="select"
           value={item.collectionId}
           isInvalid={!!errors.collectionId}
-          onChange={(e) => mutate((d) => (d.collectionId = e.target.value))}
+          onChange={(e) => mutate({collectionId: e.target.value})}
         >
           {collections.map((c) => (
             <option key={c.id} value={c.id}>
@@ -74,7 +74,7 @@ export const VariableForm = ({
           name="value"
           value={item.value}
           isInvalid={!!errors.value}
-          onChange={(e) => mutate((d) => (d.value = e.target.value))}
+          onChange={(e) => mutate({value: e.target.value})}
         />
         <FieldError message={errors.value} />
       </Form.Group>

@@ -1,9 +1,7 @@
 import {fireEvent, render, screen} from '@testing-library/react';
-import type {VariableInput} from '../types';
 import {VariableForm} from './VariableForm';
 
 describe('VariableForm', () => {
-  let draft: VariableInput;
   let props: Parameters<typeof VariableForm>[0];
 
   beforeEach(() => {
@@ -15,11 +13,10 @@ describe('VariableForm', () => {
       ],
       pending: false,
       errors: {},
-      mutate: jest.fn((recipe) => recipe(draft)),
+      mutate: jest.fn(),
       onSave: jest.fn(),
       onDelete: jest.fn(),
     };
-    draft = JSON.parse(JSON.stringify(props.item));
   });
 
   it('renders add item', () => {
@@ -48,7 +45,7 @@ describe('VariableForm', () => {
       },
     });
     expect(mutate).toHaveBeenCalledTimes(1);
-    expect(draft.name).toBe('My Other Var');
+    expect(mutate).toHaveBeenCalledWith({name: 'My Other Var'});
 
     mutate.mockClear();
     fireEvent.change(screen.getByLabelText('Collection'), {
@@ -57,7 +54,7 @@ describe('VariableForm', () => {
       },
     });
     expect(mutate).toHaveBeenCalledTimes(1);
-    expect(draft.collectionId).toBe('de1044cc');
+    expect(mutate).toHaveBeenCalledWith({collectionId: 'de1044cc'});
 
     mutate.mockClear();
     fireEvent.change(screen.getByLabelText('Value'), {
@@ -66,7 +63,7 @@ describe('VariableForm', () => {
       },
     });
     expect(mutate).toHaveBeenCalledTimes(1);
-    expect(draft.value).toBe('Hello');
+    expect(mutate).toHaveBeenCalledWith({value: 'Hello'});
   });
 
   it('calls on save callback', () => {
