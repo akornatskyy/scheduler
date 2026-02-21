@@ -42,6 +42,7 @@ export class VariablePage {
     const promises = [this.page.waitForResponse('/collections')];
     if (this.getId()) {
       // TODO: there is a race that api call completes earlier
+      // eslint-disable-next-line playwright/missing-playwright-await
       promises.push(this.page.waitForResponse('/variables/*'));
     }
 
