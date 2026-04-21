@@ -5,6 +5,8 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	// Embed timezone database so it works without system tzdata.
+	_ "time/tzdata"
 
 	"github.com/akornatskyy/scheduler/internal/core"
 	"github.com/akornatskyy/scheduler/internal/domain"
