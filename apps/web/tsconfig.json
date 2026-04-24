@@ -12,11 +12,9 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "baseUrl": "./src",
     "paths": {
-      "$shared/*": ["shared/*"],
-      "$features/*": ["features/*"]
+      "$shared/*": ["./src/shared/*"],
+      "$features/*": ["./src/features/*"]
     }
-  },
-  "include": ["src/**/*"]
+  }
 }
