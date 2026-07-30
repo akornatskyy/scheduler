@@ -53,7 +53,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - uses: github/codeql-action/init@v4
+      - uses: github/codeql-action/init@v4.37.3
         with:
           languages: go, javascript
-      - uses: github/codeql-action/analyze@v4
+      - uses: github/codeql-action/analyze@v4.37.3
