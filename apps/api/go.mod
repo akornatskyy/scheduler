@@ -1,6 +1,6 @@
 module github.com/akornatskyy/scheduler
 
-go 1.24
+go 1.25
 
 require (
 	github.com/CAFxX/httpcompression v0.0.9
@@ -11,7 +11,7 @@ require (
 )
 
 require (
-	github.com/andybalholm/brotli v1.2.2 // indirect
+	github.com/andybalholm/brotli v1.2.4 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/klauspost/compress v1.19.2 // indirect
+	github.com/klauspost/compress v1.20.0 // indirect
 )
