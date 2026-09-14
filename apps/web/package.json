@@ -30,7 +30,7 @@
     "immer": "^11.1.18",
     "react": "^19.2.8",
     "react-bootstrap": "^2.10.10",
-    "react-dom": "^19.2.8",
+    "react-dom": "^19.3.0",
     "react-router": "7.18.3"
   },
   "devDependencies": {
@@ -40,7 +40,7 @@
     "@testing-library/react": "^16.3.3",
     "@types/jest": "^30.0.0",
     "@types/react": "^19.2.18",
-    "@types/react-dom": "^19.2.7",
+    "@types/react-dom": "^19.3.0",
     "@typescript-eslint/eslint-plugin": "^8.70.0",
     "@typescript-eslint/parser": "^8.70.0",
     "eslint": "^9.39.5",
