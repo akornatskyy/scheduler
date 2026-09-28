@@ -1,8 +1,8 @@
 package domain
 
 import (
-	"html/template"
 	"strings"
+	"text/template"
 
 	"github.com/akornatskyy/goext/errorstate"
 )
@@ -61,7 +61,7 @@ func (req *HTTPRequest) Transpose(variables map[string]string) (*HTTPRequest, er
 }
 
 func renderTemplate(name string, text string, variables map[string]string) (string, error) {
-	t, err := template.New(name).Parse(text)
+	t, err := template.New(name).Option("missingkey=zero").Parse(text)
 	if err != nil {
 		return "", err
 	}
