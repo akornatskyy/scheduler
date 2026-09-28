@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -81,6 +82,44 @@ func TestRun(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+	}
+}
+
+func TestRunTransposedRequest(t *testing.T) {
+	client, teardown := setupClient(func(w http.ResponseWriter, r *http.Request) {
+		if got, want := r.URL.RawQuery, "first=1&second=2"; got != want {
+			t.Errorf("query, got: %q, expected: %q", got, want)
+		}
+		if got, want := r.Header.Get("Authorization"), "Bearer a+b&c=d"; got != want {
+			t.Errorf("Authorization, got: %q, expected: %q", got, want)
+		}
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Error(err)
+		}
+		if got, want := string(body), `{"message":"A&B < C"}`; got != want {
+			t.Errorf("body, got: %q, expected: %q", got, want)
+		}
+	})
+	defer teardown()
+	req, err := (&domain.HTTPRequest{
+		Method: "POST",
+		URI:    "{{.endpoint}}",
+		Headers: []*domain.NameValuePair{
+			{Name: "Authorization", Value: "Bearer {{.token}}"},
+		},
+		Body: "{{.payload}}",
+	}).Transpose(map[string]string{
+		"endpoint": "http://127.0.0.1:8000/run?first=1&second=2",
+		"token":    "a+b&c=d",
+		"payload":  `{"message":"A&B < C"}`,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	runner := &httpRunner{client: client}
+	if err := runner.Run(context.Background(), &domain.Action{Request: req}); err != nil {
+		t.Fatal(err)
 	}
 }
 
