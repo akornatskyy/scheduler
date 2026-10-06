@@ -27,7 +27,7 @@
   "homepage": "https://github.com/akornatskyy/scheduler",
   "dependencies": {
     "check-compiler": "^1.4.0",
-    "immer": "^11.1.18",
+    "immer": "^11.1.21",
     "react": "^19.3.0",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.3.0",
