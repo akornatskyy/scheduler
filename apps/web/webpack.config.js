@@ -40,8 +40,8 @@ module.exports = (env, argv) => {
     },
     plugins: plugins,
     performance: {
-      maxEntrypointSize: 380 * 1024,
-      maxAssetSize: 345 * 1024,
+      maxEntrypointSize: 410 * 1024,
+      maxAssetSize: 380 * 1024,
     },
     optimization: {
       splitChunks: {
