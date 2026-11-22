@@ -7,10 +7,9 @@ jest.mock('../api');
 
 const mockNavigate = jest.fn();
 
-jest.mock('react-router', () => {
-  const actual = jest.requireActual('react-router');
-  return {...actual, useNavigate: () => mockNavigate};
-});
+jest.mock('react-router', () => ({
+  useNavigate: () => mockNavigate,
+}));
 
 describe('useJobHistory', () => {
   const id = '1hZsD7XGqPE';

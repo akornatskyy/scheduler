@@ -1,6 +1,9 @@
 import {ApiResource} from '$shared/lib/resource';
-import {trackPending} from '$shared/utils';
+import {$isPending} from '$shared/signals';
+import {createTracker} from '$shared/utils';
 import {createErrorFromResponse} from './errors';
+
+const trackPending = createTracker($isPending);
 
 export const client = new ApiResource({
   baseURL: window.location.origin,
