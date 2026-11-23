@@ -4,7 +4,7 @@
   "description": "A fully managed cron job scheduler",
   "scripts": {
     "start": "webpack serve",
-    "lint": "eslint . --max-warnings 0",
+    "lint": "oxlint --deny-warnings",
     "build": "tsc && webpack",
     "test": "jest",
     "e2e": "npx playwright test"
@@ -26,44 +26,35 @@
   },
   "homepage": "https://github.com/akornatskyy/scheduler",
   "dependencies": {
-    "check-compiler": "^1.4.0",
-    "immer": "^11.2.10",
+    "check-compiler": "^1.4.1",
+    "immer": "^11.2.13",
     "react": "^19.3.1",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.3.1",
-    "react-router": "7.18.6"
+    "react-router": "^8.5.3"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.5",
     "@playwright/test": "^1.65.1",
-    "@testing-library/jest-dom": "^7.0.1",
+    "@swc/core": "^1.16.22",
+    "@swc/jest": "^0.2.39",
+    "@testing-library/jest-dom": "^8.0.0",
     "@testing-library/react": "^16.3.3",
     "@types/jest": "^30.0.0",
-    "@types/react": "^19.3.0",
+    "@types/react": "^19.3.3",
     "@types/react-dom": "^19.3.0",
-    "@typescript-eslint/eslint-plugin": "^8.74.0",
-    "@typescript-eslint/parser": "^8.74.0",
-    "eslint": "^9.39.5",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-playwright": "^2.12.2",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.8",
-    "globals": "^17.14.0",
     "html-webpack-plugin": "^5.6.8",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
+    "oxlint": "^1.95.0",
+    "swc-loader": "^0.2.7",
     "terser-webpack-plugin": "^5.6.1",
-    "ts-jest": "^29.4.15",
-    "ts-loader": "^9.6.2",
-    "typescript": "^5.9.3",
+    "typescript": "^7.0.2",
     "webpack": "^5.113.0",
     "webpack-cli": "^7.3.1",
     "webpack-dev-server": "^6.1.0"
   },
   "jest": {
     "testEnvironment": "jsdom",
-    "preset": "ts-jest",
     "moduleNameMapper": {
       "^\\$shared/(.*)$": "<rootDir>/src/shared/$1",
       "^\\$features/(.*)$": "<rootDir>/src/features/$1"
@@ -74,6 +65,30 @@
     ],
     "setupFilesAfterEnv": [
       "<rootDir>/src/shared/setup-tests.ts"
+    ],
+    "transform": {
+      "^.+.[tj]sx?$": [
+        "@swc/jest",
+        {
+          "jsc": {
+            "transform": {
+              "react": {
+                "runtime": "automatic"
+              },
+              "optimizer": {
+                "globals": {
+                  "vars": {
+                    "import.meta": "({})"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!react-router|@remix-run|cookie)"
     ]
   },
   "prettier": {

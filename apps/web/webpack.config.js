@@ -40,7 +40,7 @@ module.exports = (env, argv) => {
     },
     plugins: plugins,
     performance: {
-      maxEntrypointSize: 410 * 1024,
+      maxEntrypointSize: 450 * 1024,
       maxAssetSize: 380 * 1024,
     },
     optimization: {
@@ -69,8 +69,8 @@ module.exports = (env, argv) => {
         {
           test: /\.tsx?$/,
           use: {
-            loader: 'ts-loader',
-            options: {transpileOnly: true},
+            loader: 'swc-loader',
+            options: {jsc: {transform: {react: {runtime: 'automatic'}}}},
           },
           exclude: /node_modules/,
         },

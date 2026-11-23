@@ -22,7 +22,7 @@ const INITIAL: JobInput = {
 
 export function useJob(id?: string) {
   const navigate = useNavigate();
-  const intialRef = useRef(INITIAL);
+  const initialRef = useRef(INITIAL);
   const etagRef = useRef<string>(undefined);
   const [item, setItem] = useState<JobInput>(INITIAL);
   const [collections, setCollections] = useState<CollectionItem[]>([]);
@@ -35,7 +35,7 @@ export function useJob(id?: string) {
           const [data, etag] = await api.getJob(id);
           const input = toInput(data);
           setItem(input);
-          intialRef.current = input;
+          initialRef.current = input;
           etagRef.current = etag;
         } catch (error) {
           setErrors(toErrorMap(error));
@@ -74,7 +74,7 @@ export function useJob(id?: string) {
 
     try {
       if (id) {
-        const delta = diffPartial(intialRef.current, item);
+        const delta = diffPartial(initialRef.current, item);
         if (delta) {
           await api.updateJob(id, delta, etagRef.current);
         }
@@ -111,14 +111,8 @@ const toInput = (data: JobDefinition): JobInput => {
     schedule,
     action: {
       type: 'HTTP',
-      request: {
-        ...{method: 'GET', uri: '', headers: [], body: ''},
-        ...action.request,
-      },
-      retryPolicy: {
-        ...{retryCount: 3, retryInterval: '10s', deadline: '1m'},
-        ...action.retryPolicy,
-      },
+      request: {...INITIAL.action.request, ...action.request},
+      retryPolicy: {...INITIAL.action.retryPolicy, ...action.retryPolicy},
     },
   };
 };
